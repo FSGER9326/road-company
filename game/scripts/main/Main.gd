@@ -11,13 +11,13 @@ const RoadSystemScript = preload("res://game/scripts/road/RoadSystem.gd")
 const ContractSystemScript = preload("res://game/scripts/contracts/ContractSystem.gd")
 const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
 
-var data: DataStore
-var company: CompanyState
+var data
+var company
 var pending_route = {}
 var pending_destination = ""
 var travel_summary = {}
-var road_system: RoadSystem
-var contract_system: ContractSystem
+var road_system
+var contract_system
 var run_seed = 12345
 
 func _ready() -> void:
@@ -25,7 +25,7 @@ func _ready() -> void:
 	data = DataStoreScript.new()
 	data.load_all()
 	road_system = RoadSystemScript.new()
-	road_system.setup(data, run_seed)
+	road_system.call("setup", data, run_seed)
 	contract_system = ContractSystemScript.new()
 	if _user_arg("autoplay") != "":
 		call_deferred("_run_autoplay_from_args")
@@ -51,14 +51,14 @@ func _start_new_run() -> void:
 
 func show_road(message: String = "") -> void:
 	var road = RoadScreenScript.new()
-	road.setup(data, company, message)
+	road.call("setup", data, company, message)
 	road.open_contract_board.connect(show_contract_board)
 	road.travel_requested.connect(_begin_travel)
 	_set_screen(road)
 
 func show_contract_board() -> void:
 	var board = ContractBoardScript.new()
-	board.setup(data, company)
+	board.call("setup", data, company)
 	board.back_requested.connect(func(): show_road())
 	board.contract_accepted.connect(func(contract):
 		if contract_system.accept(company, contract):
@@ -89,7 +89,7 @@ func _begin_travel(route: Dictionary) -> void:
 
 func show_combat(context: Dictionary) -> void:
 	var combat = CombatScreenScript.new()
-	combat.setup(data, company, context)
+	combat.call("setup", data, company, context)
 	combat.combat_finished.connect(_finish_combat)
 	_set_screen(combat)
 
@@ -134,7 +134,7 @@ func _make_travel_aftermath(had_combat: bool, reached_destination: bool, headlin
 
 func show_camp(summary: Dictionary) -> void:
 	var camp = CampScreenScript.new()
-	camp.setup(data, company, summary)
+	camp.call("setup", data, company, summary)
 	camp.continue_requested.connect(func(): show_road("The company is ready for the next leg."))
 	_set_screen(camp)
 
@@ -159,8 +159,8 @@ func _run_autoplay_from_args() -> void:
 	var result = {}
 	if scenario == "escort_smoke":
 		var runner = AutoplaySmokeScript.new()
-		runner.setup(data, run_seed)
-		result = runner.run_escort_smoke()
+		runner.call("setup", data, run_seed)
+		result = runner.call("run_escort_smoke")
 	else:
 		result = {"ok": false, "error": "Unknown autoplay scenario: %s" % scenario}
 	if result.get("ok", false):

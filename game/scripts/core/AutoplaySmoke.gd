@@ -7,10 +7,10 @@ const ContractSystemScript = preload("res://game/scripts/contracts/ContractSyste
 const CombatSystemScript = preload("res://game/scripts/combat/CombatSystem.gd")
 const CampSystemScript = preload("res://game/scripts/camp/CampSystem.gd")
 
-var data: DataStore
+var data
 var seed := 12345
 
-func setup(new_data: DataStore, new_seed: int = 12345) -> void:
+func setup(new_data, new_seed: int = 12345) -> void:
 	data = new_data
 	seed = new_seed
 
@@ -18,21 +18,21 @@ func run_escort_smoke() -> Dictionary:
 	var company = CompanyStateScript.new()
 	company.load_from_start(data.company_start)
 	var road_system = RoadSystemScript.new()
-	road_system.setup(data, seed)
+	road_system.call("setup", data, seed)
 	var contract_system = ContractSystemScript.new()
 	var combat_system = CombatSystemScript.new()
-	combat_system.setup(data, company, seed)
+	combat_system.call("setup", data, company, seed)
 	var camp_system = CampSystemScript.new()
 
 	var contract = data.by_id(data.contracts, "escort_embermill")
 	if contract.is_empty():
 		return _fail("escort_embermill contract is missing")
-	if not contract_system.accept(company, contract):
+	if not contract_system.call("accept", company, contract):
 		return _fail("could not accept escort contract")
 	var route = data.by_id(data.routes, contract.get("target_route", ""))
 	if route.is_empty():
 		return _fail("escort target route is missing")
-	var travel = road_system.travel(company, route)
+	var travel = road_system.call("travel", company, route)
 	if not travel.get("ok", false):
 		return _fail(travel.get("error", "travel failed"))
 	var context = travel.get("context", {})
@@ -47,11 +47,11 @@ func run_escort_smoke() -> Dictionary:
 	company.apply_combat_result(combat_result)
 	if combat_result.get("victory", false):
 		company.move_to(travel.get("destination", company.current_location))
-		if contract_system.active_contract_completed(company, route, travel.get("destination", "")):
-			contract_system.complete(company)
+		if contract_system.call("active_contract_completed", company, route, travel.get("destination", "")):
+			contract_system.call("complete", company)
 	elif combat_result.get("objective_failed", false):
-		contract_system.fail(company)
-	camp_system.rest(company)
+		contract_system.call("fail", company)
+	camp_system.call("rest", company)
 	return {
 		"ok": true,
 		"scenario": "escort_smoke",
@@ -63,7 +63,7 @@ func run_escort_smoke() -> Dictionary:
 		"graveyard_count": company.graveyard.size()
 	}
 
-func _scripted_combat(combat_system: CombatSystem, units: Array, terrain: Dictionary) -> Dictionary:
+func _scripted_combat(combat_system, units: Array, terrain: Dictionary) -> Dictionary:
 	var max_rounds = 8
 	var rounds = 0
 	for round_index in range(max_rounds):
@@ -88,13 +88,13 @@ func _scripted_combat(combat_system: CombatSystem, units: Array, terrain: Dictio
 			return _combat_result(units, true, "Autoplay wagon survived the ambush clock.", false, rounds)
 	return _combat_result(units, not _alive_units(units, "player").is_empty(), "Autoplay reached max rounds.", false, rounds)
 
-func _player_scripted_turn(combat_system: CombatSystem, units: Array, actor: Dictionary, terrain: Dictionary) -> void:
+func _player_scripted_turn(combat_system, units: Array, actor: Dictionary, terrain: Dictionary) -> void:
 	var target = _nearest_alive(units, actor, "enemy", combat_system)
 	if target.is_empty():
 		return
 	_act_toward_and_attack(combat_system, units, actor, target, terrain)
 
-func _enemy_scripted_turn(combat_system: CombatSystem, units: Array, actor: Dictionary, terrain: Dictionary) -> void:
+func _enemy_scripted_turn(combat_system, units: Array, actor: Dictionary, terrain: Dictionary) -> void:
 	var target = _objective_unit(units)
 	if target.is_empty() or not bool(target.get("alive", true)):
 		target = _nearest_alive(units, actor, "player", combat_system)
@@ -102,7 +102,7 @@ func _enemy_scripted_turn(combat_system: CombatSystem, units: Array, actor: Dict
 		return
 	_act_toward_and_attack(combat_system, units, actor, target, terrain)
 
-func _act_toward_and_attack(combat_system: CombatSystem, units: Array, actor: Dictionary, target: Dictionary, terrain: Dictionary) -> void:
+func _act_toward_and_attack(combat_system, units: Array, actor: Dictionary, target: Dictionary, terrain: Dictionary) -> void:
 	var weapon = data.get_weapon(actor.get("weapon_id", ""))
 	var range_limit = int(weapon.get("range", 1))
 	while int(actor.get("ap", 0)) >= 3 and combat_system.hex_distance(actor.get("q", 0), actor.get("r", 0), target.get("q", 0), target.get("r", 0)) > range_limit:
@@ -114,7 +114,7 @@ func _act_toward_and_attack(combat_system: CombatSystem, units: Array, actor: Di
 	if bool(target.get("alive", true)) and combat_system.hex_distance(actor.get("q", 0), actor.get("r", 0), target.get("q", 0), target.get("r", 0)) <= range_limit:
 		combat_system.attack(actor, target, weapon)
 
-func _best_step(combat_system: CombatSystem, units: Array, actor: Dictionary, target: Dictionary, blocked: Dictionary) -> Dictionary:
+func _best_step(combat_system, units: Array, actor: Dictionary, target: Dictionary, blocked: Dictionary) -> Dictionary:
 	var candidates = [
 		Vector2i(actor.get("q", 0) + 1, actor.get("r", 0)),
 		Vector2i(actor.get("q", 0) - 1, actor.get("r", 0)),
@@ -176,7 +176,7 @@ func _combat_result(units: Array, victory: bool, headline: String, objective_fai
 		"loot": {"crowns": 95 if victory else 0, "tools": 1 if victory else 0}
 	}
 
-func _nearest_alive(units: Array, actor: Dictionary, side: String, combat_system: CombatSystem) -> Dictionary:
+func _nearest_alive(units: Array, actor: Dictionary, side: String, combat_system) -> Dictionary:
 	var best = {}
 	var best_dist = 999
 	for unit in units:

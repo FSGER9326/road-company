@@ -15,7 +15,7 @@ def project_root() -> Path:
     raise RuntimeError("Could not locate project root containing project.godot")
 
 
-def run_command(label: str, command: list[str], cwd: Path) -> tuple[bool, str]:
+def run_command(label: str, command: list[str], cwd: Path, fail_patterns: list[str] | None = None) -> tuple[bool, str]:
     print(f"\n== {label} ==")
     print(" ".join(command))
     env = os.environ.copy()
@@ -25,14 +25,19 @@ def run_command(label: str, command: list[str], cwd: Path) -> tuple[bool, str]:
         print(proc.stdout.rstrip())
     if proc.stderr:
         print(proc.stderr.rstrip())
-    if proc.returncode == 0:
+    combined_output = f"{proc.stdout}\n{proc.stderr}"
+    matched_patterns = [pattern for pattern in (fail_patterns or []) if pattern in combined_output]
+    if proc.returncode == 0 and not matched_patterns:
         print(f"PASS: {label}")
         return True, ""
+    if matched_patterns:
+        print(f"FAIL: {label} output contained failure marker(s): {', '.join(matched_patterns)}")
+        return False, f"{label} emitted failure marker(s): {', '.join(matched_patterns)}"
     print(f"FAIL: {label} exited {proc.returncode}")
     return False, f"{label} failed with exit code {proc.returncode}"
 
 
-def discover_godot() -> tuple[str | None, str]:
+def discover_godot(root: Path) -> tuple[str | None, str]:
     env_bin = os.environ.get("GODOT_BIN", "").strip()
     if env_bin:
         candidate = Path(env_bin)
@@ -42,6 +47,14 @@ def discover_godot() -> tuple[str | None, str]:
         if resolved:
             return resolved, "GODOT_BIN"
         return None, f"GODOT_BIN is set to '{env_bin}', but it was not found"
+
+    local_candidates = sorted((root / ".godot" / "bin").glob("Godot*.exe")) + sorted((root / ".godot" / "bin").glob("godot*.exe"))
+    if os.name != "nt":
+        local_candidates.extend(sorted((root / ".godot" / "bin").glob("Godot*")))
+        local_candidates.extend(sorted((root / ".godot" / "bin").glob("godot*")))
+    for candidate in local_candidates:
+        if candidate.is_file():
+            return str(candidate), f"local:{candidate.relative_to(root)}"
 
     candidates = [
         "godot",
@@ -85,12 +98,13 @@ def main() -> int:
     if not ok:
         failures.append(reason)
 
-    godot_bin, godot_reason = discover_godot()
+    godot_bin, godot_reason = discover_godot(root)
     if godot_bin:
         ok, reason = run_command(
             "Godot headless tests",
             [godot_bin, "--headless", "--path", str(root), "-s", "res://tools/godot/run_godot_tests.gd"],
             root,
+            fail_patterns=["SCRIPT ERROR", "Parse Error", "Compile Error", "ERROR: Failed to load script"],
         )
         if not ok:
             failures.append(reason)

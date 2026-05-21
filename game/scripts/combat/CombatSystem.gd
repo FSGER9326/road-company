@@ -3,11 +3,11 @@ class_name CombatSystem
 
 const SeededRngScript = preload("res://game/scripts/core/SeededRng.gd")
 
-var data: DataStore
-var company: CompanyState
-var rng: SeededRng
+var data
+var company
+var rng
 
-func setup(new_data: DataStore, new_company: CompanyState, seed: int = 12345) -> void:
+func setup(new_data, new_company, seed: int = 12345) -> void:
 	data = new_data
 	company = new_company
 	rng = SeededRngScript.new()

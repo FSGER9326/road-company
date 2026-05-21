@@ -41,3 +41,18 @@ Prefer adding testable logic to:
 - `game/scripts/core/AutoplaySmoke.gd`
 
 UI screens should call those systems instead of duplicating rule logic.
+
+## Current Verification Snapshot
+
+- Branch: `design/deepseek-world-systems`
+- Latest commit before this stabilization pass: `dc43930 docs: design dynamic world simulation systems`
+- Commands run:
+  - `git status`
+  - `python tools/run_all_tests.py`
+  - `python tools/run_all_tests.py` with local Godot executable available through `.godot/bin`
+- Result: PASS
+- Godot headless result: PASS with `Godot_v4.6.2-stable_win64.exe` copied locally under `.godot/bin`
+- Skipped tests: none in the final run
+- Known broken behavior: no known validation or headless smoke-test failure after this pass
+- Remaining worktree note: DeepSeek design documents may be present on this branch and should not be merged into gameplay branches until intentionally reviewed
+- Next recommended implementation task: keep the next pass focused on a small UI/test polish item, or intentionally merge/review design documents before starting world simulation implementation

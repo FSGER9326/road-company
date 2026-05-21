@@ -1,21 +1,23 @@
 extends Control
 class_name RoadScreen
 
+const RoadMapCanvasScript = preload("res://game/scripts/road/RoadMapCanvas.gd")
+
 signal open_contract_board
 signal travel_requested(route)
 
-var data: DataStore
-var company: CompanyState
+var data
+var company
 var selected_route = {}
 var route_buttons = []
-var map_canvas: RoadMapCanvas
+var map_canvas
 var detail_label: RichTextLabel
 var resource_label: Label
 var contract_label: Label
 var location_label: RichTextLabel
 var travel_button: Button
 
-func setup(new_data: DataStore, new_company: CompanyState, message: String = "") -> void:
+func setup(new_data, new_company, message: String = "") -> void:
 	data = new_data
 	company = new_company
 	_build(message)
@@ -49,7 +51,7 @@ func _build(message: String) -> void:
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	root.add_child(split)
 
-	map_canvas = RoadMapCanvas.new()
+	map_canvas = RoadMapCanvasScript.new()
 	map_canvas.custom_minimum_size = Vector2(760, 580)
 	map_canvas.set_map(data.locations, data.routes, company.current_location)
 	split.add_child(map_canvas)
