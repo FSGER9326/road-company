@@ -2,6 +2,17 @@
 
 ROAD COMPANY is designed so coding agents can verify the core loop without manual clicking. Keep changes small, deterministic, and data-first.
 
+## SVG Token Loading Fix (Antigravity)
+
+- **Branch**: `feature/svg-token-loading-fix-v1`
+- **Root Cause**: `CombatBoard.gd` and `RoadMapCanvas.gd` either duplicated fallback loading logic incorrectly, completely lacked it, or failed to handle headless Godot environments (where `.import` files for SVGs aren't generated). Furthermore, `RoadMapCanvas` hardcoded settlement icons to `icon_settlement_town` instead of using the settlement's `market_tier`.
+- **Fix Summary**: Added a robust `load_asset_texture` helper method in `DataStore.gd` that handles `ResourceLoader.exists()` checking and falls back to `Image.load_svg_from_string` for loose SVG files. `CombatBoard.gd` and `RoadMapCanvas.gd` were updated to use this helper. `RoadMapCanvas.gd` now supports unique route statuses (blocked, secure, stabilizing) and correctly calculates settlement tiers (village, town, city) dynamically based on `market_tier`.
+- **SVG Assets Load Status**: SVG assets now load and render correctly even in headless runs.
+- **Fallback Status**: The procedural rendering fallback remains intact and functional if the SVG asset file is missing or fails to parse.
+- **Visual Smoke Result**: Passed. The baseline for `combat_board.png` was updated (differs by 2.576%) because SVGs now visibly replace procedural drawing. `road_map.png` didn't differ sufficiently to break threshold but was confirmed working via test scripts.
+- **Remaining Limitations**: The SVGs are still simple placeholders. Some route features (e.g. dynamic blocked/secured icons) might overlap if paths are densely clustered.
+
+
 ## Latest Main Status
 
 - Contract generator v1 merged into `main`.
