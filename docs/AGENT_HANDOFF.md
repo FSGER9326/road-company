@@ -272,12 +272,16 @@ Next recommended task: `feature/contract-generator-v1` - implement world-state-b
 
 Next recommended task: `feature/contract-generator-v1` — implement `ContractGenerator.gd` following `prompts/codex_next/contract_generator_v1.md`.
 
-## Visual Smoke Pass V1 (Antigravity)
+## Visual Asset Wiring Merge (Antigravity)
 
-- Branch: `feature/antigravity-godot-visual-smoke-v1`
+- Merged `feature/antigravity-visual-asset-wiring-v1` into `main` via `--no-ff`.
 - Purpose: Wiring placeholder art assets to the UI gracefully and ensuring layout and missing assets don't crash.
 - Modified `CombatScreen.gd` to pass `DataStore` to `CombatBoard`.
 - Modified `CombatBoard.gd` to load SVG tokens (`token_fighter_...`, `token_enemy_...`, `token_wagon`) via `DataStore.get_asset()` with a fallback to procedural circles.
 - Modified `RoadScreen.gd` to pass `DataStore` to `RoadMapCanvas`.
 - Modified `RoadMapCanvas.gd` to load SVG icons for settlements (`icon_settlement_town`) and route danger indicators (`icon_danger_1` to `5`) via `DataStore.get_asset()` with a fallback to procedural drawing.
-- Tested successfully under Godot headless and via `python tools/run_all_tests.py`.
+- Commands run:
+  - `python tools/run_all_tests.py` on feature branch: **PASS** (8 validators, 50 tests, Godot 9/9)
+  - `python tools/run_all_tests.py` on main after merge: **PASS**
+- Godot headless result: `Godot_v4.6.2` headless test suite passed 9/9.
+- Remaining visual limitations: SVGs are basic placeholders; combat and road screens still lack animations, rich UI containers, and dynamic visual states for things like unit injuries or route blockades.
