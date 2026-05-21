@@ -1,0 +1,79 @@
+[
+  {
+    "route_id": "blackford_embermill_highroad",
+    "traffic": 62,
+    "danger": 34,
+    "road_quality": 68,
+    "trade_flow": 64,
+    "patrol_presence": 42,
+    "bandit_pressure": 26,
+    "monster_pressure": 4,
+    "blocked": false
+  },
+  {
+    "route_id": "blackford_embermill_fenway",
+    "traffic": 24,
+    "danger": 68,
+    "road_quality": 28,
+    "trade_flow": 22,
+    "patrol_presence": 10,
+    "bandit_pressure": 48,
+    "monster_pressure": 18,
+    "blocked": false
+  },
+  {
+    "route_id": "embermill_saintsfall_pilgrim",
+    "traffic": 58,
+    "danger": 24,
+    "road_quality": 60,
+    "trade_flow": 56,
+    "patrol_presence": 52,
+    "bandit_pressure": 18,
+    "monster_pressure": 4,
+    "blocked": false
+  },
+  {
+    "route_id": "blackford_saintsfall_oldwood",
+    "traffic": 18,
+    "danger": 76,
+    "road_quality": 22,
+    "trade_flow": 16,
+    "patrol_presence": 8,
+    "bandit_pressure": 54,
+    "monster_pressure": 26,
+    "blocked": false
+  },
+  {
+    "route_id": "blackford_saintsfall_causeway",
+    "traffic": 38,
+    "danger": 52,
+    "road_quality": 46,
+    "trade_flow": 36,
+    "patrol_presence": 24,
+    "bandit_pressure": 38,
+    "monster_pressure": 8,
+    "blocked": false
+  },
+  {
+    "route_id": "embermill_blackford_rivertrack",
+    "traffic": 34,
+    "danger": 58,
+    "road_quality": 40,
+    "trade_flow": 32,
+    "patrol_presence": 20,
+    "bandit_pressure": 44,
+    "monster_pressure": 10,
+    "blocked": false
+  },
+  {
+    "route_id": "saintsfall_embermill_coalpath",
+    "traffic": 42,
+    "danger": 40,
+    "road_quality": 48,
+    "trade_flow": 42,
+    "patrol_presence": 30,
+    "bandit_pressure": 30,
+    "monster_pressure": 6,
+    "blocked": false
+  }
+]

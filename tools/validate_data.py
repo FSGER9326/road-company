@@ -12,6 +12,7 @@ from validate_company import validate as validate_company
 from validate_contracts import validate as validate_contracts
 from validate_factions import validate as validate_factions
 from validate_world import validate as validate_world
+from validate_world_economy import validate as validate_world_economy
 
 
 def validate_json_parses() -> list[str]:
@@ -68,6 +69,7 @@ def main() -> int:
         ("JSON parse", validate_json_parses),
         ("Factions", validate_factions),
         ("World", validate_world),
+        ("World economy", validate_world_economy),
         ("Contracts", validate_contracts),
         ("Company", validate_company),
         ("Combat", validate_combat),

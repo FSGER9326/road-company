@@ -7,6 +7,7 @@ const RoadScreenScript = preload("res://game/scripts/road/RoadScreen.gd")
 const CombatScreenScript = preload("res://game/scripts/combat/CombatScreen.gd")
 const CampScreenScript = preload("res://game/scripts/camp/CampScreen.gd")
 const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
+const WorldEconomySystemScript = preload("res://game/scripts/world/WorldEconomySystem.gd")
 
 var failures := 0
 var data
@@ -26,6 +27,7 @@ func _run() -> void:
 	_test_road_map_instantiates()
 	_test_combat_instantiates()
 	_test_camp_instantiates()
+	_test_world_economy_ticks()
 	_test_autoplay_escort_smoke()
 
 	if failures == 0:
@@ -111,6 +113,16 @@ func _test_autoplay_escort_smoke() -> void:
 		_pass("autoplay escort scenario reached aftermath")
 	else:
 		_fail("autoplay escort scenario failed: %s" % str(result))
+
+func _test_world_economy_ticks() -> void:
+	var economy = WorldEconomySystemScript.new()
+	var settlements = data.settlement_economy.duplicate(true)
+	var routes = data.route_economy.duplicate(true)
+	var result = economy.call("weekly_tick", settlements, routes, data.routes)
+	if result.get("settlements", []).size() == data.settlement_economy.size() and result.get("routes", []).size() == data.route_economy.size():
+		_pass("world economy weekly tick")
+	else:
+		_fail("world economy weekly tick did not return expected updates")
 
 func _escort_context() -> Dictionary:
 	var contract = data.by_id(data.contracts, "escort_embermill")

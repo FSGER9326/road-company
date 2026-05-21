@@ -1,0 +1,32 @@
+[
+  {
+    "id": "well_stocked",
+    "name": "Well Stocked",
+    "duration_ticks": 2,
+    "modifiers": {
+      "unrest": -2,
+      "prosperity": 1
+    },
+    "description": "Granaries and storehouses are reliable enough to quiet local fears."
+  },
+  {
+    "id": "road_worries",
+    "name": "Road Worries",
+    "duration_ticks": 3,
+    "modifiers": {
+      "trade_access": -3,
+      "unrest": 2
+    },
+    "description": "Merchants delay travel while road rumors grow darker."
+  },
+  {
+    "id": "food_shortage",
+    "name": "Food Shortage",
+    "duration_ticks": 2,
+    "modifiers": {
+      "prosperity": -4,
+      "unrest": 6
+    },
+    "description": "Food is short enough that every market argument turns sharp."
+  }
+]

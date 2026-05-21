@@ -2,6 +2,7 @@ extends Control
 class_name RoadScreen
 
 const RoadMapCanvasScript = preload("res://game/scripts/road/RoadMapCanvas.gd")
+const WorldEconomySystemScript = preload("res://game/scripts/world/WorldEconomySystem.gd")
 
 signal open_contract_board
 signal travel_requested(route)
@@ -16,10 +17,14 @@ var resource_label: Label
 var contract_label: Label
 var location_label: RichTextLabel
 var travel_button: Button
+var economy_label: RichTextLabel
+var economy_result_label: Label
+var economy_system
 
 func setup(new_data, new_company, message: String = "") -> void:
 	data = new_data
 	company = new_company
+	economy_system = WorldEconomySystemScript.new()
 	_build(message)
 
 func _build(message: String) -> void:
@@ -69,6 +74,21 @@ func _build(message: String) -> void:
 	contract_label = Label.new()
 	contract_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	side.add_child(contract_label)
+
+	economy_label = RichTextLabel.new()
+	economy_label.custom_minimum_size = Vector2(0, 118)
+	economy_label.fit_content = true
+	side.add_child(economy_label)
+
+	var tick_button = Button.new()
+	tick_button.text = "Advance Week"
+	tick_button.pressed.connect(_advance_week)
+	side.add_child(tick_button)
+
+	economy_result_label = Label.new()
+	economy_result_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	economy_result_label.add_theme_color_override("font_color", Color(0.78, 0.72, 0.58))
+	side.add_child(economy_result_label)
 
 	var contracts_button = Button.new()
 	contracts_button.text = "Contract Board"
@@ -164,3 +184,45 @@ func _refresh_labels() -> void:
 		]
 	else:
 		contract_label.text = "Active contract: none"
+	_refresh_economy_label()
+
+func _refresh_economy_label() -> void:
+	if economy_label == null:
+		return
+	var economy = data.get_settlement_economy(company.current_location)
+	if economy.is_empty():
+		economy_label.text = "[b]Settlement Economy[/b]\nNo economy entry for this settlement."
+		return
+	economy_label.text = "[b]Settlement Economy[/b]\nPopulation %s  Prosperity %s  Food %s\nUnrest %s  Security %s  Trade %s\nMarket Tier %s  Recruits %s" % [
+		economy.get("population", 0),
+		economy.get("prosperity", 0),
+		economy.get("food_stock", 0),
+		economy.get("unrest", 0),
+		economy.get("security", 0),
+		economy.get("trade_access", 0),
+		economy.get("market_tier", 1),
+		economy.get("recruitment_pool_quality", 0)
+	]
+
+func _advance_week() -> void:
+	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes)
+	var current = {}
+	for entry in result.get("settlements", []):
+		if entry.get("settlement_id", "") == company.current_location:
+			current = entry
+			break
+	if current.is_empty():
+		economy_result_label.text = "Week advanced. No local economy delta found."
+	else:
+		economy_result_label.text = "Week advanced: food -%s, prosperity %s, unrest %s, population %s" % [
+			current.get("food_consumed", 0),
+			_signed_delta(int(current.get("prosperity_delta", 0))),
+			_signed_delta(int(current.get("unrest_delta", 0))),
+			_signed_delta(int(current.get("population_delta", 0)))
+		]
+	_refresh_economy_label()
+
+func _signed_delta(value: int) -> String:
+	if value > 0:
+		return "+%s" % value
+	return str(value)

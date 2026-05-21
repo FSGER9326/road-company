@@ -80,6 +80,7 @@ def main() -> int:
     validators = [
         "tools/validate_factions.py",
         "tools/validate_world.py",
+        "tools/validate_world_economy.py",
         "tools/validate_contracts.py",
         "tools/validate_company.py",
         "tools/validate_combat.py",
