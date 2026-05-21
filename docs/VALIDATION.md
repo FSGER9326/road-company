@@ -98,6 +98,24 @@ The Godot test runner checks:
 - deterministic route dynamics contract effect runs;
 - deterministic escort autoplay reaches aftermath without crashing.
 
+## Visual Regression Testing
+
+There is an automated visual screenshot and comparison harness available. It captures screenshots of key game screens and compares them against baselines.
+
+**Note:** This is *not* run by `run_all_tests.py` by default because visual rendering can depend on local GPU/Godot environments.
+
+Run it directly (requires Godot):
+```powershell
+python tools/run_visual_smoke.py
+```
+
+If it reports missing baselines or if you intentionally changed the UI, you can accept the new baselines:
+```powershell
+python tools/run_visual_smoke.py --accept-baseline
+```
+
+For more details, see `docs/visual_regression_testing.md`.
+
 ## World Economy Validation
 
 `tools/validate_world_economy.py` checks:

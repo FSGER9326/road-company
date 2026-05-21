@@ -4,3 +4,5 @@ __pycache__/
 *.log
 .godot/
 export_presets.cfg
+tests/visual/runs/
+*.tmp.png
