@@ -88,7 +88,7 @@ Next recommended implementation task: connect the economy state to contract rewa
 
 ## Route Dynamics V1 Handoff
 
-- Branch: `feature/route-dynamics-v1`
+- Merged into `main` from `feature/route-dynamics-v1`.
 - Purpose: deterministic route economy changes from contract success/failure.
 - Spec docs were merged to `main` first from `spec/deepseek-route-dynamics-v1`.
 - Runtime behavior lives in `game/scripts/world/RouteDynamicsSystem.gd`.
@@ -107,7 +107,10 @@ python -m unittest discover -s tools/tests -p test_*.py
 python tools/run_all_tests.py
 ```
 
-Expected result as of this handoff: all pass, including Godot headless tests through the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable.
+- Feature branch result before merge: `python tools/run_all_tests.py` passed.
+- Main result after merge: `python tools/run_all_tests.py` passed.
+- Godot headless result: passed through the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable.
+- Skipped tests: none.
 
 Known limitations:
 
@@ -115,6 +118,29 @@ Known limitations:
 - Contract-driven route changes only apply when resolution code passes a route economy entry.
 - Route status visuals and contract-board effect previews are deferred.
 - No new contract types were added.
+
+## Art Pipeline Spec Merge
+
+- Merged into `main` from `spec/deepseek-art-pipeline-v1`.
+- Spec files imported:
+  - `docs/art_pipeline_v1_spec.md`
+  - `prompts/codex_next/art_placeholder_pipeline_v1.md`
+  - `data/schema_drafts/art_asset_manifest_schema_draft.json`
+- No art pipeline runtime implementation was added.
+- No generated image assets were added.
+- `design/deepseek-world-systems` and MiniMax branches remain intentionally unmerged.
+
+Verification commands run:
+
+```powershell
+python tools/run_all_tests.py
+```
+
+- Main result after art spec merge: `python tools/run_all_tests.py` passed.
+- Godot headless result: passed through the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable.
+- Skipped tests: none.
+
+Next recommended task: create `feature/art-placeholder-pipeline-v1` and implement the text-first placeholder art manifest and validation workflow from the spec, without adding binary art or changing gameplay.
 
 ## Docs-Only DeepSeek Integration
 
