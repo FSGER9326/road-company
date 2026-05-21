@@ -47,6 +47,19 @@ Next recommended task: `feature/settlement-factions-v1`.
 - Added baseline screenshot images inside `tests/visual/baselines/`.
 - Updated `docs/VALIDATION.md` and `docs/AGENT_HANDOFF.md` to instruct agents to use visual tests when touching UI.
 
+## Combat Readability Polish V1 (Antigravity)
+
+- **feature/combat-readability-polish-v1** - merged into main.
+- **Purpose**: Improve tactical combat screen readability using procedural fallback and basic visual markers without adding new game mechanics or changing the rules.
+- **Changes**:
+  - HP (red), Armor (grey), and AP (yellow, active only) values draw as clear numerical badges on units in `CombatBoard.gd`.
+  - Active and Selected units highlight via distinct hollow circular arcs rather than solid filled blocks.
+  - Objective tokens (e.g. Wagons) render as distinct shapes (squares instead of circles) in the fallback procedural renderer.
+  - Side panel UI uses rich BBCode color-coding to highlight Teams, Morale, HP, Armor, AP, Fatigue, and explicitly lists Injuries.
+- **Visual Harness Result**: `python tools/run_visual_smoke.py` successfully caught the UI updates, requiring a manual update of `tests/visual/baselines/combat_board.png`. The baseline was updated, and all 5/5 screens now pass against the strict tolerance threshold (0.05% for the combat board).
+- **SVG Loading**: Headless testing revealed that loading SVG assets via `Image.load(path)` fails to render them properly (producing blank white squares) without Godot's editor `.import` pipeline. The code correctly detects headless failure and preserves the robust procedural fallback rendering.
+- **Remaining Limitations**: The combat visual presentation is still highly abstracted. Animations, hover previews (like range highlights or damage pathing), and dynamic status effects are not yet implemented.
+
 ## Settlement Factions V1 Merge (Antigravity)
 
 - **feature/settlement-factions-v1-antigravity** - merged into main.
