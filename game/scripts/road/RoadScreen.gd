@@ -56,6 +56,8 @@ func _build(message: String) -> void:
 	resource_label = Label.new()
 	resource_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	resource_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	# Hide the text because we'll draw it in _draw() as requested
+	resource_label.text = "" 
 	header.add_child(resource_label)
 
 	var split = HSplitContainer.new()
@@ -98,11 +100,13 @@ func _build(message: String) -> void:
 	side.add_child(economy_result_label)
 	
 	events_label = RichTextLabel.new()
+	events_label.bbcode_enabled = true
 	events_label.custom_minimum_size = Vector2(0, 80)
 	events_label.fit_content = true
 	side.add_child(events_label)
 
 	rumors_label = RichTextLabel.new()
+	rumors_label.bbcode_enabled = true
 	rumors_label.custom_minimum_size = Vector2(0, 100)
 	rumors_label.fit_content = true
 	side.add_child(rumors_label)
@@ -167,27 +171,28 @@ func _select_route(route: Dictionary) -> void:
 	map_canvas.set_selected(route.get("id", ""))
 	travel_button.disabled = false
 	var dest = data.by_id(data.locations, data.other_end(route, company.current_location))
-	detail_label.text = "[b]%s[/b]\nDanger: %s\nTerrain: %s\nBattlefield: %s\nEncounter table: %s" % [
-		dest.get("name", ""),
-		route.get("danger", 0),
+	
+	var r_eco = data.by_id(data.route_economy, route.get("id", ""))
+	var traffic = r_eco.get("traffic", 0) if not r_eco.is_empty() else 0
+	var bandits = r_eco.get("bandit_pressure", 0) if not r_eco.is_empty() else 0
+	var patrols = r_eco.get("patrol_presence", 0) if not r_eco.is_empty() else 0
+	var trade = r_eco.get("trade_flow", 0) if not r_eco.is_empty() else 0
+	var status = "Blocked" if r_eco.get("blocked", false) else "Normal"
+	
+	detail_label.text = "[b]Route: %s-%s[/b]\nDanger: %s    Traffic: %s\nBandits: %s    Patrols: %s\nTrade Flow: %s    Status: %s\n\nTerrain: %s\nBattlefield: %s\nEncounter table: %s" % [
+		data.by_id(data.locations, route.get("from", "")).get("name", ""),
+		data.by_id(data.locations, route.get("to", "")).get("name", ""),
+		route.get("danger", 0), traffic,
+		bandits, patrols,
+		trade, status,
 		", ".join(route.get("terrain_tags", [])),
 		", ".join(route.get("battlefield_tags", [])),
 		route.get("encounter_table", "none")
 	]
 
 func _refresh_labels() -> void:
+	queue_redraw()
 	var loc = data.by_id(data.locations, company.current_location)
-	resource_label.text = "%s | Crowns %s  Food %s  Tools %s  Medicine %s  Ammo %s  Morale %s  Vigor %s  Renown %s" % [
-		company.company_name,
-		company.crowns,
-		company.food,
-		company.tools,
-		company.medicine,
-		company.ammunition,
-		company.morale,
-		company.vigor,
-		company.renown
-	]
 	location_label.text = "[b]%s[/b]\n%s\nFaction pressure: %s\nMarket: %s" % [
 		loc.get("name", company.current_location),
 		loc.get("description", ""),
@@ -207,25 +212,30 @@ func _refresh_labels() -> void:
 func _refresh_world_state_labels() -> void:
 	if events_label == null or rumors_label == null: return
 	
+	if rumor_system != null:
+		var top_rumors = rumor_system.get_top_rumors(3)
+		var rumor_lines = []
+		for r in top_rumors:
+			var urg = int(r.get("urgency", 1))
+			var text = r.get("text", "")
+			if urg >= 4:
+				rumor_lines.append("[color=#ffffff]\"%s\"[/color]" % text)
+			elif urg <= 2:
+				rumor_lines.append("[color=#666666]\"%s\"[/color]" % text)
+			else:
+				rumor_lines.append("\"%s\"" % text)
+		var r_text = "[b]RUMORS:[/b] " + " · ".join(rumor_lines)
+		if top_rumors.is_empty(): r_text = "[b]RUMORS:[/b] The roads are quiet."
+		rumors_label.text = r_text
+
 	if memory_system != null:
 		var recent = memory_system.get_recent(3)
-		var event_lines = ["[b]Recent Events:[/b]"]
-		if recent.is_empty():
-			event_lines.append("No recent events.")
-		else:
-			for m in recent:
-				event_lines.append("- " + m.get("title", ""))
-		events_label.text = "\n".join(event_lines)
-	
-	if rumor_system != null:
-		var top_rumors = rumor_system.get_top_rumors(5)
-		var rumor_lines = ["[b]Active Rumors:[/b]"]
-		if top_rumors.is_empty():
-			rumor_lines.append("The roads are quiet.")
-		else:
-			for r in top_rumors:
-				rumor_lines.append("- " + r.get("text", ""))
-		rumors_label.text = "\n".join(rumor_lines)
+		var event_lines = []
+		for m in recent:
+			event_lines.append("[color=#888888][t%s][/color] %s" % [m.get("tick", 0), m.get("title", "")])
+		var m_text = "[b]LOG:[/b] " + " · ".join(event_lines)
+		if recent.is_empty(): m_text = "[b]LOG:[/b] No recent events."
+		events_label.text = m_text
 
 func _refresh_economy_label() -> void:
 	if economy_label == null:
@@ -237,19 +247,58 @@ func _refresh_economy_label() -> void:
 	var faction_lines = []
 	for faction in data.settlement_factions_for_location(company.current_location):
 		faction_lines.append("%s %s/%s" % [faction.get("name", ""), faction.get("influence", 0), faction.get("attitude_to_company", 0)])
-	economy_label.text = "[b]Settlement Economy[/b]\nPopulation %s  Prosperity %s  Food %s\nUnrest %s  Security %s  Trade %s\nMarket Tier %s  Recruits %s\nDominant: %s  Tension %s\n%s" % [
-		economy.get("population", 0),
-		economy.get("prosperity", 0),
-		economy.get("food_stock", 0),
-		economy.get("unrest", 0),
-		economy.get("security", 0),
-		economy.get("trade_access", 0),
+	economy_label.text = "[b]Settlement Economy[/b]\nProsperity\nSecurity\nUnrest\nTrade Acc\nMarket Tier %s  ·  Pop %s  ·  Food %s\nRecruits %s\nDominant: %s  Tension %s\n%s" % [
 		economy.get("market_tier", 1),
+		economy.get("population", 0),
+		economy.get("food_stock", 0),
 		economy.get("recruitment_pool_quality", 0),
 		economy.get("dominant_internal_faction", ""),
 		economy.get("faction_tension", 0),
 		"\n".join(faction_lines)
 	]
+	
+func _draw() -> void:
+	if company == null or data == null: return
+	var font = get_theme_default_font()
+	
+	# 1. Company Resource Strip (draw_string)
+	var res_text = "%s  |  %sc  %sf  %st  %sm  M:%s  V:%s  R:%s" % [
+		company.company_name, company.crowns, company.food, company.tools,
+		company.medicine, company.morale, company.vigor, company.renown
+	]
+	draw_string(font, Vector2(250, 32), res_text, HORIZONTAL_ALIGNMENT_RIGHT, size.x - 260, 16, Color(0.86, 0.84, 0.78))
+	
+	# 2. Settlement Economy Bars (draw_rect)
+	if economy_label != null and economy_label.is_visible_in_tree():
+		var eco = data.get_settlement_economy(company.current_location)
+		if eco.is_empty(): return
+		var base_pos = economy_label.global_position + Vector2(200, 20)
+		
+		# Prosperity
+		_draw_eco_bar(base_pos, eco.get("prosperity", 0), false)
+		# Security
+		_draw_eco_bar(base_pos + Vector2(0, 18), eco.get("security", 0), false)
+		# Unrest
+		_draw_eco_bar(base_pos + Vector2(0, 36), eco.get("unrest", 0), true)
+		# Trade
+		_draw_eco_bar(base_pos + Vector2(0, 54), eco.get("trade_access", 0), false)
+
+func _draw_eco_bar(pos: Vector2, value: float, invert_colors: bool) -> void:
+	var w = 40.0
+	var h = 6.0
+	var bg = Color(0.23, 0.16, 0.16)
+	var fill = Color.GREEN
+	
+	if invert_colors:
+		if value > 60: fill = Color.RED
+		elif value > 30: fill = Color.YELLOW
+	else:
+		if value < 30: fill = Color.RED
+		elif value < 60: fill = Color.YELLOW
+		
+	draw_rect(Rect2(pos, Vector2(w, h)), bg)
+	var fw = clamp(value / 100.0 * w, 0, w)
+	draw_rect(Rect2(pos, Vector2(fw, h)), fill)
 
 func _advance_week() -> void:
 	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes, 0, data.settlement_factions)
