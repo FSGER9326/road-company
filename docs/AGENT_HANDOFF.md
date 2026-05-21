@@ -46,6 +46,11 @@ Next recommended task: `feature/settlement-factions-v1`.
 - `RoadScreen.gd` has a simple internal faction debug readout.
 - Added `tools/validate_settlement_factions.py` and `tools/tests/test_settlement_factions.py`.
 
+### 5. Event/Rumor/Memory V1
+**Status**: Implemented on `feature/event-rumor-memory-v1`.
+**Command**: `godot --headless --path . -s res://tools/godot/run_godot_tests.gd` and `python tools/run_all_tests.py` all pass.
+**Next Steps**: Merge into main when ready. Expand content templates.
+
 Commands run:
 - `python tools/run_all_tests.py` on main after merge: **PASS** (10 validators, 61 simulation tests)
 - `godot --headless ...` test suite: **PASS** (9/9 scenes load cleanly)

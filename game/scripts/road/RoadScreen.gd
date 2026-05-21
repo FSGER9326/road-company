@@ -20,6 +20,12 @@ var travel_button: Button
 var economy_label: RichTextLabel
 var economy_result_label: Label
 var economy_system
+var event_system
+var rumor_system
+var memory_system
+
+var events_label: RichTextLabel
+var rumors_label: RichTextLabel
 
 func setup(new_data, new_company, message: String = "") -> void:
 	data = new_data
@@ -90,6 +96,16 @@ func _build(message: String) -> void:
 	economy_result_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	economy_result_label.add_theme_color_override("font_color", Color(0.78, 0.72, 0.58))
 	side.add_child(economy_result_label)
+	
+	events_label = RichTextLabel.new()
+	events_label.custom_minimum_size = Vector2(0, 80)
+	events_label.fit_content = true
+	side.add_child(events_label)
+
+	rumors_label = RichTextLabel.new()
+	rumors_label.custom_minimum_size = Vector2(0, 100)
+	rumors_label.fit_content = true
+	side.add_child(rumors_label)
 
 	var contracts_button = Button.new()
 	contracts_button.text = "Contract Board"
@@ -186,6 +202,30 @@ func _refresh_labels() -> void:
 	else:
 		contract_label.text = "Active contract: none"
 	_refresh_economy_label()
+	_refresh_world_state_labels()
+
+func _refresh_world_state_labels() -> void:
+	if events_label == null or rumors_label == null: return
+	
+	if memory_system != null:
+		var recent = memory_system.get_recent(3)
+		var event_lines = ["[b]Recent Events:[/b]"]
+		if recent.is_empty():
+			event_lines.append("No recent events.")
+		else:
+			for m in recent:
+				event_lines.append("- " + m.get("title", ""))
+		events_label.text = "\n".join(event_lines)
+	
+	if rumor_system != null:
+		var top_rumors = rumor_system.get_top_rumors(5)
+		var rumor_lines = ["[b]Active Rumors:[/b]"]
+		if top_rumors.is_empty():
+			rumor_lines.append("The roads are quiet.")
+		else:
+			for r in top_rumors:
+				rumor_lines.append("- " + r.get("text", ""))
+		rumors_label.text = "\n".join(rumor_lines)
 
 func _refresh_economy_label() -> void:
 	if economy_label == null:

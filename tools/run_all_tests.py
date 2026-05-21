@@ -87,6 +87,7 @@ def main() -> int:
         "tools/validate_company.py",
         "tools/validate_combat.py",
         "tools/validate_art_assets.py",
+        "tools/validate_event_rumor_memory.py",
         "tools/validate_data.py",
     ]
     for validator in validators:

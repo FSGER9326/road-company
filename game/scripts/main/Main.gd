@@ -10,6 +10,9 @@ const CampScreenScript = preload("res://game/scripts/camp/CampScreen.gd")
 const RoadSystemScript = preload("res://game/scripts/road/RoadSystem.gd")
 const ContractSystemScript = preload("res://game/scripts/contracts/ContractSystem.gd")
 const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
+const EventSystemScript = preload("res://game/scripts/world/EventSystem.gd")
+const RumorSystemScript = preload("res://game/scripts/world/RumorSystem.gd")
+const WorldMemorySystemScript = preload("res://game/scripts/world/WorldMemorySystem.gd")
 
 var data
 var company
@@ -18,6 +21,9 @@ var pending_destination = ""
 var travel_summary = {}
 var road_system
 var contract_system
+var event_system
+var rumor_system
+var memory_system
 var run_seed = 12345
 
 func _ready() -> void:
@@ -26,7 +32,17 @@ func _ready() -> void:
 	data.load_all()
 	road_system = RoadSystemScript.new()
 	road_system.call("setup", data, run_seed)
+	
+	event_system = EventSystemScript.new()
+	event_system.configure(data.event_templates)
+	rumor_system = RumorSystemScript.new()
+	memory_system = WorldMemorySystemScript.new()
+	
 	contract_system = ContractSystemScript.new()
+	contract_system.configure_event_system(event_system)
+	contract_system.configure_rumor_system(rumor_system)
+	contract_system.configure_memory_system(memory_system)
+	
 	if _user_arg("autoplay") != "":
 		call_deferred("_run_autoplay_from_args")
 		return
@@ -52,6 +68,14 @@ func _start_new_run() -> void:
 func show_road(message: String = "") -> void:
 	var road = RoadScreenScript.new()
 	road.call("setup", data, company, message)
+	road.economy_system.configure_event_system(event_system)
+	road.economy_system.configure_rumor_system(rumor_system)
+	road.economy_system.configure_memory_system(memory_system)
+	
+	road.set("event_system", event_system)
+	road.set("rumor_system", rumor_system)
+	road.set("memory_system", memory_system)
+	
 	road.open_contract_board.connect(show_contract_board)
 	road.travel_requested.connect(_begin_travel)
 	_set_screen(road)

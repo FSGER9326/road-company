@@ -13,6 +13,7 @@ from validate_contracts import validate as validate_contracts
 from validate_contract_generator import validate as validate_contract_generator
 from validate_factions import validate as validate_factions
 from validate_art_assets import validate as validate_art_assets
+import validate_event_rumor_memory
 from validate_world import validate as validate_world
 from validate_world_economy import validate as validate_world_economy
 from validate_settlement_factions import validate as validate_settlement_factions
@@ -94,6 +95,13 @@ def main() -> int:
         for error in all_errors:
             print(f"- {error}")
         return 1
+    try:
+        validate_event_rumor_memory.validate_events()
+        print("Event/Rumor/Memory: passed")
+    except Exception as e:
+        print(f"Event/Rumor/Memory: failed ({e})")
+        sys.exit(1)
+        
     print("\nAll data validation passed.")
     return 0
 
