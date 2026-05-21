@@ -3,15 +3,15 @@ class_name RoadSystem
 
 const SeededRngScript = preload("res://game/scripts/core/SeededRng.gd")
 
-var data: DataStore
-var rng: SeededRng
+var data
+var rng
 
-func setup(new_data: DataStore, seed: int = 12345) -> void:
+func setup(new_data, seed: int = 12345) -> void:
 	data = new_data
 	rng = SeededRngScript.new()
 	rng.configure(seed)
 
-func is_connected(location_id: String, route: Dictionary) -> bool:
+func route_is_connected(location_id: String, route: Dictionary) -> bool:
 	return route.get("from", "") == location_id or route.get("to", "") == location_id
 
 func destination_for(location_id: String, route: Dictionary) -> String:
@@ -21,7 +21,7 @@ func destination_for(location_id: String, route: Dictionary) -> String:
 		return route.get("from", "")
 	return ""
 
-func scout_score(company: CompanyState) -> int:
+func scout_score(company) -> int:
 	var score = 0
 	for fighter in company.roster:
 		if fighter.get("traits", []).has("sharp_eyes"):
@@ -30,7 +30,7 @@ func scout_score(company: CompanyState) -> int:
 			score += 1
 	return score
 
-func build_travel_context(company: CompanyState, route: Dictionary) -> Dictionary:
+func build_travel_context(company, route: Dictionary) -> Dictionary:
 	var destination = destination_for(company.current_location, route)
 	var contract = company.active_contract
 	var contract_on_route = false
@@ -66,7 +66,7 @@ func build_travel_context(company: CompanyState, route: Dictionary) -> Dictionar
 		"encounter_id": encounter_id
 	}
 
-func apply_road_event(company: CompanyState, route: Dictionary) -> Dictionary:
+func apply_road_event(company, route: Dictionary) -> Dictionary:
 	if data.road_events.is_empty():
 		return {"headline": "The road leg passes without incident.", "effects": {}}
 	var event_index = 0
@@ -90,8 +90,8 @@ func apply_road_event(company: CompanyState, route: Dictionary) -> Dictionary:
 		"headline": "%s: %s" % [event.get("title", "Road Event"), event.get("description", "")]
 	}
 
-func travel(company: CompanyState, route: Dictionary) -> Dictionary:
-	if not is_connected(company.current_location, route):
+func travel(company, route: Dictionary) -> Dictionary:
+	if not route_is_connected(company.current_location, route):
 		return {"ok": false, "error": "Route is not connected to current location."}
 	var destination = destination_for(company.current_location, route)
 	var costs = company.apply_route_cost(route)

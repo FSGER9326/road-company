@@ -6,10 +6,10 @@ signal combat_finished(result)
 const CombatBoardScript = preload("res://game/scripts/combat/CombatBoard.gd")
 const CombatSystemScript = preload("res://game/scripts/combat/CombatSystem.gd")
 
-var data: DataStore
-var company: CompanyState
+var data
+var company
 var context = {}
-var board: CombatBoard
+var board
 var cells = []
 var units = []
 var turn_queue = []
@@ -22,7 +22,7 @@ var blocked_cells = {}
 var slow_cells = {}
 var log_lines = []
 var rng = RandomNumberGenerator.new()
-var combat_system: CombatSystem
+var combat_system
 var info_label: RichTextLabel
 var log_label: RichTextLabel
 var status_label: Label
@@ -33,13 +33,13 @@ var end_button: Button
 var combat_over = false
 var objective_rounds_to_hold = 5
 
-func setup(new_data: DataStore, new_company: CompanyState, new_context: Dictionary) -> void:
+func setup(new_data, new_company, new_context: Dictionary) -> void:
 	data = new_data
 	company = new_company
 	context = new_context.duplicate(true)
 	rng.seed = int(context.get("seed", 12345))
 	combat_system = CombatSystemScript.new()
-	combat_system.setup(data, company, int(context.get("seed", 12345)))
+	combat_system.call("setup", data, company, int(context.get("seed", 12345)))
 	_build_ui()
 	_build_battle()
 	_start_round()

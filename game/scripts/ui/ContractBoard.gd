@@ -4,10 +4,10 @@ class_name ContractBoard
 signal contract_accepted(contract)
 signal back_requested
 
-var data: DataStore
-var company: CompanyState
+var data
+var company
 
-func setup(new_data: DataStore, new_company: CompanyState) -> void:
+func setup(new_data, new_company) -> void:
 	data = new_data
 	company = new_company
 	_build()

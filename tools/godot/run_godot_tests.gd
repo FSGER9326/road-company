@@ -66,7 +66,7 @@ func _test_main_menu_instantiates() -> void:
 
 func _test_road_map_instantiates() -> void:
 	var road = RoadScreenScript.new()
-	road.setup(data, company, "headless test")
+	road.call("setup", data, company, "headless test")
 	get_root().add_child(road)
 	if road.get_child_count() > 0:
 		_pass("loaded road map")
@@ -78,7 +78,7 @@ func _test_road_map_instantiates() -> void:
 func _test_combat_instantiates() -> void:
 	var context = _escort_context()
 	var combat = CombatScreenScript.new()
-	combat.setup(data, company, context)
+	combat.call("setup", data, company, context)
 	get_root().add_child(combat)
 	var has_units = combat.units.size() >= 11
 	var has_wagon = false
@@ -94,7 +94,7 @@ func _test_combat_instantiates() -> void:
 
 func _test_camp_instantiates() -> void:
 	var camp = CampScreenScript.new()
-	camp.setup(data, company, {"headline": "Headless aftermath", "had_combat": false, "reached_destination": true})
+	camp.call("setup", data, company, {"headline": "Headless aftermath", "had_combat": false, "reached_destination": true})
 	get_root().add_child(camp)
 	if camp.get_child_count() > 0:
 		_pass("loaded camp aftermath")
@@ -105,8 +105,8 @@ func _test_camp_instantiates() -> void:
 
 func _test_autoplay_escort_smoke() -> void:
 	var runner = AutoplaySmokeScript.new()
-	runner.setup(data, 12345)
-	var result = runner.run_escort_smoke()
+	runner.call("setup", data, 12345)
+	var result = runner.call("run_escort_smoke")
 	if result.get("ok", false) and result.get("location", "") == "embermill" and not result.get("active_contract", true):
 		_pass("autoplay escort scenario reached aftermath")
 	else:

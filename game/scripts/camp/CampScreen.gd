@@ -5,15 +5,15 @@ signal continue_requested
 
 const CampSystemScript = preload("res://game/scripts/camp/CampSystem.gd")
 
-var data: DataStore
-var company: CompanyState
+var data
+var company
 var summary = {}
 var summary_label: RichTextLabel
 var resources_label: Label
 var action_label: Label
-var camp_system: CampSystem
+var camp_system
 
-func setup(new_data: DataStore, new_company: CompanyState, new_summary: Dictionary) -> void:
+func setup(new_data, new_company, new_summary: Dictionary) -> void:
 	data = new_data
 	company = new_company
 	summary = new_summary.duplicate(true)
