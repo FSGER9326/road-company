@@ -35,9 +35,9 @@ Known limitations:
 
 Next recommended task: `feature/settlement-factions-v1`.
 
-## Settlement Factions V1 Handoff
+## Settlement Factions V1 Merge (Antigravity)
 
-- Branch: `feature/settlement-factions-v1`.
+- Merged `feature/settlement-factions-v1-antigravity` into `main` via `--no-ff`.
 - Purpose: small deterministic internal settlement faction system.
 - Added `data/world/settlement_factions.json` with six faction types per settlement.
 - Added `game/scripts/world/SettlementFactionSystem.gd`.
@@ -46,22 +46,17 @@ Next recommended task: `feature/settlement-factions-v1`.
 - `RoadScreen.gd` has a simple internal faction debug readout.
 - Added `tools/validate_settlement_factions.py` and `tools/tests/test_settlement_factions.py`.
 
-Verification commands:
+Commands run:
+- `python tools/run_all_tests.py` on main after merge: **PASS** (10 validators, 61 simulation tests)
+- `godot --headless ...` test suite: **PASS** (9/9 scenes load cleanly)
 
-```powershell
-python tools/validate_settlement_factions.py
-python -m unittest discover -s tools/tests -p test_settlement_factions.py
-python tools/run_all_tests.py
-```
-
-Known limitations:
-
-- No event/rumor/memory implementation.
-- No faction event choices yet.
+Remaining limitations:
+- No event/rumor/memory implementation exists to use the faction contexts.
+- No faction event choices are implemented.
 - No save/load persistence for faction drift.
-- Internal factions are local settlement groups only; they are not full nation politics.
+- Internal factions remain local settlement groups only; they do not dictate full nation politics.
 
-Next recommended task after merge: `feature/event-rumor-memory-v1` only after settlement factions are stable.
+Next recommended task: implement `feature/event-rumor-memory-v1`.
 
 ## Contract Generator V1 Handoff
 
