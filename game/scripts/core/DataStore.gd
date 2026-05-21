@@ -14,6 +14,7 @@ var trade_goods = []
 var settlement_economy = []
 var route_economy = []
 var settlement_status_effects = []
+var asset_manifest = []
 var company_start = {}
 
 func load_all() -> void:
@@ -30,6 +31,7 @@ func load_all() -> void:
 	settlement_economy = _load_array("res://data/world/settlement_economy.json")
 	route_economy = _load_array("res://data/world/route_economy.json")
 	settlement_status_effects = _load_array("res://data/world/settlement_status_effects.json")
+	asset_manifest = _load_dict("res://data/art/asset_manifest.json").get("assets", [])
 	company_start = _load_dict("res://data/company/company_start.json")
 
 func by_id(collection: Array, item_id: String) -> Dictionary:
@@ -80,6 +82,12 @@ func get_settlement_economy(settlement_id: String) -> Dictionary:
 func get_route_economy(route_id: String) -> Dictionary:
 	for item in route_economy:
 		if item.get("route_id", "") == route_id:
+			return item
+	return {}
+
+func get_asset(asset_id: String) -> Dictionary:
+	for item in asset_manifest:
+		if item.get("asset_id", "") == asset_id:
 			return item
 	return {}
 

@@ -32,3 +32,19 @@ Terrain should use reusable 2D tiles and overlays. Forest, mud, road, hill, reed
 - Complex isometric walk cycles.
 - Large binary asset dumps.
 - Copyrighted assets, copied layouts, or recognizable names from other games.
+
+## V1 Placeholder Pipeline
+
+See `data/art/asset_manifest.json` for the authoritative asset list.
+See `docs/art_pipeline_v1_spec.md` for the full specification.
+See `docs/art_asset_pipeline.md` for the current local workflow.
+
+Run:
+
+```powershell
+python tools/generate_placeholder_assets.py
+python tools/validate_art_assets.py
+python tools/run_all_tests.py
+```
+
+V1 uses small deterministic SVG placeholders under `assets/generated/`. These files are intentionally simple and replaceable later by final PNGs or generated image batches.
