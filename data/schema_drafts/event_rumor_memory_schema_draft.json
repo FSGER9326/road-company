@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event, Rumor, Memory Schema Draft",
+  "definitions": {
+    "event_template": {
+      "type": "object",
+      "required": ["event_id", "category", "title", "trigger", "text", "choices"],
+      "properties": {
+        "event_id": {"type": "string"},
+        "category": {"type":"string","enum":["road","settlement","route_trade","faction","contract_outcome","company"]},
+        "title": {"type": "string"},
+        "trigger": {
+          "type": "object",
+          "required": ["conditions", "cooldown_ticks", "weight"],
+          "properties": {
+            "conditions": {"type":"array","items":{"type":"object","required":["field","op","value"],"properties":{"field":{"type":"string"},"op":{"type":"string","enum":["lt","lte","gt","gte","eq","neq","change_gt"]},"value":{}}}},
+            "cooldown_ticks": {"type":"integer","minimum":4},
+            "weight": {"type":"number","minimum":0,"maximum":1}
+          }
+        },
+        "text": {"type": "string"},
+        "choices": {
+          "type": "array", "minItems": 2, "maxItems": 4,
+          "items": {
+            "type": "object", "required": ["id","label","effects"],
+            "properties": {
+              "id": {"type":"string"},
+              "label": {"type":"string"},
+              "effects": {
+                "type":"object",
+                "properties": {
+                  "company":{"type":"object"},"settlement":{"type":"object"},"route":{"type":"object"},
+                  "faction":{"type":"object","additionalProperties":{"type":"integer"}},
+                  "attitude":{"type":"object","additionalProperties":{"type":"integer"}},
+                  "contract_generated":{"type":"object","properties":{"type":{"type":"string"},"target":{"type":"string"}}}
+                }
+              }
+            }
+          }
+        },
+        "memory_entry": {"type":"object","properties":{"title":{"type":"string"},"significance":{"type":"string","enum":["minor","major","critical"]}}},
+        "rumor_entry": {"type":"object","properties":{"text":{"type":"string"},"truth":{"type":"number","minimum":0,"maximum":1},"urgency":{"type":"integer","minimum":1,"maximum":5}}}
+      }
+    },
+    "rumor": {
+      "type":"object",
+      "required":["rumor_id","source_type","text","truth_level","urgency","expires_after_ticks"],
+      "properties": {
+        "rumor_id":{"type":"string"},"source_type":{"type":"string","enum":["event","settlement_tick","route_tick","contract"]},
+        "source_location":{"type":["string","null"]},"target_route":{"type":["string","null"]},
+        "text":{"type":"string"},"truth_level":{"type":"number","minimum":0,"maximum":1},
+        "urgency":{"type":"integer","minimum":1,"maximum":5},"expires_after_ticks":{"type":"integer","minimum":1,"maximum":26},
+        "generated_tick":{"type":"integer"},"revealed_state_tags":{"type":"array","items":{"type":"string"}}
+      }
+    },
+    "memory_entry": {
+      "type":"object",
+      "required":["entry_id","tick","category","title","summary","significance"],
+      "properties": {
+        "entry_id":{"type":"string"},"tick":{"type":"integer"},
+        "category":{"type":"string","enum":["settlement_event","combat_result","contract_outcome","faction_change","route_change","company_event"]},
+        "location_id":{"type":["string","null"]},"route_id":{"type":["string","null"]},
+        "title":{"type":"string"},"summary":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}},
+        "significance":{"type":"string","enum":["minor","major","critical"]},
+        "visible_to_player":{"type":"boolean"},"discoverable_via_rumor":{"type":"boolean"}
+      }
+    }
+  }
+}
