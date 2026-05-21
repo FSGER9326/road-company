@@ -37,8 +37,9 @@ Next recommended task: `feature/settlement-factions-v1`.
 
 ## Settlement Factions V1 Merge (Antigravity)
 
-- Merged `feature/settlement-factions-v1-antigravity` into `main` via `--no-ff`.
-- Purpose: small deterministic internal settlement faction system.
+- **feature/settlement-factions-v1-antigravity** - merged into main.
+- **feature/event-rumor-memory-v1** - merged into main.
+- **spec/deepseek-road-ui-playability-v1** - merged into main.
 - Added `data/world/settlement_factions.json` with six faction types per settlement.
 - Added `game/scripts/world/SettlementFactionSystem.gd`.
 - `WorldEconomySystem.weekly_tick()` can apply faction drift when supplied faction data.
@@ -47,21 +48,24 @@ Next recommended task: `feature/settlement-factions-v1`.
 - Added `tools/validate_settlement_factions.py` and `tools/tests/test_settlement_factions.py`.
 
 ### 5. Event/Rumor/Memory V1
-**Status**: Implemented on `feature/event-rumor-memory-v1`.
-**Command**: `godot --headless --path . -s res://tools/godot/run_godot_tests.gd` and `python tools/run_all_tests.py` all pass.
-**Next Steps**: Merge into main when ready. Expand content templates.
+**Status**: Merged into main.
+**Next Steps**: Expand content templates in `data/world/event_templates.json`.
+
+### 6. Road UI Playability Spec
+**Status**: Spec merged into main (`docs/road_ui_playability_v1_spec.md`).
 
 Commands run:
-- `python tools/run_all_tests.py` on main after merge: **PASS** (10 validators, 61 simulation tests)
+- `python tools/run_all_tests.py` on main after merge: **PASS** (10 validators, 67 simulation tests)
 - `godot --headless ...` test suite: **PASS** (9/9 scenes load cleanly)
 
-Remaining limitations:
-- No event/rumor/memory implementation exists to use the faction contexts.
-- No faction event choices are implemented.
-- No save/load persistence for faction drift.
-- Internal factions remain local settlement groups only; they do not dictate full nation politics.
+Known limitations:
+- Placeholder visual assets are still primitive and lack polish.
+- `CombatScreen` is purely a placeholder auto-resolve state and not fully playable.
+- Events/rumors debug UI currently lives directly in `RoadScreen.gd` rather than an isolated view.
+- No player control over camera or movement within settlements yet.
 
-Next recommended task: implement `feature/event-rumor-memory-v1`.
+Next recommended task:
+- implement road UI playability v1
 
 ## Contract Generator V1 Handoff
 
