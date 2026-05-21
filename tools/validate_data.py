@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from validate_combat import validate as validate_combat
 from validate_company import validate as validate_company
 from validate_contracts import validate as validate_contracts
+from validate_contract_generator import validate as validate_contract_generator
 from validate_factions import validate as validate_factions
 from validate_art_assets import validate as validate_art_assets
 from validate_world import validate as validate_world
@@ -72,6 +73,7 @@ def main() -> int:
         ("World", validate_world),
         ("World economy", validate_world_economy),
         ("Contracts", validate_contracts),
+        ("Contract generator", validate_contract_generator),
         ("Company", validate_company),
         ("Combat", validate_combat),
         ("Art assets", validate_art_assets),

@@ -1,9 +1,12 @@
 extends RefCounted
 class_name DataStore
 
+const ContractGeneratorScript = preload("res://game/scripts/contracts/ContractGenerator.gd")
+
 var locations = []
 var routes = []
 var contracts = []
+var contract_type_defaults = []
 var factions = []
 var weapons = []
 var armor = []
@@ -21,6 +24,7 @@ func load_all() -> void:
 	locations = _load_array("res://data/world/locations.json")
 	routes = _load_array("res://data/world/routes.json")
 	contracts = _load_array("res://data/contracts/contracts.json")
+	contract_type_defaults = _load_array("res://data/contracts/contract_type_defaults.json")
 	factions = _load_array("res://data/factions/factions.json")
 	weapons = _load_array("res://data/combat/weapons.json")
 	armor = _load_array("res://data/combat/armor.json")
@@ -60,6 +64,27 @@ func contracts_for_location(location_id: String) -> Array:
 		if contract.get("origin_location") == location_id or allowed.has(contract.get("id")):
 			found.append(contract)
 	return found
+
+func generated_contracts_for_location(location_id: String, faction_reputation: Dictionary = {}, seed: int = 12345, tick: int = 0) -> Array:
+	var generator = ContractGeneratorScript.new()
+	generator.call("configure", contract_type_defaults, seed)
+	return generator.call(
+		"generate_contracts",
+		location_id,
+		settlement_economy,
+		route_economy,
+		routes,
+		faction_reputation,
+		contracts,
+		locations,
+		factions,
+		tick
+	)
+
+func contract_board_for_location(location_id: String, faction_reputation: Dictionary = {}, seed: int = 12345, tick: int = 0) -> Array:
+	var board = contracts_for_location(location_id)
+	board.append_array(generated_contracts_for_location(location_id, faction_reputation, seed, tick))
+	return board
 
 func get_weapon(weapon_id: String) -> Dictionary:
 	return by_id(weapons, weapon_id)

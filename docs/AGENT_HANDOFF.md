@@ -2,6 +2,33 @@
 
 ROAD COMPANY is designed so coding agents can verify the core loop without manual clicking. Keep changes small, deterministic, and data-first.
 
+## Contract Generator V1 Handoff
+
+- Branch: `feature/contract-generator-v1`.
+- Purpose: deterministic settlement contract boards from current settlement and route economy state.
+- Static contracts remain in `data/contracts/contracts.json`; generated contracts are appended by `DataStore.contract_board_for_location()`.
+- Added `data/contracts/contract_type_defaults.json`.
+- Added `game/scripts/contracts/ContractGenerator.gd`.
+- Added Python test mirror and validation in `tools/contract_generator_core.py`, `tools/validate_contract_generator.py`, and `tools/tests/test_contract_generator.py`.
+- `ContractSystem.complete()` and `ContractSystem.fail()` can now apply generated settlement effects when passed `data.settlement_economy`.
+
+Verification commands for this branch:
+
+```powershell
+python tools/validate_contract_generator.py
+python -m unittest discover -s tools/tests -p test_contract_generator.py
+python tools/run_all_tests.py
+```
+
+Known limitations:
+
+- Generated boards are deterministic but not persisted across save/load.
+- Board UX is still minimal; generated reasons are debug text only.
+- The generator uses existing encounter IDs and does not introduce new combat content.
+- Internal settlement factions are intentionally not implemented yet.
+
+Next recommended task after merge: merge the settlement factions spec docs, then implement `feature/settlement-factions-v1`.
+
 ## Before Any Commit
 
 Run:
