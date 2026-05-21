@@ -7,6 +7,7 @@ ROAD COMPANY is designed so coding agents can verify the core loop without manua
 - Contract generator v1 merged into `main`.
 - Settlement factions v1 spec merged into `main` as docs/schema/prompt only.
 - Settlement factions runtime implementation is intentionally deferred.
+- Visual Regression Harness merged into `main`.
 - MiniMax/Qwen branches remain unmerged.
 
 Commands run:
@@ -14,17 +15,18 @@ Commands run:
 ```powershell
 python tools/run_all_tests.py
 git push
-git merge --no-ff spec/deepseek-settlement-factions-v1 -m "docs: merge settlement factions v1 spec"
+git merge --no-ff feature/visual-regression-harness-v1 -m "test: merge visual regression harness"
 python tools/run_all_tests.py
+python tools/run_visual_smoke.py
 git push
 ```
 
 Results:
 
-- Contract generator merge test: PASS.
-- Settlement factions spec merge test: PASS.
-- Pure Python tests: 50 passed.
+- Visual harness merge test: PASS.
+- Pure Python tests: 67 passed.
 - Godot headless: PASS through `.godot/bin/Godot_v4.6.2-stable_win64.exe`.
+- Visual smoke test: PASS (5/5 screens matched created baselines).
 - Skipped tests: none.
 
 Known limitations:
@@ -32,8 +34,18 @@ Known limitations:
 - Generated contract boards are deterministic but not persisted.
 - Settlement factions are spec-only; no runtime faction influence tick exists yet.
 - Generated contract board UX is minimal debug-facing text.
+- Visual smoke uses a windowed capture because headless OpenGL doesn't support rendering images in this Godot build.
 
 Next recommended task: `feature/settlement-factions-v1`.
+
+## Visual Regression Harness Merge (Antigravity)
+
+- **feature/visual-regression-harness-v1** - merged into main.
+- Added `tools/godot/capture_visual_screens.gd` to deterministically open and capture screens.
+- Added `tools/run_visual_smoke.py` to trigger Godot captures.
+- Added `tools/compare_visual_screens.py` to generate image diffs and reports.
+- Added baseline screenshot images inside `tests/visual/baselines/`.
+- Updated `docs/VALIDATION.md` and `docs/AGENT_HANDOFF.md` to instruct agents to use visual tests when touching UI.
 
 ## Settlement Factions V1 Merge (Antigravity)
 
