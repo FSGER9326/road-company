@@ -1,24 +1,28 @@
 extends RefCounted
 class_name WorldEconomySystem
 
+const RouteDynamicsSystemScript = preload("res://game/scripts/world/RouteDynamicsSystem.gd")
 const MIN_POPULATION = 10
 const MAX_POPULATION = 50000
 
-func weekly_tick(settlements: Array, routes: Array, route_links: Array = []) -> Dictionary:
+func weekly_tick(settlements: Array, routes: Array, route_links: Array = [], current_tick: int = 0) -> Dictionary:
 	var settlement_updates = []
 	var route_updates = []
+	var route_dynamics = RouteDynamicsSystemScript.new()
 	for route in routes:
-		route_updates.append(_tick_route(route))
+		route_updates.append(_tick_route(route, route_dynamics, current_tick))
 	for settlement in settlements:
 		var connected = _connected_route_economies(settlement.get("settlement_id", ""), routes, route_links)
-		settlement_updates.append(_tick_settlement(settlement, connected))
+		settlement_updates.append(_tick_settlement(settlement, connected, route_dynamics))
 	return {
 		"settlements": settlement_updates,
 		"routes": route_updates
 	}
 
-func _tick_route(route: Dictionary) -> Dictionary:
+func _tick_route(route: Dictionary, route_dynamics, current_tick: int) -> Dictionary:
 	var before = route.duplicate(true)
+	route_dynamics.clear_expired_blocks(route, current_tick)
+	route_dynamics.recalculate_status(route)
 	if bool(route.get("blocked", false)):
 		route["traffic"] = 0
 		route["trade_flow"] = 0
@@ -29,15 +33,19 @@ func _tick_route(route: Dictionary) -> Dictionary:
 		var traffic_delta = int(round((safety - pressure - int(route.get("danger", 0))) / 25.0))
 		route["traffic"] = _clamp_int(int(route.get("traffic", 0)) + traffic_delta, 0, 100)
 		var danger_delta = int(round((pressure - safety) / 35.0))
+		if danger_delta > 0:
+			danger_delta = int(round(float(danger_delta) * route_dynamics.status_bandit_growth_multiplier(route)))
 		route["danger"] = _clamp_int(int(route.get("danger", 0)) + danger_delta, 0, 100)
+		route_dynamics.apply_status_floors(route)
 		route["trade_flow"] = _clamp_int(int(round((int(route.get("traffic", 0)) + int(route.get("road_quality", 0)) + int(route.get("patrol_presence", 0)) - int(route.get("danger", 0))) / 3.0)), 0, 100)
+	route_dynamics.recalculate_status(route)
 	return {
 		"route_id": route.get("route_id", ""),
 		"before": before,
 		"after": route.duplicate(true)
 	}
 
-func _tick_settlement(settlement: Dictionary, connected_routes: Array) -> Dictionary:
+func _tick_settlement(settlement: Dictionary, connected_routes: Array, route_dynamics = null) -> Dictionary:
 	var before = settlement.duplicate(true)
 	var population = _clamp_int(int(settlement.get("population", MIN_POPULATION)), MIN_POPULATION, MAX_POPULATION)
 	var weekly_food_need = max(1, int(ceil(float(population) / 250.0)))
@@ -54,6 +62,8 @@ func _tick_settlement(settlement: Dictionary, connected_routes: Array) -> Dictio
 		unrest_delta += 8
 	if int(settlement.get("security", 0)) < 30:
 		unrest_delta += 3
+	if _has_secure_route(connected_routes, route_dynamics):
+		unrest_delta -= 1
 	settlement["unrest"] = _clamp_int(int(settlement.get("unrest", 0)) + unrest_delta, 0, 100)
 
 	var prosperity_delta = 0
@@ -69,7 +79,10 @@ func _tick_settlement(settlement: Dictionary, connected_routes: Array) -> Dictio
 		prosperity_delta -= 2
 	if int(settlement.get("unrest", 0)) > 60:
 		prosperity_delta -= 3
+	if _has_secure_route(connected_routes, route_dynamics):
+		prosperity_delta += 1
 	settlement["prosperity"] = _clamp_int(int(settlement.get("prosperity", 0)) + prosperity_delta, 0, 100)
+	_apply_connected_status_effects(settlement, connected_routes, route_dynamics)
 
 	var population_delta = 0
 	if int(settlement.get("prosperity", 0)) >= 70 and int(settlement.get("security", 0)) >= 45 and int(settlement.get("unrest", 0)) <= 35 and not shortage:
@@ -113,6 +126,26 @@ func _connected_route_economies(settlement_id: String, route_economies: Array, r
 		if route_ids.has(route_economy.get("route_id", "")):
 			found.append(route_economy)
 	return found
+
+func _has_secure_route(connected_routes: Array, route_dynamics) -> bool:
+	if route_dynamics == null:
+		return false
+	for route in connected_routes:
+		if route_dynamics.get_settlement_effect_ids(route).has("route_secure"):
+			return true
+	return false
+
+func _apply_connected_status_effects(settlement: Dictionary, connected_routes: Array, route_dynamics) -> void:
+	if route_dynamics == null:
+		return
+	var status_effects = settlement.get("status_effects", [])
+	if typeof(status_effects) != TYPE_ARRAY:
+		status_effects = []
+	for route in connected_routes:
+		for effect_id in route_dynamics.get_settlement_effect_ids(route):
+			if not status_effects.has(effect_id):
+				status_effects.append(effect_id)
+	settlement["status_effects"] = status_effects
 
 func _market_tier(population: int, prosperity: int) -> int:
 	var base = 1

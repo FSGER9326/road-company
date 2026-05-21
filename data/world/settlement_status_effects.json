@@ -28,5 +28,15 @@
       "unrest": 6
     },
     "description": "Food is short enough that every market argument turns sharp."
+  },
+  {
+    "id": "route_secure",
+    "name": "Route Secure",
+    "duration_ticks": 1,
+    "modifiers": {
+      "prosperity": 1,
+      "unrest": -1
+    },
+    "description": "Connected roads are patrolled and safe, easing local fears."
   }
 ]
