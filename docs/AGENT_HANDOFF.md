@@ -142,6 +142,35 @@ python tools/run_all_tests.py
 
 Next recommended task: create `feature/art-placeholder-pipeline-v1` and implement the text-first placeholder art manifest and validation workflow from the spec, without adding binary art or changing gameplay.
 
+## Art Placeholder Pipeline V1 Handoff
+
+- Branch: `feature/art-placeholder-pipeline-v1`.
+- Purpose: manifest-driven placeholder art assets for the current 2D prototype.
+- Added `data/art/asset_manifest.json` as the authoritative asset list.
+- Added deterministic SVG generation under `assets/generated/`.
+- Added `tools/generate_placeholder_assets.py` and `tools/validate_art_assets.py`.
+- Added lightweight art manifest tests in `tools/tests/test_art_assets.py`.
+- `DataStore` now loads the asset manifest and exposes `get_asset(asset_id)`.
+- Existing procedural combat and road drawing remain the runtime fallback.
+- No final-quality art, generated PNGs, 3D assets, or large binary dumps were added.
+
+Verification commands:
+
+```powershell
+python tools/generate_placeholder_assets.py
+python tools/validate_art_assets.py
+python -m unittest discover -s tools/tests -p test_art_assets.py
+python tools/run_all_tests.py
+```
+
+Known limitations:
+
+- Combat and road screens still draw procedurally; SVG runtime replacement is deferred.
+- The manifest contains placeholder paths only, not final Imagen requests.
+- Placeholder SVGs are intentionally simple and not production art.
+
+Next recommended task: wire selected manifest assets into RoadMapCanvas and CombatBoard as optional Texture2D fallbacks while keeping procedural drawing as the hard fallback.
+
 ## Docs-Only DeepSeek Integration
 
 - Integration branch: `integration/deepseek-docs-only`

@@ -15,6 +15,7 @@ Run it from the project root, `road_company/`.
 - JSON parsing and data validators.
 - Faction, world, contract, company, and combat reference checks.
 - World economy data checks for trade goods, settlement economy, route economy, and settlement status effects.
+- Art asset manifest and generated placeholder path checks.
 - Pure Python gameplay simulation tests for travel, contracts, combat math, travel-to-combat consequences, camp actions, and seed reproducibility.
 - Pure Python world economy tests for deterministic weekly settlement and route updates.
 - Pure Python route dynamics tests for deterministic contract-driven route changes.
@@ -61,6 +62,7 @@ python tools/validate_world_economy.py
 python tools/validate_contracts.py
 python tools/validate_company.py
 python tools/validate_combat.py
+python tools/validate_art_assets.py
 ```
 
 Pure simulation tests only:
@@ -136,6 +138,22 @@ Targeted commands:
 python tools/validate_contracts.py
 python tools/validate_world_economy.py
 python -m unittest discover -s tools/tests -p test_route_dynamics.py
+```
+
+## Art Asset Validation
+
+Art pipeline validation is covered by:
+
+- `tools/validate_art_assets.py`, which checks `data/art/asset_manifest.json`, required asset IDs, unique IDs, allowed categories, supported extensions, existing generated files, and path boundaries;
+- `tools/tests/test_art_assets.py`, which checks required token, terrain, settlement, condition, and faction manifest coverage;
+- `tools/generate_placeholder_assets.py`, which deterministically regenerates small SVG placeholders under `assets/generated/`.
+
+Targeted commands:
+
+```powershell
+python tools/generate_placeholder_assets.py
+python tools/validate_art_assets.py
+python -m unittest discover -s tools/tests -p test_art_assets.py
 ```
 
 ## Codex Verification Rule

@@ -11,6 +11,7 @@ from validate_combat import validate as validate_combat
 from validate_company import validate as validate_company
 from validate_contracts import validate as validate_contracts
 from validate_factions import validate as validate_factions
+from validate_art_assets import validate as validate_art_assets
 from validate_world import validate as validate_world
 from validate_world_economy import validate as validate_world_economy
 
@@ -73,6 +74,7 @@ def main() -> int:
         ("Contracts", validate_contracts),
         ("Company", validate_company),
         ("Combat", validate_combat),
+        ("Art assets", validate_art_assets),
         ("Company resources", validate_company_resources),
     ]
     all_errors: list[str] = []
