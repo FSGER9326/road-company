@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UI State Schema Draft",
+  "description": "Draft schemas for road-layer UI state representation in ROAD COMPANY.",
+  "definitions": {
+    "road_screen_state": {
+      "type": "object",
+      "properties": {
+        "current_location": {"type": "string"},
+        "selected_settlement": {"type": ["string", "null"]},
+        "selected_route": {"type": ["string", "null"]},
+        "company_resources": {
+          "type": "object",
+          "properties": {
+            "crowns": {"type": "integer"},
+            "food": {"type": "integer"},
+            "tools": {"type": "integer"},
+            "medicine": {"type": "integer"},
+            "morale": {"type": "integer", "minimum": 0, "maximum": 100},
+            "vigor": {"type": "integer", "minimum": 0, "maximum": 100},
+            "renown": {"type": "integer"}
+          }
+        },
+        "settlement_display": {
+          "type": "object",
+          "properties": {
+            "settlement_id": {"type": "string"},
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "population": {"type": "integer"},
+            "prosperity": {"type": "integer", "minimum": 0, "maximum": 100},
+            "security": {"type": "integer", "minimum": 0, "maximum": 100},
+            "unrest": {"type": "integer", "minimum": 0, "maximum": 100},
+            "trade_access": {"type": "integer", "minimum": 0, "maximum": 100},
+            "market_tier": {"type": "integer", "minimum": 1, "maximum": 5},
+            "food_stock": {"type": "integer"},
+            "medicine_stock": {"type": "integer"},
+            "dominant_faction_id": {"type": "string"},
+            "faction_tension": {"type": "integer", "minimum": 0, "maximum": 100}
+          }
+        },
+        "route_display": {
+          "type": "object",
+          "properties": {
+            "route_id": {"type": "string"},
+            "name": {"type": "string"},
+            "danger": {"type": "integer", "minimum": 0, "maximum": 100},
+            "traffic": {"type": "integer", "minimum": 0, "maximum": 100},
+            "bandit_pressure": {"type": "integer", "minimum": 0, "maximum": 100},
+            "patrol_presence": {"type": "integer", "minimum": 0, "maximum": 100},
+            "trade_flow": {"type": "integer", "minimum": 0, "maximum": 100},
+            "blocked": {"type": "boolean"},
+            "status": {"type": "string", "enum": ["normal", "stabilizing", "secure"]}
+          }
+        },
+        "contracts_display": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "contract_id": {"type": "string"},
+              "type": {"type": "string"},
+              "title": {"type": "string"},
+              "patron": {"type": "string"},
+              "danger": {"type": "integer"},
+              "urgency": {"type": "integer"},
+              "reward_crowns": {"type": "integer"},
+              "reward_renown": {"type": "integer"},
+              "generated_reason": {"type": "string"},
+              "route_effects": {"type": "object"},
+              "settlement_effects": {"type": "object"},
+              "expires_ticks": {"type": ["integer", "null"]}
+            }
+          }
+        },
+        "rumors_feed": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {"$ref": "#/definitions/rumor_entry"}
+        },
+        "memory_feed": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {"$ref": "#/definitions/memory_entry"}
+        }
+      }
+    },
+    "rumor_entry": {
+      "type": "object",
+      "properties": {
+        "text": {"type": "string"},
+        "urgency": {"type": "integer", "minimum": 1, "maximum": 5},
+        "truth_level": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "memory_entry": {
+      "type": "object",
+      "properties": {
+        "tick": {"type": "integer"},
+        "title": {"type": "string"},
+        "significance": {"type": "string", "enum": ["minor", "major", "critical"]}
+      }
+    },
+    "aftermath_summary": {
+      "type": "object",
+      "properties": {
+        "category": {"type": "string", "enum": ["contract", "travel", "combat"]},
+        "rewards": {
+          "type": "object",
+          "properties": {
+            "crowns": {"type": "integer"},
+            "renown": {"type": "integer"},
+            "items": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "losses": {
+          "type": "object",
+          "properties": {
+            "fighters_killed": {"type": "array", "items": {"type": "string"}},
+            "fighters_wounded": {"type": "array", "items": {"type": "string"}},
+            "food_lost": {"type": "integer"},
+            "tools_lost": {"type": "integer"}
+          }
+        },
+        "route_changes": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "settlement_changes": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "faction_changes": {
+          "type": "object",
+          "properties": {
+            "influence": {"type": "object", "additionalProperties": {"type": "integer"}},
+            "attitude": {"type": "object", "additionalProperties": {"type": "integer"}}
+          }
+        },
+        "new_rumors": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/rumor_entry"}
+        }
+      }
+    }
+  }
+}
