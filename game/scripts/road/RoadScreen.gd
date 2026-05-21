@@ -58,6 +58,7 @@ func _build(message: String) -> void:
 
 	map_canvas = RoadMapCanvasScript.new()
 	map_canvas.custom_minimum_size = Vector2(760, 580)
+	map_canvas.set("data", data)
 	map_canvas.set_map(data.locations, data.routes, company.current_location)
 	split.add_child(map_canvas)
 
