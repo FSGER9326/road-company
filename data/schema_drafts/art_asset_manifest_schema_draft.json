@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Art Asset Manifest Schema",
+  "description": "Schema for art_asset_manifest.json in ROAD COMPANY. Every visual is referenced by asset_id so gameplay code never depends on file paths.",
+  "type": "object",
+  "required": ["version", "generated_by", "assets"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Manifest format version, e.g. '1.0'"
+    },
+    "generated_by": {
+      "type": "string",
+      "enum": ["codex_placeholder", "imagen_batch", "artist_handoff"],
+      "description": "Who or what generated this manifest"
+    },
+    "assets": {
+      "type": "array",
+      "description": "List of all visual assets",
+      "items": {
+        "type": "object",
+        "required": ["asset_id", "category", "intended_use", "size_px", "replaceable", "generated_by"],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "description": "Unique ID. Convention: {category}_{subcategory}_{detail}. Example: token_enemy_bandit_cutthroat"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["token", "tile", "icon", "ui", "emblem"],
+            "description": "Broad asset category for organization and validation"
+          },
+          "subcategory": {
+            "type": ["string", "null"],
+            "description": "Optional finer grouping: fighter, enemy, terrain, condition, settlement, faction"
+          },
+          "path": {
+            "type": ["string", "null"],
+            "pattern": "^res://.*$",
+            "description": "Path to the current asset file. Null if only procedural fallback exists."
+          },
+          "fallback_path": {
+            "type": ["string", "null"],
+            "pattern": "^res://.*$",
+            "description": "Path to fallback rendering. For tokens: res://game/scripts/combat/CombatBoard.gd. For procedural SVG: res://assets/placeholder/..."
+          },
+          "intended_use": {
+            "type": "string",
+            "description": "Human-readable description of where this asset appears"
+          },
+          "size_px": {
+            "type": "integer",
+            "minimum": 8,
+            "maximum": 4096,
+            "description": "Largest dimension in pixels. For tokens: 28-128. For tiles: 32-128. For icons: 16-32."
+          },
+          "anchor": {
+            "type": "string",
+            "enum": ["center", "top_left", "top_center", "bottom_center"],
+            "default": "center",
+            "description": "Draw anchor point"
+          },
+          "replaceable": {
+            "type": "boolean",
+            "description": "True if this asset can be swapped for final Imagen art later"
+          },
+          "generated_by": {
+            "type": "string",
+            "enum": ["procedural", "svg", "imagen", null],
+            "description": "How this asset was generated. procedural = GDScript drawing. svg = tools/generate_placeholders.py. imagen = future Imagen pass."
+          },
+          "imagen_request_id": {
+            "type": ["string", "null"],
+            "description": "Maps to an entry in imagen_asset_requests.json (future). Null if not applicable."
+          },
+          "notes": {
+            "type": "string",
+            "description": "Freeform notes for artists/agents"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": "1.0",
+      "generated_by": "codex_placeholder",
+      "assets": [
+        {
+          "asset_id": "token_enemy_bandit_cutthroat",
+          "category": "token",
+          "subcategory": "enemy",
+          "path": null,
+          "fallback_path": "res://game/scripts/combat/CombatBoard.gd",
+          "intended_use": "Tactical combat hex token for bandit cutthroat enemy",
+          "size_px": 28,
+          "anchor": "center",
+          "replaceable": true,
+          "generated_by": "procedural",
+          "imagen_request_id": "enemy_bandit_cutthroat_v1",
+          "notes": "Current fallback: colored circle with 'CT' label. Replace with Imagen PNG later."
+        },
+        {
+          "asset_id": "tile_grass",
+          "category": "tile",
+          "subcategory": "terrain",
+          "path": null,
+          "fallback_path": null,
+          "intended_use": "Default open hex terrain tile",
+          "size_px": 68,
+          "anchor": "center",
+          "replaceable": true,
+          "generated_by": "svg",
+          "imagen_request_id": null,
+          "notes": "SVG placeholder: green hex with subtle grass marks."
+        },
+        {
+          "asset_id": "icon_condition_bleeding",
+          "category": "icon",
+          "subcategory": "condition",
+          "path": null,
+          "fallback_path": null,
+          "intended_use": "16x16 status overlay icon for bleeding condition",
+          "size_px": 16,
+          "anchor": "center",
+          "replaceable": true,
+          "generated_by": "svg",
+          "imagen_request_id": null,
+          "notes": "SVG placeholder: red droplet shape."
+        },
+        {
+          "asset_id": "emblem_ashen_crown",
+          "category": "emblem",
+          "subcategory": "faction",
+          "path": null,
+          "fallback_path": null,
+          "intended_use": "Faction emblem for Ashen Crown displayed in settlement/contract UI",
+          "size_px": 32,
+          "anchor": "center",
+          "replaceable": true,
+          "generated_by": "svg",
+          "imagen_request_id": "emblem_ashen_crown_v1",
+          "notes": "Placeholder: gray crown shape on dark brown circle."
+        }
+      ]
+    }
+  ]
+}
