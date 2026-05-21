@@ -14,6 +14,25 @@ var mode = "inspect"
 var blocked_cells = {}
 var slow_cells = {}
 var origin = Vector2(82, 62)
+var data
+
+func _get_asset_id_for_unit(unit: Dictionary) -> String:
+	var side = unit.get("side", "")
+	if side == "objective":
+		return "token_wagon"
+	elif side == "enemy":
+		var base_id = unit.get("id", "").split("_0")[0].split("_1")[0].split("_2")[0].split("_3")[0]
+		base_id = base_id.replace("raider_", "bandit_")
+		return "token_enemy_" + base_id
+	elif side == "player":
+		var idx = 1
+		for u in units:
+			if u.get("side", "") == "player":
+				if u.get("id", "") == unit.get("id", ""):
+					break
+				idx += 1
+		return "token_fighter_0%s" % clamp(idx, 1, 6)
+	return ""
 
 func set_state(new_cells: Array, new_units: Array, active_id: String, selected_id: String, new_mode: String, blocked: Dictionary, slow: Dictionary) -> void:
 	cells = new_cells
@@ -58,10 +77,23 @@ func _draw() -> void:
 			draw_circle(pos, 20, Color(0.96, 0.78, 0.28))
 		if unit.get("id", "") == selected_unit_id:
 			draw_circle(pos, 24, Color(0.84, 0.84, 0.76))
-		draw_circle(pos, 17, Color(0.025, 0.025, 0.02))
-		draw_circle(pos, 14, color)
-		var label = unit.get("abbr", unit.get("name", "?").left(2)).to_upper()
-		draw_string(font, pos + Vector2(-10, 5), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color.WHITE)
+		
+		var texture = null
+		if get("data") != null:
+			var asset_id = _get_asset_id_for_unit(unit)
+			if asset_id != "":
+				var asset = data.get_asset(asset_id)
+				if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
+					texture = load(asset["path"])
+		
+		if texture != null:
+			var s = 64.0
+			draw_texture_rect(texture, Rect2(pos - Vector2(s/2.0, s/2.0), Vector2(s, s)), false)
+		else:
+			draw_circle(pos, 17, Color(0.025, 0.025, 0.02))
+			draw_circle(pos, 14, color)
+			var label = unit.get("abbr", unit.get("name", "?").left(2)).to_upper()
+			draw_string(font, pos + Vector2(-10, 5), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color.WHITE)
 		var bar_w = 32.0
 		var hp_ratio = float(unit.get("hp", 1)) / max(1.0, float(unit.get("max_hp", 1)))
 		draw_rect(Rect2(pos + Vector2(-16, 20), Vector2(bar_w, 4)), Color(0.12, 0.04, 0.04), true)

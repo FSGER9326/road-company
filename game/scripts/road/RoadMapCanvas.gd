@@ -5,6 +5,7 @@ var locations = []
 var routes = []
 var current_location = ""
 var selected_route_id = ""
+var data
 
 func set_map(new_locations: Array, new_routes: Array, location_id: String) -> void:
 	locations = new_locations
@@ -34,15 +35,36 @@ func _draw() -> void:
 			width = 5.0
 		draw_line(pa, pb, color, width)
 		var mid = (pa + pb) * 0.5
-		draw_string(font, mid + Vector2(-18, -6), "D%s" % danger, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.92, 0.82, 0.62))
+		var tex = null
+		if get("data") != null:
+			var asset = data.get_asset("icon_danger_%s" % clamp(danger, 1, 5))
+			if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
+				tex = load(asset["path"])
+		if tex != null:
+			draw_texture_rect(tex, Rect2(mid - Vector2(12, 12), Vector2(24, 24)), false)
+		else:
+			draw_string(font, mid + Vector2(-18, -6), "D%s" % danger, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.92, 0.82, 0.62))
 
 	for loc in locations:
 		var pos = _map_pos(loc)
 		var is_current = loc.get("id", "") == current_location
-		var radius = 16 if is_current else 12
-		var color = Color(0.82, 0.68, 0.36) if is_current else Color(0.38, 0.42, 0.39)
-		draw_circle(pos, radius + 3, Color(0.02, 0.02, 0.02))
-		draw_circle(pos, radius, color)
+		
+		var icon_id = "icon_settlement_town"
+		var tex = null
+		if get("data") != null:
+			var asset = data.get_asset(icon_id)
+			if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
+				tex = load(asset["path"])
+				
+		if tex != null:
+			var s = 40 if is_current else 32
+			draw_texture_rect(tex, Rect2(pos - Vector2(s/2.0, s/2.0), Vector2(s, s)), false)
+		else:
+			var radius = 16 if is_current else 12
+			var color = Color(0.82, 0.68, 0.36) if is_current else Color(0.38, 0.42, 0.39)
+			draw_circle(pos, radius + 3, Color(0.02, 0.02, 0.02))
+			draw_circle(pos, radius, color)
+			
 		draw_string(font, pos + Vector2(18, 4), loc.get("name", ""), HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.86, 0.84, 0.78))
 
 func _map_pos(location: Dictionary) -> Vector2:
