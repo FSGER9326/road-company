@@ -169,7 +169,9 @@ Known limitations:
 - The manifest contains placeholder paths only, not final Imagen requests.
 - Placeholder SVGs are intentionally simple and not production art.
 
-Next recommended task: wire selected manifest assets into RoadMapCanvas and CombatBoard as optional Texture2D fallbacks while keeping procedural drawing as the hard fallback.
+Merge status: Merged into `main` via `feature/art-placeholder-pipeline-v1`. All validators and 38 simulation tests pass. Godot headless passes (9/9).
+
+Next recommended task: `feature/contract-generator-v1` - implement world-state-based contract generation from `docs/contract_generator_v1_spec.md`.
 
 ## Docs-Only DeepSeek Integration
 
@@ -186,3 +188,26 @@ Next recommended task: wire selected manifest assets into RoadMapCanvas and Comb
 - Runtime changes from `design/deepseek-world-systems` were intentionally not imported.
 - Test harness changes from `design/deepseek-world-systems` were intentionally not imported.
 - Validation result on this branch: `python tools/run_all_tests.py` passed, including Godot headless tests through the local `.godot/bin` executable.
+
+## Contract Generator Spec Status
+
+- Spec branch: `spec/deepseek-contract-generator-v1`.
+- Spec files already present on `main` (included via art pipeline merge):
+  - `docs/contract_generator_v1_spec.md` — full specification (7 contract types, trigger conditions, reward formulas)
+  - `prompts/codex_next/contract_generator_v1.md` — implementable Codex prompt
+  - `data/schema_drafts/contract_generator_schema_draft.json` — JSON schema draft
+- No runtime implementation yet — spec/docs only.
+- No separate merge required (already on main).
+
+## Art Pipeline Merge (latest)
+
+- Merged `feature/art-placeholder-pipeline-v1` into `main` via `--no-ff`.
+- Commit: `0441cce` (merge), `74820a3` (feature tip).
+- Commands run:
+  - `python tools/run_all_tests.py` on feature branch: **PASS** (8 validators, 38 tests, Godot 9/9)
+  - `python tools/run_all_tests.py` on main after merge: **PASS** (8 validators, 38 tests, Godot 9/9)
+- 85 files added: 72 SVG placeholders, manifest, generator, validator, tests, doc updates.
+- Skipped: none.
+- Godot headless: `Godot_v4.6.2` — 9/9 passed.
+
+Next recommended task: `feature/contract-generator-v1` — implement `ContractGenerator.gd` following `prompts/codex_next/contract_generator_v1.md`.
