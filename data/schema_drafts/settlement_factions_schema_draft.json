@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Settlement Internal Factions Schema Draft",
+  "definitions": {
+    "faction_type_definition": {
+      "type": "object",
+      "required": ["type", "name", "default_influence", "economy_modifiers", "supported_contract_types"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ruling_authority", "merchant_guild", "militia_command", "temple_chapter", "criminal_network", "peasant_commons"]
+        },
+        "name": {"type": "string"},
+        "default_influence": {"type": "integer", "minimum": 10, "maximum": 60},
+        "economy_modifiers": {
+          "type": "object",
+          "properties": {
+            "prosperity": {"type": "integer"},
+            "security": {"type": "integer"},
+            "unrest": {"type": "integer"},
+            "corruption": {"type": "integer"},
+            "trade_access": {"type": "integer"}
+          }
+        },
+        "supported_contract_types": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["escort_caravan", "patrol_route", "hunt_bandits", "recover_wagon", "deliver_medicine", "defend_settlement", "bounty_target"]}
+        },
+        "opposed_contract_types": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["escort_caravan", "patrol_route", "hunt_bandits", "recover_wagon", "deliver_medicine", "defend_settlement", "bounty_target"]}
+        },
+        "agenda_tags": {"type": "array", "items": {"type": "string"}},
+        "rival_type": {"type": "string"}
+      }
+    },
+    "internal_faction": {
+      "type": "object",
+      "required": ["faction_id", "settlement_id", "name", "type", "influence", "attitude_to_company"],
+      "properties": {
+        "faction_id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "settlement_id": {"type": "string"},
+        "name": {"type": "string"},
+        "type": {"type": "string", "enum": ["ruling_authority", "merchant_guild", "militia_command", "temple_chapter", "criminal_network", "peasant_commons"]},
+        "influence": {"type": "integer", "minimum": 0, "maximum": 100},
+        "attitude_to_company": {"type": "integer", "minimum": -100, "maximum": 100},
+        "agenda_tags": {"type": "array", "items": {"type": "string"}},
+        "rival_faction_ids": {"type": "array", "items": {"type": "string"}},
+        "supported_contract_types": {"type": "array", "items": {"type": "string"}},
+        "opposed_contract_types": {"type": "array", "items": {"type": "string"}},
+        "economy_modifiers": {
+          "type": "object",
+          "properties": {
+            "prosperity": {"type": "integer"},
+            "security": {"type": "integer"},
+            "unrest": {"type": "integer"},
+            "corruption": {"type": "integer"},
+            "trade_access": {"type": "integer"}
+          }
+        },
+        "market_modifiers": {"type": "object", "additionalProperties": {"type": "number"}},
+        "event_tags": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "faction_event": {
+      "type": "object",
+      "required": ["event_id", "name", "trigger", "text", "choices"],
+      "properties": {
+        "event_id": {"type": "string"},
+        "name": {"type": "string"},
+        "trigger": {
+          "type": "object",
+          "required": ["faction_type", "min_influence", "cooldown_ticks"],
+          "properties": {
+            "faction_type": {"type": "string"},
+            "min_influence": {"type": "integer", "minimum": 20, "maximum": 70},
+            "min_tension": {"type": "integer", "minimum": 0, "maximum": 100},
+            "cooldown_ticks": {"type": "integer", "minimum": 4, "maximum": 20},
+            "additional_conditions": {
+              "type": "object",
+              "properties": {
+                "unrest_min": {"type": "integer"},
+                "prosperity_min": {"type": "integer"},
+                "corruption_min": {"type": "integer"},
+                "food_shortage": {"type": "boolean"},
+                "has_active_contract": {"type": "boolean"},
+                "rival_influence_min": {"type": "integer"},
+                "company_renown_min": {"type": "integer"}
+              }
+            }
+          }
+        },
+        "text": {"type": "string"},
+        "choices": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "effects"],
+            "properties": {
+              "id": {"type": "string"},
+              "label": {"type": "string"},
+              "effects": {
+                "type": "object",
+                "properties": {
+                  "faction": {"type": "object", "additionalProperties": {"type": "integer"}},
+                  "settlement": {
+                    "type": "object",
+                    "properties": {
+                      "prosperity": {"type": "integer"},
+                      "security": {"type": "integer"},
+                      "unrest": {"type": "integer"},
+                      "corruption": {"type": "integer"},
+                      "trade_access": {"type": "integer"}
+                    }
+                  },
+                  "attitude": {"type": "object", "additionalProperties": {"type": "integer"}}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settlement_faction_state": {
+      "type": "object",
+      "properties": {
+        "dominant_faction_id": {"type": "string"},
+        "faction_tension": {"type": "integer", "minimum": 0, "maximum": 100},
+        "local_policy_tags": {"type": "array", "items": {"type": "string"}},
+        "active_internal_conflicts": {"type": "array", "items": {"type": "string"}},
+        "last_faction_event_tick": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}
