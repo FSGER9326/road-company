@@ -10,6 +10,10 @@ var armor = []
 var enemies = []
 var encounters = []
 var road_events = []
+var trade_goods = []
+var settlement_economy = []
+var route_economy = []
+var settlement_status_effects = []
 var company_start = {}
 
 func load_all() -> void:
@@ -22,6 +26,10 @@ func load_all() -> void:
 	enemies = _load_array("res://data/combat/enemies.json")
 	encounters = _load_array("res://data/combat/encounters.json")
 	road_events = _load_array("res://data/events/road_events.json")
+	trade_goods = _load_array("res://data/world/trade_goods.json")
+	settlement_economy = _load_array("res://data/world/settlement_economy.json")
+	route_economy = _load_array("res://data/world/route_economy.json")
+	settlement_status_effects = _load_array("res://data/world/settlement_status_effects.json")
 	company_start = _load_dict("res://data/company/company_start.json")
 
 func by_id(collection: Array, item_id: String) -> Dictionary:
@@ -62,6 +70,12 @@ func get_encounter(encounter_id: String) -> Dictionary:
 
 func get_enemy(enemy_id: String) -> Dictionary:
 	return by_id(enemies, enemy_id)
+
+func get_settlement_economy(settlement_id: String) -> Dictionary:
+	for item in settlement_economy:
+		if item.get("settlement_id", "") == settlement_id:
+			return item
+	return {}
 
 func _load_array(path: String) -> Array:
 	var value = _load_json(path)

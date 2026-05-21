@@ -1,0 +1,56 @@
+[
+  {
+    "id": "grain",
+    "name": "Grain",
+    "category": "food",
+    "base_value": 8,
+    "scarcity_weight": 1.4,
+    "produced_by_tags": ["grain", "food", "farmland"],
+    "demanded_by_tags": ["town", "settlement", "caravan"]
+  },
+  {
+    "id": "medicine",
+    "name": "Medicine",
+    "category": "service",
+    "base_value": 35,
+    "scarcity_weight": 1.8,
+    "produced_by_tags": ["medicine", "blessings"],
+    "demanded_by_tags": ["town", "shrine", "road_company"]
+  },
+  {
+    "id": "tools",
+    "name": "Tools",
+    "category": "construction",
+    "base_value": 30,
+    "scarcity_weight": 1.2,
+    "produced_by_tags": ["tools", "iron", "workshops"],
+    "demanded_by_tags": ["mill", "road", "settlement"]
+  },
+  {
+    "id": "arms",
+    "name": "Arms",
+    "category": "material",
+    "base_value": 45,
+    "scarcity_weight": 1.5,
+    "produced_by_tags": ["ammo", "iron", "garrison"],
+    "demanded_by_tags": ["guard", "danger", "bounty"]
+  },
+  {
+    "id": "timber",
+    "name": "Timber",
+    "category": "construction",
+    "base_value": 12,
+    "scarcity_weight": 1.0,
+    "produced_by_tags": ["forest", "charcoal"],
+    "demanded_by_tags": ["town", "repair", "road"]
+  },
+  {
+    "id": "relics",
+    "name": "Relics",
+    "category": "luxury",
+    "base_value": 80,
+    "scarcity_weight": 2.0,
+    "produced_by_tags": ["blessings", "shrine"],
+    "demanded_by_tags": ["church", "nobility", "pilgrim"]
+  }
+]

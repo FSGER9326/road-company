@@ -39,8 +39,48 @@ Prefer adding testable logic to:
 - `game/scripts/combat/CombatSystem.gd`
 - `game/scripts/camp/CampSystem.gd`
 - `game/scripts/core/AutoplaySmoke.gd`
+- `game/scripts/world/WorldEconomySystem.gd`
 
 UI screens should call those systems instead of duplicating rule logic.
+
+## Current Feature Branch
+
+- Branch: `feature/world-tick-v1`
+- Purpose: first deterministic settlement economy tick only.
+- Main merge completed first: `integration/deepseek-docs-only` was merged into `main`; runtime changes from `design/deepseek-world-systems` remain intentionally excluded.
+- MiniMax reference branches/data were not merged into runtime data.
+
+## World Tick V1 Handoff
+
+Implemented:
+
+- deterministic weekly economy tick in `game/scripts/world/WorldEconomySystem.gd`;
+- data files for trade goods, settlement economy, route economy, and settlement status effects under `data/world/`;
+- validator `tools/validate_world_economy.py`;
+- pure Python regression tests in `tools/tests/test_world_economy.py`;
+- a small road-screen debug panel with an `Advance Week` button;
+- Godot headless coverage for the economy tick.
+
+Intentionally deferred:
+
+- full world simulation;
+- internal settlement factions;
+- combat conditions from economy state;
+- save/load persistence;
+- procedural trade generation;
+- MiniMax runtime data integration.
+
+Before continuing this branch, run:
+
+```powershell
+python tools/run_all_tests.py
+python tools/validate_world_economy.py
+python -m unittest discover -s tools/tests -p test_*.py
+```
+
+Expected result as of this handoff: all pass, including Godot headless tests when the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable is present.
+
+Next recommended implementation task: connect the economy state to contract reward/danger modifiers through a small, testable adapter without changing combat rules.
 
 ## Docs-Only DeepSeek Integration
 

@@ -1,0 +1,47 @@
+[
+  {
+    "settlement_id": "blackford",
+    "population": 2400,
+    "prosperity": 54,
+    "security": 48,
+    "food_stock": 210,
+    "medicine_stock": 26,
+    "tools_stock": 42,
+    "arms_stock": 60,
+    "unrest": 22,
+    "trade_access": 58,
+    "market_tier": 3,
+    "recruitment_pool_quality": 46,
+    "status_effects": ["well_stocked"]
+  },
+  {
+    "settlement_id": "embermill",
+    "population": 1800,
+    "prosperity": 58,
+    "security": 42,
+    "food_stock": 190,
+    "medicine_stock": 30,
+    "tools_stock": 52,
+    "arms_stock": 44,
+    "unrest": 18,
+    "trade_access": 55,
+    "market_tier": 3,
+    "recruitment_pool_quality": 43,
+    "status_effects": []
+  },
+  {
+    "settlement_id": "saintsfall",
+    "population": 3200,
+    "prosperity": 62,
+    "security": 60,
+    "food_stock": 260,
+    "medicine_stock": 64,
+    "tools_stock": 36,
+    "arms_stock": 58,
+    "unrest": 14,
+    "trade_access": 50,
+    "market_tier": 4,
+    "recruitment_pool_quality": 55,
+    "status_effects": []
+  }
+]

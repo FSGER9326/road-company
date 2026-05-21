@@ -14,7 +14,9 @@ Run it from the project root, `road_company/`.
 
 - JSON parsing and data validators.
 - Faction, world, contract, company, and combat reference checks.
+- World economy data checks for trade goods, settlement economy, route economy, and settlement status effects.
 - Pure Python gameplay simulation tests for travel, contracts, combat math, travel-to-combat consequences, camp actions, and seed reproducibility.
+- Pure Python world economy tests for deterministic weekly settlement and route updates.
 - Godot headless tests if Godot is available.
 
 The command exits nonzero if any required layer fails. If Godot is unavailable, it prints a `SKIP` line explaining why and still reports the Python/data result.
@@ -54,6 +56,7 @@ Data validation only:
 python tools/validate_data.py
 python tools/validate_factions.py
 python tools/validate_world.py
+python tools/validate_world_economy.py
 python tools/validate_contracts.py
 python tools/validate_company.py
 python tools/validate_combat.py
@@ -86,7 +89,33 @@ The Godot test runner checks:
 - road map instantiates;
 - combat screen instantiates with escort wagon objective;
 - camp aftermath instantiates;
+- deterministic world economy weekly tick runs;
 - deterministic escort autoplay reaches aftermath without crashing.
+
+## World Economy Validation
+
+`tools/validate_world_economy.py` checks:
+
+- `data/world/trade_goods.json` parses and has unique trade good IDs;
+- `data/world/settlement_status_effects.json` parses and has unique effect IDs;
+- `data/world/settlement_economy.json` references valid location IDs;
+- `data/world/route_economy.json` references valid route IDs;
+- settlement status effects reference known effect IDs;
+- prosperity, security, unrest, trade access, recruitment quality, route danger, traffic, road quality, trade flow, patrol presence, bandit pressure, and monster pressure remain in `0..100`;
+- food, medicine, tools, and arms stocks are nonnegative;
+- market tiers remain in `1..5`.
+
+Targeted command:
+
+```powershell
+python tools/validate_world_economy.py
+```
+
+The weekly tick regression tests live in `tools/tests/test_world_economy.py` and are included in:
+
+```powershell
+python -m unittest discover -s tools/tests -p test_*.py
+```
 
 ## Codex Verification Rule
 
