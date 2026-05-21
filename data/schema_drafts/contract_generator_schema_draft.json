@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Contract Generator Schema Draft",
+  "description": "Draft schemas for contract generation system in ROAD COMPANY.",
+  "definitions": {
+    "contract_type_default": {
+      "type": "object",
+      "required": ["type", "base_crowns", "base_renown", "trigger_condition", "title_template", "description_template"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["escort_caravan", "patrol_route", "hunt_bandits", "recover_wagon", "deliver_medicine", "defend_settlement", "bounty_target"]
+        },
+        "base_crowns": {"type": "integer", "minimum": 50, "maximum": 1000},
+        "base_renown": {"type": "integer", "minimum": 2, "maximum": 30},
+        "encounter_id": {"type": ["string", "null"]},
+        "required_objective": {"type": ["string", "null"]},
+        "trigger_condition": {
+          "type": "string",
+          "enum": ["food_shortage", "medicine_shortage", "route_danger", "bandit_pressure", "monster_pressure", "low_security", "high_unrest", "low_trade_access", "blocked_route", "traffic_disruption"]
+        },
+        "title_template": {"type": "string"},
+        "description_template": {"type": "string"},
+        "success_template": {"type": "string"},
+        "failure_template": {"type": "string"},
+        "route_effects_success": {
+          "type": "object",
+          "properties": {
+            "bandit_pressure": {"type": "integer"},
+            "danger": {"type": "integer"},
+            "patrol_presence": {"type": "integer"},
+            "traffic": {"type": "integer"},
+            "trade_flow": {"type": "integer"},
+            "monster_pressure": {"type": "integer"},
+            "block_duration_ticks": {"type": "integer"}
+          }
+        },
+        "route_effects_failure": {
+          "type": "object",
+          "properties": {
+            "bandit_pressure": {"type": "integer"},
+            "danger": {"type": "integer"},
+            "patrol_presence": {"type": "integer"},
+            "traffic": {"type": "integer"},
+            "trade_flow": {"type": "integer"},
+            "monster_pressure": {"type": "integer"},
+            "block_duration_ticks": {"type": "integer"}
+          }
+        },
+        "settlement_effects_success": {
+          "type": "object",
+          "properties": {
+            "food_stock": {"type": "integer"},
+            "medicine_stock": {"type": "integer"},
+            "tools_stock": {"type": "integer"},
+            "arms_stock": {"type": "integer"},
+            "prosperity": {"type": "integer"},
+            "security": {"type": "integer"},
+            "unrest": {"type": "integer"},
+            "trade_access": {"type": "integer"},
+            "remove_status_effect": {"type": "string"}
+          }
+        },
+        "settlement_effects_failure": {
+          "type": "object",
+          "properties": {
+            "food_stock": {"type": "integer"},
+            "medicine_stock": {"type": "integer"},
+            "prosperity": {"type": "integer"},
+            "security": {"type": "integer"},
+            "unrest": {"type": "integer"},
+            "trade_access": {"type": "integer"},
+            "corruption": {"type": "integer"},
+            "add_status_effect": {"type": "string"}
+          }
+        }
+      }
+    },
+    "generated_contract": {
+      "type": "object",
+      "required": ["id", "type", "origin_location", "target_location", "reward_crowns", "reward_renown", "danger", "urgency", "generated_from"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+_\\d{3}$",
+          "description": "Format: {type}_{origin}_{target}_{counter}. Example: escort_blackford_embermill_001"
+        },
+        "title": {"type": "string"},
+        "type": {
+          "type": "string",
+          "enum": ["escort_caravan", "patrol_route", "hunt_bandits", "recover_wagon", "deliver_medicine", "defend_settlement", "bounty_target"]
+        },
+        "patron_faction": {"type": "string"},
+        "origin_location": {"type": "string"},
+        "target_location": {"type": "string"},
+        "target_route": {"type": ["string", "null"]},
+        "urgency": {"type": "integer", "minimum": 1, "maximum": 5},
+        "danger": {"type": "integer", "minimum": 1, "maximum": 10},
+        "reward_crowns": {"type": "integer", "minimum": 50, "maximum": 5000},
+        "reward_renown": {"type": "integer", "minimum": 2, "maximum": 50},
+        "description": {"type": "string"},
+        "success_text": {"type": "string"},
+        "failure_text": {"type": "string"},
+        "encounter_id": {"type": ["string", "null"]},
+        "required_cargo_or_objective": {"type": ["string", "null"]},
+        "faction_effects": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "failure_faction_effects": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "route_effects_on_success": {
+          "type": "object",
+          "properties": {
+            "bandit_pressure": {"type": "integer"},
+            "danger": {"type": "integer"},
+            "patrol_presence": {"type": "integer"},
+            "traffic": {"type": "integer"},
+            "trade_flow": {"type": "integer"},
+            "monster_pressure": {"type": "integer"},
+            "block_duration_ticks": {"type": "integer"}
+          }
+        },
+        "route_effects_on_failure": {
+          "type": "object",
+          "properties": {
+            "bandit_pressure": {"type": "integer"},
+            "danger": {"type": "integer"},
+            "patrol_presence": {"type": "integer"},
+            "traffic": {"type": "integer"},
+            "trade_flow": {"type": "integer"},
+            "monster_pressure": {"type": "integer"},
+            "block_duration_ticks": {"type": "integer"}
+          }
+        },
+        "settlement_effects_on_success": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "food_stock": {"type": "integer"},
+              "medicine_stock": {"type": "integer"},
+              "tools_stock": {"type": "integer"},
+              "arms_stock": {"type": "integer"},
+              "prosperity": {"type": "integer"},
+              "security": {"type": "integer"},
+              "unrest": {"type": "integer"},
+              "trade_access": {"type": "integer"},
+              "remove_status_effect": {"type": "string"}
+            }
+          }
+        },
+        "settlement_effects_on_failure": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "food_stock": {"type": "integer"},
+              "medicine_stock": {"type": "integer"},
+              "prosperity": {"type": "integer"},
+              "security": {"type": "integer"},
+              "unrest": {"type": "integer"},
+              "trade_access": {"type": "integer"},
+              "corruption": {"type": "integer"},
+              "add_status_effect": {"type": "string"}
+            }
+          }
+        },
+        "generated_from": {
+          "type": "object",
+          "required": ["world_state_reason", "trigger_fields"],
+          "properties": {
+            "world_state_reason": {"type": "string"},
+            "trigger_fields": {"type": "object"},
+            "seed_offset": {"type": "integer"}
+          }
+        },
+        "expires_after_ticks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 52,
+          "description": "0 = never expires"
+        },
+        "seed": {"type": "integer"}
+      }
+    },
+    "generator_input": {
+      "type": "object",
+      "required": ["current_location", "settlement_economies", "route_economies", "route_links", "seed"],
+      "properties": {
+        "current_location": {"type": "string"},
+        "settlement_economies": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/settlement_economy_snapshot"}
+        },
+        "route_economies": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/route_economy_snapshot"}
+        },
+        "route_links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "from": {"type": "string"},
+              "to": {"type": "string"}
+            }
+          }
+        },
+        "faction_reputation": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "existing_contracts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "IDs of currently active contracts to avoid duplicating"
+        },
+        "seed": {"type": "integer"}
+      }
+    },
+    "settlement_economy_snapshot": {
+      "type": "object",
+      "properties": {
+        "settlement_id": {"type": "string"},
+        "population": {"type": "integer"},
+        "prosperity": {"type": "integer"},
+        "security": {"type": "integer"},
+        "food_stock": {"type": "integer"},
+        "medicine_stock": {"type": "integer"},
+        "tools_stock": {"type": "integer"},
+        "arms_stock": {"type": "integer"},
+        "unrest": {"type": "integer"},
+        "trade_access": {"type": "integer"},
+        "market_tier": {"type": "integer"},
+        "recruitment_pool_quality": {"type": "integer"},
+        "status_effects": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "route_economy_snapshot": {
+      "type": "object",
+      "properties": {
+        "route_id": {"type": "string"},
+        "traffic": {"type": "integer"},
+        "danger": {"type": "integer"},
+        "road_quality": {"type": "integer"},
+        "trade_flow": {"type": "integer"},
+        "patrol_presence": {"type": "integer"},
+        "bandit_pressure": {"type": "integer"},
+        "monster_pressure": {"type": "integer"},
+        "blocked": {"type": "boolean"},
+        "status": {"type": "string"}
+      }
+    }
+  }
+}
