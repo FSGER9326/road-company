@@ -33,13 +33,17 @@ def compare_images(img1_path, img2_path, diff_out_path, tolerance=0.01):
     diff_percent = mean_diff / 255.0
     
     if diff_percent > tolerance:
-        # Generate diff image
-        # Enhance the diff for visibility
         diff = diff.point(lambda p: min(p * 5, 255))
         diff.save(diff_out_path)
-        return False, f"Differs by {diff_percent * 100:.2f}%"
+        return False, f"Differs by {diff_percent * 100:.3f}% (threshold {tolerance*100:.3f}%)"
         
     return True, "Match"
+
+def get_tolerance_for_screen(screen: str) -> float:
+    # combat_board.png requires stricter tolerance because UI changes are small
+    if screen == "combat_board.png":
+        return 0.0005 # 0.05%
+    return 0.01 # 1% default
 
 def main():
     parser = argparse.ArgumentParser(description="Compare visual smoke tests")
@@ -114,7 +118,8 @@ def main():
                 report["summary"]["failed"] += 1
         else:
             diff_img = os.path.join(latest_dir, screen.replace(".png", "_diff.png"))
-            match, msg = compare_images(base_img, run_img, diff_img)
+            tol = get_tolerance_for_screen(screen)
+            match, msg = compare_images(base_img, run_img, diff_img, tolerance=tol)
             
             if match:
                 report["details"].append({

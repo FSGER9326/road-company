@@ -402,18 +402,32 @@ func _refresh_board() -> void:
 	if selected.is_empty():
 		info_label.text = ""
 	else:
-		info_label.text = "[b]%s[/b]\nSide: %s  Morale: %s\nHP: %s/%s  Armor: %s body / %s head\nAP: %s  Fatigue: %s/%s\nWeapon: %s" % [
+		var side_col = "#ffffff"
+		var s = selected.get("side", "")
+		if s == "player":
+			side_col = "#88ccee"
+		elif s == "enemy":
+			side_col = "#ff6666"
+		elif s == "objective":
+			side_col = "#ffcc88"
+			
+		var inj = selected.get("injuries", [])
+		var inj_str = "None" if inj.is_empty() else ", ".join(inj)
+			
+		info_label.text = "[b][color=%s]%s[/color][/b]\nSide: %s  Morale: %s\n[color=#ff8888]HP:[/color] %s/%s  [color=#aaccff]Armor:[/color] %s body / %s head\n[color=#ffdd66]AP:[/color] %s  [color=#88ee88]Fatigue:[/color] %s/%s\nWeapon: %s\nInjuries: %s" % [
+			side_col,
 			selected.get("name", ""),
-			selected.get("side", ""),
-			selected.get("morale_state", "steady"),
-			selected.get("hp", 0),
-			selected.get("max_hp", 0),
-			selected.get("armor_body", 0),
-			selected.get("armor_head", 0),
-			selected.get("ap", 0),
-			selected.get("fatigue", 0),
-			selected.get("max_fatigue", 0),
-			selected.get("weapon_id", "")
+			selected.get("side", "").capitalize(),
+			selected.get("morale_state", "steady").capitalize(),
+			int(selected.get("hp", 0)),
+			int(selected.get("max_hp", 0)),
+			int(selected.get("armor_body", 0)),
+			int(selected.get("armor_head", 0)),
+			int(selected.get("ap", 0)),
+			int(selected.get("fatigue", 0)),
+			int(selected.get("max_fatigue", 0)),
+			str(selected.get("weapon_id", "")).capitalize(),
+			inj_str
 		]
 	log_label.text = "\n".join(log_lines.slice(max(0, log_lines.size() - 16), log_lines.size()))
 
