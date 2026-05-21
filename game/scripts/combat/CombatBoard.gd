@@ -86,8 +86,10 @@ func _draw() -> void:
 			var asset_id = _get_asset_id_for_unit(unit)
 			if asset_id != "":
 				var asset = data.get_asset(asset_id)
-				if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
-					texture = load(asset["path"])
+				if not asset.is_empty() and asset.has("path"):
+					var path = asset["path"]
+					if ResourceLoader.exists(path):
+						texture = load(path)
 		
 		if texture != null:
 			var s = 64.0
@@ -102,40 +104,49 @@ func _draw() -> void:
 			draw_string(font, pos + Vector2(-10, 5), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
 			
 		# Badges
-		var badge_y = 20
-		var hp = unit.get("hp", 0)
+		var badge_y = 20.0
+		var hp = int(unit.get("hp", 0))
 		var armor = int(unit.get("armor_body", 0)) + int(unit.get("armor_head", 0))
 		
 		# HP Badge
-		draw_rect(Rect2(pos + Vector2(-18, badge_y), Vector2(16, 14)), Color(0.6, 0.15, 0.15, 0.95), true)
-		draw_string(font, pos + Vector2(-15, badge_y + 11), str(hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
+		_draw_badge(font, pos + Vector2(-12, badge_y), str(hp), Color(0.6, 0.15, 0.15, 0.95), Color.WHITE)
 		
 		# Armor Badge
 		if armor > 0:
-			draw_rect(Rect2(pos + Vector2(2, badge_y), Vector2(16, 14)), Color(0.45, 0.5, 0.55, 0.95), true)
-			draw_string(font, pos + Vector2(5, badge_y + 11), str(armor), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
+			_draw_badge(font, pos + Vector2(12, badge_y), str(armor), Color(0.45, 0.5, 0.55, 0.95), Color.WHITE)
 			
 		# AP Badge (active only)
 		if unit.get("id", "") == active_unit_id:
-			var ap = unit.get("ap", 0)
-			draw_rect(Rect2(pos + Vector2(-8, -34), Vector2(16, 14)), Color(0.85, 0.65, 0.15, 0.95), true)
-			draw_string(font, pos + Vector2(-4, -34 + 11), str(ap), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.BLACK)
+			var ap = int(unit.get("ap", 0))
+			_draw_badge(font, pos + Vector2(0, -32), str(ap), Color(0.85, 0.65, 0.15, 0.95), Color.BLACK)
 			
 		# Status condition icon
 		var morale = unit.get("morale_state", "steady")
 		if morale == "breaking":
-			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_frightened", font, "!")
+			_draw_condition_icon(pos + Vector2(-28, -20), "icon_condition_frightened", font, "!")
 		elif morale == "wavering":
-			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_exposed", font, "?")
+			_draw_condition_icon(pos + Vector2(-28, -20), "icon_condition_exposed", font, "?")
 		elif unit.get("injuries", []).size() > 0:
-			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_bleeding", font, "+")
+			_draw_condition_icon(pos + Vector2(-28, -20), "icon_condition_bleeding", font, "+")
+
+func _draw_badge(font: Font, center_pos: Vector2, text: String, bg_color: Color, text_color: Color) -> void:
+	var text_size = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
+	var w = max(22.0, text_size.x + 8.0)
+	var h = 18.0
+	var rect = Rect2(center_pos - Vector2(w / 2.0, h / 2.0), Vector2(w, h))
+	draw_rect(rect, bg_color, true)
+	draw_string(font, center_pos + Vector2(-text_size.x / 2.0, text_size.y / 2.0 - 1), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, text_color)
 
 func _draw_condition_icon(icon_pos: Vector2, icon_id: String, font: Font, fallback_char: String) -> void:
 	var tex = null
 	if get("data") != null:
 		var asset = data.get_asset(icon_id)
-		if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
-			tex = load(asset["path"])
+		if not asset.is_empty() and asset.has("path"):
+			var path = asset["path"]
+			# Note: SVG loading in headless Godot without .import files is unreliable and produces white blocks.
+			# We only use ResourceLoader; if it fails (e.g. in headless CI), we intentionally fall back to procedural drawing.
+			if ResourceLoader.exists(path):
+				tex = load(path)
 			
 	if tex != null:
 		draw_texture_rect(tex, Rect2(icon_pos, Vector2(16, 16)), false)
