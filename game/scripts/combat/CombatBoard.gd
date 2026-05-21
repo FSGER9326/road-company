@@ -73,10 +73,13 @@ func _draw() -> void:
 			color = Color(0.62, 0.22, 0.18)
 		elif side == "objective":
 			color = Color(0.66, 0.50, 0.26)
+		# Highlights
 		if unit.get("id", "") == active_unit_id:
-			draw_circle(pos, 20, Color(0.96, 0.78, 0.28))
-		if unit.get("id", "") == selected_unit_id:
-			draw_circle(pos, 24, Color(0.84, 0.84, 0.76))
+			draw_circle(pos, 36, Color(0.96, 0.78, 0.28, 0.3))
+			draw_arc(pos, 36, 0, TAU, 32, Color(0.96, 0.78, 0.28), 3.0)
+		elif unit.get("id", "") == selected_unit_id:
+			draw_circle(pos, 32, Color(0.84, 0.84, 0.76, 0.3))
+			draw_arc(pos, 32, 0, TAU, 32, Color(0.84, 0.84, 0.76), 2.0)
 		
 		var texture = null
 		if get("data") != null:
@@ -90,14 +93,55 @@ func _draw() -> void:
 			var s = 64.0
 			draw_texture_rect(texture, Rect2(pos - Vector2(s/2.0, s/2.0), Vector2(s, s)), false)
 		else:
-			draw_circle(pos, 17, Color(0.025, 0.025, 0.02))
-			draw_circle(pos, 14, color)
+			draw_circle(pos, 19, Color(0.025, 0.025, 0.02))
+			if side == "objective":
+				draw_rect(Rect2(pos - Vector2(13, 13), Vector2(26, 26)), color)
+			else:
+				draw_circle(pos, 16, color)
 			var label = unit.get("abbr", unit.get("name", "?").left(2)).to_upper()
-			draw_string(font, pos + Vector2(-10, 5), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color.WHITE)
-		var bar_w = 32.0
-		var hp_ratio = float(unit.get("hp", 1)) / max(1.0, float(unit.get("max_hp", 1)))
-		draw_rect(Rect2(pos + Vector2(-16, 20), Vector2(bar_w, 4)), Color(0.12, 0.04, 0.04), true)
-		draw_rect(Rect2(pos + Vector2(-16, 20), Vector2(bar_w * hp_ratio, 4)), Color(0.64, 0.08, 0.08), true)
+			draw_string(font, pos + Vector2(-10, 5), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+			
+		# Badges
+		var badge_y = 20
+		var hp = unit.get("hp", 0)
+		var armor = int(unit.get("armor_body", 0)) + int(unit.get("armor_head", 0))
+		
+		# HP Badge
+		draw_rect(Rect2(pos + Vector2(-18, badge_y), Vector2(16, 14)), Color(0.6, 0.15, 0.15, 0.95), true)
+		draw_string(font, pos + Vector2(-15, badge_y + 11), str(hp), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
+		
+		# Armor Badge
+		if armor > 0:
+			draw_rect(Rect2(pos + Vector2(2, badge_y), Vector2(16, 14)), Color(0.45, 0.5, 0.55, 0.95), true)
+			draw_string(font, pos + Vector2(5, badge_y + 11), str(armor), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
+			
+		# AP Badge (active only)
+		if unit.get("id", "") == active_unit_id:
+			var ap = unit.get("ap", 0)
+			draw_rect(Rect2(pos + Vector2(-8, -34), Vector2(16, 14)), Color(0.85, 0.65, 0.15, 0.95), true)
+			draw_string(font, pos + Vector2(-4, -34 + 11), str(ap), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.BLACK)
+			
+		# Status condition icon
+		var morale = unit.get("morale_state", "steady")
+		if morale == "breaking":
+			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_frightened", font, "!")
+		elif morale == "wavering":
+			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_exposed", font, "?")
+		elif unit.get("injuries", []).size() > 0:
+			_draw_condition_icon(pos + Vector2(-24, -20), "icon_condition_bleeding", font, "+")
+
+func _draw_condition_icon(icon_pos: Vector2, icon_id: String, font: Font, fallback_char: String) -> void:
+	var tex = null
+	if get("data") != null:
+		var asset = data.get_asset(icon_id)
+		if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
+			tex = load(asset["path"])
+			
+	if tex != null:
+		draw_texture_rect(tex, Rect2(icon_pos, Vector2(16, 16)), false)
+	else:
+		draw_rect(Rect2(icon_pos, Vector2(14, 14)), Color(0.1, 0.1, 0.1, 0.8), true)
+		draw_string(font, icon_pos + Vector2(4, 11), fallback_char, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.RED)
 
 func hex_center(q: int, r: int) -> Vector2:
 	return origin + Vector2(HEX_SIZE * SQRT3 * (float(q) + float(r) * 0.5), HEX_SIZE * 1.5 * float(r))
@@ -129,3 +173,4 @@ func _cell_at(pos: Vector2) -> Dictionary:
 
 func _key(q: int, r: int) -> String:
 	return "%s,%s" % [q, r]
+
