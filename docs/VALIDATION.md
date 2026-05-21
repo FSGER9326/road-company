@@ -59,6 +59,7 @@ python tools/validate_data.py
 python tools/validate_factions.py
 python tools/validate_world.py
 python tools/validate_world_economy.py
+python tools/validate_settlement_factions.py
 python tools/validate_contracts.py
 python tools/validate_contract_generator.py
 python tools/validate_company.py
@@ -153,6 +154,20 @@ Targeted commands:
 ```powershell
 python tools/validate_contract_generator.py
 python -m unittest discover -s tools/tests -p test_contract_generator.py
+```
+
+## Settlement Faction Validation
+
+Settlement faction validation is covered by:
+
+- `tools/validate_settlement_factions.py`, which checks `data/world/settlement_factions.json`, settlement references, duplicate IDs, influence and attitude ranges, same-settlement rival references, known faction types, valid contract type preferences, and settlement-level derived faction state fields;
+- `tools/tests/test_settlement_factions.py`, which checks economy-driven influence shifts, contract success effects, rival attitude effects, deterministic dominance, tension, contract generator faction preferences, and validator failure cases.
+
+Targeted commands:
+
+```powershell
+python tools/validate_settlement_factions.py
+python -m unittest discover -s tools/tests -p test_settlement_factions.py
 ```
 
 ## Art Asset Validation

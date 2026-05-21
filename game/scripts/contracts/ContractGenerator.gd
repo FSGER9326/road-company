@@ -23,7 +23,8 @@ func generate_contracts(
 	existing_contracts: Array,
 	locations: Array,
 	factions: Array,
-	tick: int = 0
+	tick: int = 0,
+	internal_factions: Array = []
 ) -> Array:
 	var current_settlement = _settlement_by_id(settlement_economies, current_location)
 	if current_settlement.is_empty():
@@ -38,9 +39,9 @@ func generate_contracts(
 
 	var candidates = []
 	for settlement in settlement_candidates:
-		candidates.append_array(_settlement_candidates(current_location, settlement, connected_routes, route_links, locations, faction_reputation))
+		candidates.append_array(_settlement_candidates(current_location, settlement, connected_routes, route_links, locations, faction_reputation, internal_factions))
 	for route in connected_routes:
-		candidates.append_array(_route_candidates(current_location, route, settlement_economies, route_links, locations, faction_reputation))
+		candidates.append_array(_route_candidates(current_location, route, settlement_economies, route_links, locations, faction_reputation, internal_factions))
 
 	var filtered = []
 	for candidate in candidates:
@@ -69,7 +70,7 @@ func generate_contracts(
 		result.append(_build_contract(candidate, result.size() + 1, tick, locations, factions))
 	return result
 
-func _settlement_candidates(current_location: String, settlement: Dictionary, connected_routes: Array, route_links: Array, locations: Array, faction_reputation: Dictionary) -> Array:
+func _settlement_candidates(current_location: String, settlement: Dictionary, connected_routes: Array, route_links: Array, locations: Array, faction_reputation: Dictionary, internal_factions: Array = []) -> Array:
 	var candidates = []
 	var population = int(settlement.get("population", 10))
 	var weekly_food_need = max(1, int(ceil(float(population) / 250.0)))
@@ -79,19 +80,19 @@ func _settlement_candidates(current_location: String, settlement: Dictionary, co
 	var target_id = settlement.get("settlement_id", "")
 	var best_route = _best_route_for_settlement(current_location, target_id, connected_routes, route_links)
 	if food_weeks < 2.0:
-		candidates.append(_candidate("escort_caravan", current_location, target_id, best_route, 30.0 + (2.0 - food_weeks) * 15.0, "%s food stores are below two weeks" % target_id, {"food_weeks": food_weeks, "food_stock": settlement.get("food_stock", 0), "weekly_food_need": weekly_food_need}, faction_reputation))
+		candidates.append(_candidate("escort_caravan", current_location, target_id, best_route, 30.0 + (2.0 - food_weeks) * 15.0, "%s food stores are below two weeks" % target_id, {"food_weeks": food_weeks, "food_stock": settlement.get("food_stock", 0), "weekly_food_need": weekly_food_need}, faction_reputation, internal_factions))
 	if medicine_ratio < 1.0:
-		candidates.append(_candidate("deliver_medicine", current_location, target_id, best_route, 30.0 + (1.0 - medicine_ratio) * 25.0, "%s medicine stock is below need" % target_id, {"medicine_ratio": medicine_ratio, "medicine_stock": settlement.get("medicine_stock", 0), "medicine_need": int(ceil(medicine_need))}, faction_reputation))
+		candidates.append(_candidate("deliver_medicine", current_location, target_id, best_route, 30.0 + (1.0 - medicine_ratio) * 25.0, "%s medicine stock is below need" % target_id, {"medicine_ratio": medicine_ratio, "medicine_stock": settlement.get("medicine_stock", 0), "medicine_need": int(ceil(medicine_need))}, faction_reputation, internal_factions))
 	if int(settlement.get("trade_access", 0)) < 30:
-		candidates.append(_candidate("escort_caravan", current_location, target_id, best_route, 18.0 + float(30 - int(settlement.get("trade_access", 0))), "%s trade access is low" % target_id, {"trade_access": settlement.get("trade_access", 0)}, faction_reputation))
-		candidates.append(_candidate("recover_wagon", current_location, target_id, best_route, 15.0 + float(30 - int(settlement.get("trade_access", 0))), "%s trade access points to missing cargo" % target_id, {"trade_access": settlement.get("trade_access", 0)}, faction_reputation))
+		candidates.append(_candidate("escort_caravan", current_location, target_id, best_route, 18.0 + float(30 - int(settlement.get("trade_access", 0))), "%s trade access is low" % target_id, {"trade_access": settlement.get("trade_access", 0)}, faction_reputation, internal_factions))
+		candidates.append(_candidate("recover_wagon", current_location, target_id, best_route, 15.0 + float(30 - int(settlement.get("trade_access", 0))), "%s trade access points to missing cargo" % target_id, {"trade_access": settlement.get("trade_access", 0)}, faction_reputation, internal_factions))
 	if int(settlement.get("security", 0)) < 35:
-		candidates.append(_candidate("defend_settlement", current_location, target_id, best_route, 25.0 + float(35 - int(settlement.get("security", 0))), "%s security is low" % target_id, {"security": settlement.get("security", 0)}, faction_reputation))
+		candidates.append(_candidate("defend_settlement", current_location, target_id, best_route, 25.0 + float(35 - int(settlement.get("security", 0))), "%s security is low" % target_id, {"security": settlement.get("security", 0)}, faction_reputation, internal_factions))
 	if int(settlement.get("unrest", 0)) > 50:
-		candidates.append(_candidate("bounty_target", current_location, target_id, best_route, 20.0 + float(int(settlement.get("unrest", 0)) - 50), "%s unrest is high" % target_id, {"unrest": settlement.get("unrest", 0)}, faction_reputation))
+		candidates.append(_candidate("bounty_target", current_location, target_id, best_route, 20.0 + float(int(settlement.get("unrest", 0)) - 50), "%s unrest is high" % target_id, {"unrest": settlement.get("unrest", 0)}, faction_reputation, internal_factions))
 	return candidates
 
-func _route_candidates(current_location: String, route: Dictionary, settlement_economies: Array, route_links: Array, locations: Array, faction_reputation: Dictionary) -> Array:
+func _route_candidates(current_location: String, route: Dictionary, settlement_economies: Array, route_links: Array, locations: Array, faction_reputation: Dictionary, internal_factions: Array = []) -> Array:
 	var candidates = []
 	var route_id = route.get("route_id", "")
 	var link = _route_link(route_links, route_id)
@@ -99,32 +100,35 @@ func _route_candidates(current_location: String, route: Dictionary, settlement_e
 	var danger = int(route.get("danger", 0))
 	var bandits = int(route.get("bandit_pressure", 0))
 	if danger > 40:
-		candidates.append(_candidate("patrol_route", current_location, target_id, route, 25.0 + float(danger - 40), "%s danger is high" % route_id, {"route.danger": danger}, faction_reputation))
-		candidates.append(_candidate("escort_caravan", current_location, target_id, route, 15.0 + float(danger - 40) * 0.5, "%s needs guarded caravans" % route_id, {"route.danger": danger}, faction_reputation))
+		candidates.append(_candidate("patrol_route", current_location, target_id, route, 25.0 + float(danger - 40), "%s danger is high" % route_id, {"route.danger": danger}, faction_reputation, internal_factions))
+		candidates.append(_candidate("escort_caravan", current_location, target_id, route, 15.0 + float(danger - 40) * 0.5, "%s needs guarded caravans" % route_id, {"route.danger": danger}, faction_reputation, internal_factions))
 	if bool(route.get("blocked", false)):
-		candidates.append(_candidate("patrol_route", current_location, target_id, route, 45.0, "%s is blocked" % route_id, {"route.blocked": true}, faction_reputation))
+		candidates.append(_candidate("patrol_route", current_location, target_id, route, 45.0, "%s is blocked" % route_id, {"route.blocked": true}, faction_reputation, internal_factions))
 	if bandits > 40:
-		candidates.append(_candidate("patrol_route", current_location, target_id, route, 25.0 + float(bandits - 40), "%s bandit pressure is high" % route_id, {"route.bandit_pressure": bandits}, faction_reputation))
+		candidates.append(_candidate("patrol_route", current_location, target_id, route, 25.0 + float(bandits - 40), "%s bandit pressure is high" % route_id, {"route.bandit_pressure": bandits}, faction_reputation, internal_factions))
 	if bandits > 55:
-		candidates.append(_candidate("hunt_bandits", current_location, target_id, route, 35.0 + float(bandits - 55), "%s bandits are organized" % route_id, {"route.bandit_pressure": bandits}, faction_reputation))
+		candidates.append(_candidate("hunt_bandits", current_location, target_id, route, 35.0 + float(bandits - 55), "%s bandits are organized" % route_id, {"route.bandit_pressure": bandits}, faction_reputation, internal_factions))
 	else:
-		candidates.append(_candidate("hunt_bandits", current_location, target_id, route, max(0.0, float(bandits - 40)), "%s bandits are active" % route_id, {"route.bandit_pressure": bandits}, faction_reputation))
+		candidates.append(_candidate("hunt_bandits", current_location, target_id, route, max(0.0, float(bandits - 40)), "%s bandits are active" % route_id, {"route.bandit_pressure": bandits}, faction_reputation, internal_factions))
 	if int(route.get("traffic", 0)) > 30 and danger > 50:
-		candidates.append(_candidate("recover_wagon", current_location, target_id, route, 20.0 + float(danger - 50), "%s has traffic and frequent losses" % route_id, {"route.traffic": route.get("traffic", 0), "route.danger": danger}, faction_reputation))
+		candidates.append(_candidate("recover_wagon", current_location, target_id, route, 20.0 + float(danger - 50), "%s has traffic and frequent losses" % route_id, {"route.traffic": route.get("traffic", 0), "route.danger": danger}, faction_reputation, internal_factions))
 	if int(route.get("monster_pressure", 0)) > 30:
-		candidates.append(_candidate("defend_settlement", current_location, target_id, route, 20.0 + float(int(route.get("monster_pressure", 0)) - 30), "%s has monster pressure near settlements" % route_id, {"route.monster_pressure": route.get("monster_pressure", 0)}, faction_reputation))
+		candidates.append(_candidate("defend_settlement", current_location, target_id, route, 20.0 + float(int(route.get("monster_pressure", 0)) - 30), "%s has monster pressure near settlements" % route_id, {"route.monster_pressure": route.get("monster_pressure", 0)}, faction_reputation, internal_factions))
 	return candidates
 
-func _candidate(contract_type: String, origin: String, target: String, route: Dictionary, score: float, reason: String, trigger_fields: Dictionary, faction_reputation: Dictionary) -> Dictionary:
+func _candidate(contract_type: String, origin: String, target: String, route: Dictionary, score: float, reason: String, trigger_fields: Dictionary, faction_reputation: Dictionary, internal_factions: Array = []) -> Dictionary:
+	var preference = _internal_faction_preference(target if not target.is_empty() else origin, contract_type, internal_factions)
 	return {
 		"type": contract_type,
 		"origin_location": origin,
 		"target_location": target if not target.is_empty() else origin,
 		"target_route": route.get("route_id", ""),
 		"route": route,
-		"score": score + float(_deterministic_jitter(contract_type, origin, target, route.get("route_id", ""))) / 100.0,
+		"score": score * float(preference.get("score_multiplier", 1.0)) + float(_deterministic_jitter(contract_type, origin, target, route.get("route_id", ""))) / 100.0,
 		"reason": reason,
-		"trigger_fields": trigger_fields
+		"trigger_fields": trigger_fields,
+		"internal_patron_faction": preference.get("internal_patron_faction", ""),
+		"internal_reward_multiplier": preference.get("reward_multiplier", 1.0)
 	}
 
 func _build_contract(candidate: Dictionary, index: int, tick: int, locations: Array, factions: Array) -> Dictionary:
@@ -139,7 +143,7 @@ func _build_contract(candidate: Dictionary, index: int, tick: int, locations: Ar
 	var urgency = _calculate_urgency(float(candidate.get("score", 0.0)))
 	var danger = _calculate_danger(_settlement_stub(target_id), route)
 	var prosperity = int(target_location.get("prosperity", 50))
-	var reward_crowns = _calculate_reward(int(defaults_for_type.get("base_crowns", 250)), danger, urgency, route_days, prosperity)
+	var reward_crowns = _clamp_int(int(round(float(_calculate_reward(int(defaults_for_type.get("base_crowns", 250)), danger, urgency, route_days, prosperity)) * float(candidate.get("internal_reward_multiplier", 1.0)))), 50, 5000)
 	var reward_renown = _clamp_int(int(round(float(defaults_for_type.get("base_renown", 8)) * (0.8 + float(urgency) * 0.05) * (0.8 + float(route_days) * 0.05))), 2, 50)
 	var patron_faction = _pick_patron_faction(target_location, origin_location)
 	var route_success = defaults_for_type.get("route_effects_success", {}).duplicate(true)
@@ -156,6 +160,7 @@ func _build_contract(candidate: Dictionary, index: int, tick: int, locations: Ar
 		"title": str(defaults_for_type.get("title_template", contract_type)).format(vars),
 		"type": contract_type,
 		"patron_faction": patron_faction,
+		"internal_patron_faction": candidate.get("internal_patron_faction", ""),
 		"origin_location": origin_id,
 		"target_location": target_id,
 		"target_route": route.get("route_id", ""),
@@ -182,6 +187,7 @@ func _build_contract(candidate: Dictionary, index: int, tick: int, locations: Ar
 		"generated_from": {
 			"world_state_reason": candidate.get("reason", ""),
 			"trigger_fields": candidate.get("trigger_fields", {}),
+			"internal_faction_preference": candidate.get("internal_patron_faction", ""),
 			"seed_offset": _deterministic_jitter(contract_type, origin_id, target_id, route.get("route_id", ""))
 		},
 		"expires_after_days": _expires_after(urgency, danger),
@@ -300,6 +306,37 @@ func _route_days(route_id: String) -> int:
 func _settlement_stub(settlement_id: String) -> Dictionary:
 	return {"settlement_id": settlement_id, "security": 50, "unrest": 0}
 
+func _internal_faction_preference(settlement_id: String, contract_type: String, internal_factions: Array) -> Dictionary:
+	var dominant = _dominant_internal_faction(settlement_id, internal_factions)
+	if dominant.is_empty():
+		return {"score_multiplier": 1.0, "reward_multiplier": 1.0, "internal_patron_faction": ""}
+	var score_multiplier = 1.0
+	if dominant.get("supported_contract_types", []).has(contract_type):
+		score_multiplier = 1.3
+	elif dominant.get("opposed_contract_types", []).has(contract_type):
+		score_multiplier = 0.7
+	return {
+		"score_multiplier": score_multiplier,
+		"reward_multiplier": _clamp_float(1.0 + float(dominant.get("attitude_to_company", 0)) / 200.0, 0.5, 1.5),
+		"internal_patron_faction": dominant.get("id", "")
+	}
+
+func _dominant_internal_faction(settlement_id: String, internal_factions: Array) -> Dictionary:
+	var type_priority = {"ruling_authority": 0, "merchant_guild": 1, "militia_command": 2, "temple_chapter": 3, "criminal_network": 4, "peasant_commons": 5}
+	var dominant = {}
+	for faction in internal_factions:
+		if faction.get("settlement_id", "") != settlement_id:
+			continue
+		if dominant.is_empty():
+			dominant = faction
+			continue
+		if int(faction.get("influence", 0)) > int(dominant.get("influence", 0)):
+			dominant = faction
+		elif int(faction.get("influence", 0)) == int(dominant.get("influence", 0)):
+			if int(type_priority.get(faction.get("type", ""), 99)) < int(type_priority.get(dominant.get("type", ""), 99)):
+				dominant = faction
+	return dominant
+
 func _deterministic_jitter(contract_type: String, origin: String, target: String, route_id: String) -> int:
 	var text = "%s|%s|%s|%s|%s" % [generator_seed, contract_type, origin, target, route_id]
 	var value = 0
@@ -308,4 +345,7 @@ func _deterministic_jitter(contract_type: String, origin: String, target: String
 	return value
 
 func _clamp_int(value: int, min_value: int, max_value: int) -> int:
+	return min(max_value, max(min_value, value))
+
+func _clamp_float(value: float, min_value: float, max_value: float) -> float:
 	return min(max_value, max(min_value, value))

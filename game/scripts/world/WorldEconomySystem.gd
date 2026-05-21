@@ -2,18 +2,21 @@ extends RefCounted
 class_name WorldEconomySystem
 
 const RouteDynamicsSystemScript = preload("res://game/scripts/world/RouteDynamicsSystem.gd")
+const SettlementFactionSystemScript = preload("res://game/scripts/world/SettlementFactionSystem.gd")
 const MIN_POPULATION = 10
 const MAX_POPULATION = 50000
 
-func weekly_tick(settlements: Array, routes: Array, route_links: Array = [], current_tick: int = 0) -> Dictionary:
+func weekly_tick(settlements: Array, routes: Array, route_links: Array = [], current_tick: int = 0, settlement_factions: Array = []) -> Dictionary:
 	var settlement_updates = []
 	var route_updates = []
 	var route_dynamics = RouteDynamicsSystemScript.new()
+	var faction_system = SettlementFactionSystemScript.new()
+	faction_system.configure(settlement_factions)
 	for route in routes:
 		route_updates.append(_tick_route(route, route_dynamics, current_tick))
 	for settlement in settlements:
 		var connected = _connected_route_economies(settlement.get("settlement_id", ""), routes, route_links)
-		settlement_updates.append(_tick_settlement(settlement, connected, route_dynamics))
+		settlement_updates.append(_tick_settlement(settlement, connected, route_dynamics, faction_system, current_tick))
 	return {
 		"settlements": settlement_updates,
 		"routes": route_updates
@@ -45,7 +48,7 @@ func _tick_route(route: Dictionary, route_dynamics, current_tick: int) -> Dictio
 		"after": route.duplicate(true)
 	}
 
-func _tick_settlement(settlement: Dictionary, connected_routes: Array, route_dynamics = null) -> Dictionary:
+func _tick_settlement(settlement: Dictionary, connected_routes: Array, route_dynamics = null, faction_system = null, current_tick: int = 0) -> Dictionary:
 	var before = settlement.duplicate(true)
 	var population = _clamp_int(int(settlement.get("population", MIN_POPULATION)), MIN_POPULATION, MAX_POPULATION)
 	var weekly_food_need = max(1, int(ceil(float(population) / 250.0)))
@@ -94,6 +97,9 @@ func _tick_settlement(settlement: Dictionary, connected_routes: Array, route_dyn
 	settlement["market_tier"] = _market_tier(int(settlement.get("population", MIN_POPULATION)), int(settlement.get("prosperity", 0)))
 	settlement["recruitment_pool_quality"] = _clamp_int(int(round((int(settlement.get("prosperity", 0)) + int(settlement.get("security", 0)) - int(settlement.get("unrest", 0)) * 0.5) / 2.0)), 0, 100)
 	_clamp_stock_fields(settlement)
+	var faction_result = {}
+	if faction_system != null:
+		faction_result = faction_system.weekly_tick(settlement, current_tick, settlement.get("_pending_contract_results", []))
 
 	return {
 		"settlement_id": settlement.get("settlement_id", ""),
@@ -104,7 +110,8 @@ func _tick_settlement(settlement: Dictionary, connected_routes: Array, route_dyn
 		"trade_delta": route_trade_delta,
 		"prosperity_delta": int(settlement.get("prosperity", 0)) - int(before.get("prosperity", 0)),
 		"unrest_delta": int(settlement.get("unrest", 0)) - int(before.get("unrest", 0)),
-		"population_delta": int(settlement.get("population", 0)) - int(before.get("population", 0))
+		"population_delta": int(settlement.get("population", 0)) - int(before.get("population", 0)),
+		"faction_result": faction_result
 	}
 
 func _route_trade_delta(connected_routes: Array) -> int:

@@ -4,6 +4,8 @@ import copy
 import math
 from typing import Any
 
+from settlement_factions_core import preference_for_contract
+
 CONTRACT_TYPES = {
     "escort_caravan",
     "patrol_route",
@@ -31,8 +33,9 @@ def generate_contracts(
     defaults: list[dict[str, Any]],
     seed: int = 12345,
     tick: int = 0,
+    internal_factions: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    generator = ContractGenerator(defaults, seed)
+    generator = ContractGenerator(defaults, seed, internal_factions or [])
     return generator.generate_contracts(
         current_location,
         settlement_economies,
@@ -47,10 +50,11 @@ def generate_contracts(
 
 
 class ContractGenerator:
-    def __init__(self, defaults: list[dict[str, Any]], seed: int = 12345) -> None:
+    def __init__(self, defaults: list[dict[str, Any]], seed: int = 12345, internal_factions: list[dict[str, Any]] | None = None) -> None:
         self.defaults = copy.deepcopy(defaults)
         self.defaults_by_type = {item.get("type", ""): item for item in self.defaults}
         self.seed = seed
+        self.internal_factions = copy.deepcopy(internal_factions or [])
 
     def generate_contracts(
         self,
@@ -237,15 +241,19 @@ class ContractGenerator:
         reason: str,
         trigger_fields: dict[str, Any],
     ) -> dict[str, Any]:
+        preference = preference_for_contract(target or origin, contract_type, self.internal_factions)
         return {
             "type": contract_type,
             "origin_location": origin,
             "target_location": target or origin,
             "target_route": route.get("route_id", ""),
             "route": route,
-            "score": score + self._deterministic_jitter(contract_type, origin, target, str(route.get("route_id", ""))) / 100.0,
+            "base_score": score,
+            "score": score * float(preference.get("score_multiplier", 1.0)) + self._deterministic_jitter(contract_type, origin, target, str(route.get("route_id", ""))) / 100.0,
             "reason": reason,
             "trigger_fields": trigger_fields,
+            "internal_patron_faction": preference.get("internal_patron_faction", ""),
+            "internal_reward_multiplier": preference.get("reward_multiplier", 1.0),
         }
 
     def _build_contract(
@@ -266,7 +274,7 @@ class ContractGenerator:
         route_days = max(1, int(self._route_link(route_links, route.get("route_id", "")).get("days", 2)))
         urgency = clamp(math.ceil(float(candidate.get("score", 0.0)) / 20.0), 1, 5)
         danger = self._calculate_danger(candidate, route)
-        reward_crowns = self._calculate_reward(int(defaults.get("base_crowns", 250)), danger, urgency, route_days)
+        reward_crowns = clamp(round(self._calculate_reward(int(defaults.get("base_crowns", 250)), danger, urgency, route_days) * float(candidate.get("internal_reward_multiplier", 1.0))), 50, 5000)
         reward_renown = clamp(round(float(defaults.get("base_renown", 8)) * (0.8 + urgency * 0.05) * (0.8 + route_days * 0.05)), 2, 50)
         patron_faction = self._pick_patron_faction(target_location, origin_location)
         route_success = copy.deepcopy(defaults.get("route_effects_success", {}))
@@ -282,6 +290,7 @@ class ContractGenerator:
             "title": str(defaults.get("title_template", contract_type)).format(**format_vars),
             "type": contract_type,
             "patron_faction": patron_faction,
+            "internal_patron_faction": candidate.get("internal_patron_faction", ""),
             "origin_location": origin_id,
             "target_location": target_id,
             "target_route": route.get("route_id", ""),
@@ -308,6 +317,7 @@ class ContractGenerator:
             "generated_from": {
                 "world_state_reason": candidate.get("reason", ""),
                 "trigger_fields": candidate.get("trigger_fields", {}),
+                "internal_faction_preference": candidate.get("internal_patron_faction", ""),
                 "seed_offset": self._deterministic_jitter(contract_type, origin_id, target_id, str(route.get("route_id", ""))),
                 "tick": tick,
             },
