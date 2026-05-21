@@ -2,6 +2,39 @@
 
 ROAD COMPANY is designed so coding agents can verify the core loop without manual clicking. Keep changes small, deterministic, and data-first.
 
+## Latest Main Status
+
+- Contract generator v1 merged into `main`.
+- Settlement factions v1 spec merged into `main` as docs/schema/prompt only.
+- Settlement factions runtime implementation is intentionally deferred.
+- MiniMax/Qwen branches remain unmerged.
+
+Commands run:
+
+```powershell
+python tools/run_all_tests.py
+git push
+git merge --no-ff spec/deepseek-settlement-factions-v1 -m "docs: merge settlement factions v1 spec"
+python tools/run_all_tests.py
+git push
+```
+
+Results:
+
+- Contract generator merge test: PASS.
+- Settlement factions spec merge test: PASS.
+- Pure Python tests: 50 passed.
+- Godot headless: PASS through `.godot/bin/Godot_v4.6.2-stable_win64.exe`.
+- Skipped tests: none.
+
+Known limitations:
+
+- Generated contract boards are deterministic but not persisted.
+- Settlement factions are spec-only; no runtime faction influence tick exists yet.
+- Generated contract board UX is minimal debug-facing text.
+
+Next recommended task: `feature/settlement-factions-v1`.
+
 ## Contract Generator V1 Handoff
 
 - Branch: `feature/contract-generator-v1`.
