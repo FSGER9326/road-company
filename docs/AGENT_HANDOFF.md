@@ -41,3 +41,19 @@ Prefer adding testable logic to:
 - `game/scripts/core/AutoplaySmoke.gd`
 
 UI screens should call those systems instead of duplicating rule logic.
+
+## Docs-Only DeepSeek Integration
+
+- Integration branch: `integration/deepseek-docs-only`
+- DeepSeek docs imported:
+  - `docs/AGENT_HANDOFF_DEEPSEEK.md`
+  - `docs/agent_implementation_roadmap.md`
+  - `docs/combat_design_battlebrothers_plus_dnd.md`
+  - `docs/data_schema_plan.md`
+  - `docs/economy_trade_growth_design.md`
+  - `docs/emergent_story_design.md`
+  - `docs/faction_settlement_design.md`
+  - `docs/world_simulation_design.md`
+- Runtime changes from `design/deepseek-world-systems` were intentionally not imported.
+- Test harness changes from `design/deepseek-world-systems` were intentionally not imported.
+- Validation result on this branch: `python tools/run_all_tests.py` passed, including Godot headless tests through the local `.godot/bin` executable.
