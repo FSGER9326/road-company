@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "World State Schema Draft",
+  "description": "Draft schema for ROAD COMPANY world state entities",
+  "definitions": {
+    "nation": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "color": {"type": "string"},
+        "government_type": {"type": "string", "enum": ["monarchy", "oligarchy", "republic", "theocracy", "tribal", "anarchy"]},
+        "capital_settlement_id": {"type": "string"},
+        "controlling_faction_id": {"type": "string"},
+        "stability": {"type": "number", "minimum": 0, "maximum": 100},
+        "military_strength": {"type": "number"},
+        "treasury": {"type": "number"},
+        "relationships": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        },
+        "active_crises": {"type": "array", "items": {"type": "string"}},
+        "control_ceded_to": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "region": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "nation_id": {"type": "string"},
+        "terrain_type": {"type": "string", "enum": ["plains", "forest", "mountains", "swamp", "desert", "coastal", "hills", "tundra"]},
+        "settlement_ids": {"type": "array", "items": {"type": "string"}},
+        "route_ids": {"type": "array", "items": {"type": "string"}},
+        "site_ids": {"type": "array", "items": {"type": "string"}},
+        "danger_level": {"type": "number", "minimum": 0, "maximum": 100},
+        "resources": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "settlement": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "region_id": {"type": "string"},
+        "settlement_type": {"type": "string", "enum": ["village", "town", "city", "fortress", "refugee_camp", "trading_post", "holy_site"]},
+        "population": {"type": "integer"},
+        "prosperity": {"type": "number", "minimum": 0, "maximum": 100},
+        "security": {"type": "number", "minimum": 0, "maximum": 100},
+        "food_stock": {"type": "number"},
+        "medicine_stock": {"type": "number"},
+        "tools_stock": {"type": "number"},
+        "arms_stock": {"type": "number"},
+        "unrest": {"type": "number", "minimum": 0, "maximum": 100},
+        "corruption": {"type": "number", "minimum": 0, "maximum": 100},
+        "trade_access": {"type": "number", "minimum": 0, "maximum": 100},
+        "market_tier": {"type": "integer", "minimum": 1, "maximum": 5},
+        "recruitment_pool": {"type": "number", "minimum": 0, "maximum": 100},
+        "faction_pressure": {"type": "number", "minimum": 0, "maximum": 100},
+        "crisis_pressure": {"type": "number", "minimum": 0, "maximum": 100},
+        "internal_faction_ids": {"type": "array", "items": {"type": "string"}},
+        "status_effects": {"type": "array", "items": {"$ref": "#/definitions/settlement_status_effect"}},
+        "connected_route_ids": {"type": "array", "items": {"type": "string"}},
+        "patron_available": {"type": "boolean"},
+        "last_visited_tick": {"type": "integer"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "region_id": {"type": "string"},
+        "start_settlement_id": {"type": "string"},
+        "end_settlement_id": {"type": "string"},
+        "distance_hexes": {"type": "integer"},
+        "route_type": {"type": "string", "enum": ["road", "trail", "river", "sea", "mountain_pass"]},
+        "danger_level": {"type": "number", "minimum": 0, "maximum": 100},
+        "patrol_coverage": {"type": "number", "minimum": 0, "maximum": 100},
+        "bandit_activity": {"type": "number", "minimum": 0, "maximum": 100},
+        "blockaded": {"type": "boolean"},
+        "patrol_contract_active": {"type": "boolean"},
+        "escort_contract_active": {"type": "boolean"},
+        "last_traveled_tick": {"type": "integer"}
+      }
+    },
+    "site": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "region_id": {"type": "string"},
+        "site_type": {"type": "string", "enum": ["ruins", "cave", "lair", "shrine", "camp", "mine", "lumber_camp", "abandoned_settlement", "battlefield", "dungeon"]},
+        "danger_level": {"type": "number", "minimum": 0, "maximum": 100},
+        "cleared": {"type": "boolean"},
+        "loot_value": {"type": "number"},
+        "hostile_type": {"type": "string"},
+        "active_mission": {"type": "string"},
+        "connected_route_id": {"type": "string"}
+      }
+    },
+    "internal_faction": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "settlement_id": {"type": "string"},
+        "name": {"type": "string"},
+        "faction_type": {"type": "string", "enum": ["guild", "cult", "noble_house", "military", "religious", "criminal", "trader_caste"]},
+        "influence": {"type": "number", "minimum": 0, "maximum": 100},
+        "leader_name": {"type": "string"},
+        "agenda": {"type": "string"},
+        "conflicts_with": {"type": "array", "items": {"type": "string"}},
+        "allies_with": {"type": "array", "items": {"type": "string"}},
+        "treasury": {"type": "number"},
+        "member_count": {"type": "integer"}
+      }
+    },
+    "trade_good": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "category": {"type": "string", "enum": ["food", "material", "luxury", "contraband", "military", "religious"]},
+        "base_price": {"type": "number"},
+        "produced_in": {"type": "array", "items": {"type": "string"}},
+        "consumed_in": {"type": "array", "items": {"type": "string"}},
+        "trade_weight": {"type": "number"},
+        "perishable": {"type": "boolean"}
+      }
+    },
+    "settlement_status_effect": {
+      "type": "object",
+      "properties": {
+        "effect_id": {"type": "string"},
+        "name": {"type": "string"},
+        "source": {"type": "string"},
+        "ticks_remaining": {"type": "integer"},
+        "severity": {"type": "number", "minimum": 1, "maximum": 10},
+        "modifiers": {
+          "type": "object",
+          "properties": {
+            "prosperity_mult": {"type": "number"},
+            "security_mult": {"type": "number"},
+            "unrest_add": {"type": "number"},
+            "trade_access_mult": {"type": "number"},
+            "recruitment_mult": {"type": "number"}
+          }
+        }
+      }
+    },
+    "world_memory_entry": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "tick": {"type": "integer"},
+        "category": {"type": "string", "enum": ["battle", "contract", "discovery", "political", "crisis", "trade", "travel", "companion", "settlement_event"]},
+        "title": {"type": "string"},
+        "summary": {"type": "string"},
+        "entities_involved": {"type": "array", "items": {"type": "string"}},
+        "settlement_effects": {"type": "array", "items": {"type": "string"}},
+        "faction_effects": {"type": "object"},
+        "route_effects": {"type": "array", "items": {"type": "string"}},
+        "companion_involved": {"type": "array", "items": {"type": "string"}},
+        "significance": {"type": "string", "enum": ["minor", "major", "critical"]},
+        "discoverable_via_rumor": {"type": "boolean"},
+        "rumor_text": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,1385 @@
+{
+  "event_templates": [
+    {
+      "id": "road_event_001",
+      "category": "road",
+      "title": "The Beggar's Warning",
+      "trigger_conditions": {"route_danger": [30, 60], "time_of_day": "any"},
+      "visible_text_summary": "A ragged beggar blocks your path, warning of danger ahead.",
+      "choices": [
+        {
+          "label": "Listen to the warning",
+          "requirements": {},
+          "effects": {"route_danger": -10, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["beggar_encounter"]
+        },
+        {
+          "label": "Ignore and continue",
+          "requirements": {},
+          "effects": {"route_danger": 0},
+          "risk": "medium",
+          "followup_tags": ["potential_ambush"]
+        },
+        {
+          "label": "Give alms and ask details",
+          "requirements": {"currency": 5},
+          "effects": {"route_danger": -15, "currency": -5, "tick": 1},
+          "risk": "none",
+          "followup_tags": ["beggar_encounter", "detailed_intel"]
+        }
+      ],
+      "mechanical_effects": {"route_danger_modifier": -5},
+      "followup_tags": ["beggar", "warning", "road_safety"],
+      "cooldown_days": 7,
+      "weight": 40
+    },
+    {
+      "id": "road_event_002",
+      "category": "road",
+      "title": "The Abandoned Cart",
+      "trigger_conditions": {"route_type": ["road", "trail"], "route_danger": [20, 80]},
+      "visible_text_summary": "A merchant cart sits abandoned on the road. Signs of struggle nearby.",
+      "choices": [
+        {
+          "label": "Investigate thoroughly",
+          "requirements": {"time": 2},
+          "effects": {"potential_loot": true, "tick": 2},
+          "risk": "medium",
+          "followup_tags": ["potential_trap", "potential_goods"]
+        },
+        {
+          "label": "Quick salvage only",
+          "requirements": {},
+          "effects": {"potential_loot_small": true, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["salvage"]
+        },
+        {
+          "label": "Pass by carefully",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"potential_encounter": "bandit_ambush"},
+      "followup_tags": ["abandoned_cart", "merchant", "ambush_site"],
+      "cooldown_days": 14,
+      "weight": 35
+    },
+    {
+      "id": "road_event_003",
+      "category": "road",
+      "title": "The Crying Child",
+      "trigger_conditions": {"time_of_day": "night", "settlement_within_6_hexes": true},
+      "visible_text_summary": "You hear a child crying near the road. Could be a trap.",
+      "choices": [
+        {
+          "label": "Investigate alone",
+          "requirements": {"companion_count": 1},
+          "effects": {"companion_onehp_loss_possible": true},
+          "risk": "high",
+          "followup_tags": ["child_in_danger", "possible_trap"]
+        },
+        {
+          "label": "Full party approach",
+          "requirements": {},
+          "effects": {"tick": 1},
+          "risk": "medium",
+          "followup_tags": ["lost_child", "or_trap"]
+        },
+        {
+          "label": "Continue on road",
+          "requirements": {},
+          "effects": {"morale": -3},
+          "risk": "none",
+          "followup_tags": ["guilt_later"]
+        }
+      ],
+      "mechanical_effects": {"morale_check": true},
+      "followup_tags": ["child", "emotional_encounter", "road_safety"],
+      "cooldown_days": 21,
+      "weight": 25
+    },
+    {
+      "id": "road_event_004",
+      "category": "road",
+      "title": "The Crossroads Oracle",
+      "trigger_conditions": {"settlement_within_8_hexes": true, "companion_occult_knowledge": true},
+      "visible_text_summary": "An old figure at the crossroads offers fortunes for those who dare hear.",
+      "choices": [
+        {
+          "label": "Have fortune read",
+          "requirements": {"currency": 15},
+          "effects": {"currency": -15, "wisdom_gain": true, "tick": 1},
+          "risk": "medium",
+          "followup_tags": ["fortune_reading", "prophecy"]
+        },
+        {
+          "label": "Ask about road ahead",
+          "requirements": {},
+          "effects": {"route_danger_revealed": true},
+          "risk": "low",
+          "followup_tags": ["oracle_info"]
+        },
+        {
+          "label": "Decline politely",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"buff_possible": "fortune_blessing"},
+      "followup_tags": ["oracle", "supernatural", "prophecy"],
+      "cooldown_days": 30,
+      "weight": 20
+    },
+    {
+      "id": "road_event_005",
+      "category": "road",
+      "title": "The Overturned Noble's Carriage",
+      "trigger_conditions": {"route_type": ["road"], "route_danger": [0, 50]},
+      "visible_text_summary": "A noble's carriage lies overturned. The noble appears injured and desperate.",
+      "choices": [
+        {
+          "label": "Help and escort to town",
+          "requirements": {},
+          "effects": {"noble_reputation": 10, "tick": 2, "companion_hp_loss_possible": true},
+          "risk": "medium",
+          "followup_tags": ["noble_gratitude", "potential_reward"]
+        },
+        {
+          "label": "Offer medical aid only",
+          "requirements": {"companion_medicine_skill": true},
+          "effects": {"noble_reputation": 5, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["medical_aid"]
+        },
+        {
+          "label": "Search the carriage",
+          "requirements": {},
+          "effects": {"potential_loot": true, "noble_reputation": -20},
+          "risk": "low",
+          "followup_tags": ["looting", "theft"]
+        },
+        {
+          "label": "Pass by",
+          "requirements": {},
+          "effects": {"noble_reputation": -5, "morale": -2},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"reputation_check": "noble_faction"},
+      "followup_tags": ["noble", "injured", "carriage"],
+      "cooldown_days": 21,
+      "weight": 30
+    },
+    {
+      "id": "road_event_006",
+      "category": "road",
+      "title": "The Ravenous Wolves",
+      "trigger_conditions": {"terrain_type": ["forest", "hills"], "route_danger": [40, 80]},
+      "visible_text_summary": "A pack of wolves blocks the path, hunger in their eyes.",
+      "choices": [
+        {
+          "label": "Fight through",
+          "requirements": {},
+          "effects": {"encounter_triggered": "wolf_pack", "companion_hp_loss": true},
+          "risk": "high",
+          "followup_tags": ["wolf_encounter"]
+        },
+        {
+          "label": "Throw meat and retreat",
+          "requirements": {"food_stock": 10},
+          "effects": {"food_stock": -10, "route_danger": 0},
+          "risk": "medium",
+          "followup_tags": ["wolf_pack_scattered"]
+        },
+        {
+          "label": "Form wall and advance slowly",
+          "requirements": {},
+          "effects": {"tick": 2, "route_danger": -5},
+          "risk": "low",
+          "followup_tags": ["wolf_standoff"]
+        }
+      ],
+      "mechanical_effects": {"encounter_possible": true, "terrain_affected": true},
+      "followup_tags": ["wolves", "predators", "terrain_danger"],
+      "cooldown_days": 14,
+      "weight": 45
+    },
+    {
+      "id": "road_event_007",
+      "category": "road",
+      "title": "The Merchant's Desperate Offer",
+      "trigger_conditions": {"route_danger": [50, 100], "merchant_encounter": true},
+      "visible_text_summary": "A desperate merchant offers premium payment for escort through dangerous territory.",
+      "choices": [
+        {
+          "label": "Accept escort contract",
+          "requirements": {},
+          "effects": {"currency": 150, "tick": 2, "route_danger": 10},
+          "risk": "medium",
+          "followup_tags": ["merchant_escort", "contract_accepted"]
+        },
+        {
+          "label": "Negotiate higher price",
+          "requirements": {"presence_skill": 40},
+          "effects": {"currency": 200, "tick": 2, "route_danger": 10},
+          "risk": "medium",
+          "followup_tags": ["merchant_escort", "better_deal"]
+        },
+        {
+          "label": "Decline",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"contract_offered": true},
+      "followup_tags": ["merchant", "desperate", "premium_offer"],
+      "cooldown_days": 10,
+      "weight": 35
+    },
+    {
+      "id": "road_event_008",
+      "category": "road",
+      "title": "The Old Battlefield",
+      "trigger_conditions": {"terrain_type": ["plains", "hills"], "route_danger": [20, 60]},
+      "visible_text_summary": "You pass an old battlefield. Bones and rusted weapons litter the ground.",
+      "choices": [
+        {
+          "label": "Search for salvage",
+          "requirements": {},
+          "effects": {"potential_weapon": true, "potential_armor": true, "tick": 2},
+          "risk": "medium",
+          "followup_tags": ["battlefield_salvage", "undead_possible"]
+        },
+        {
+          "label": "Pay respects and move on",
+          "requirements": {},
+          "effects": {"morale": 3, "tick": 1},
+          "risk": "none",
+          "followup_tags": ["respect_paid"]
+        },
+        {
+          "label": "Burial service",
+          "requirements": {"companion_religious": true},
+          "effects": {"morale": 5, "tick": 2, "companion_will_loss": true},
+          "risk": "low",
+          "followup_tags": ["burial_service", "spiritual_blessing"]
+        }
+      ],
+      "mechanical_effects": {"lore_discoverable": true},
+      "followup_tags": ["battlefield", "old_war", "bones", "salvage"],
+      "cooldown_days": 30,
+      "weight": 25
+    },
+    {
+      "id": "road_event_009",
+      "category": "road",
+      "title": "The Sudden Storm",
+      "trigger_conditions": {"weather": ["rain", "storm"], "route_type": ["trail", "mountain_pass"]},
+      "visible_text_summary": "A violent storm hits. Visibility drops and the path becomes treacherous.",
+      "choices": [
+        {
+          "label": "Seek shelter immediately",
+          "requirements": {},
+          "effects": {"tick": 1, "route_danger": -10},
+          "risk": "low",
+          "followup_tags": ["shelter_found", "rest"]
+        },
+        {
+          "label": "Push through carefully",
+          "requirements": {},
+          "effects": {"route_danger": 15, "companion_hp_loss_possible": true},
+          "risk": "high",
+          "followup_tags": ["storm_travel"]
+        },
+        {
+          "label": "Make camp in the open",
+          "requirements": {},
+          "effects": {"fatigue_recovery": -50, "route_danger": 5},
+          "risk": "medium",
+          "followup_tags": ["exposed_camp", "wet_supplies"]
+        }
+      ],
+      "mechanical_effects": {"weather_effect": true},
+      "followup_tags": ["storm", "weather", "visibility", "danger"],
+      "cooldown_days": 7,
+      "weight": 50
+    },
+    {
+      "id": "road_event_010",
+      "category": "road",
+      "title": "The Deserting Soldier",
+      "trigger_conditions": {"route_danger": [30, 70], "nation_at_war": true},
+      "visible_text_summary": "A frightened soldier flees in your direction, still in uniform.",
+      "choices": [
+        {
+          "label": "Shelter and question",
+          "requirements": {},
+          "effects": {"intel_gain": true, "military_reputation": -5, "tick": 1},
+          "risk": "medium",
+          "followup_tags": ["deserter_info", "potential_bounty"]
+        },
+        {
+          "label": "Turn him in for bounty",
+          "requirements": {"settlement_within_4_hexes": true},
+          "effects": {"currency": 75, "military_reputation": 10},
+          "risk": "low",
+          "followup_tags": ["bounty_collected"]
+        },
+        {
+          "label": "Let him pass",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"faction_relationship_possible": "military"},
+      "followup_tags": ["deserter", "soldier", "war", "bounty"],
+      "cooldown_days": 14,
+      "weight": 30
+    },
+    {
+      "id": "settlement_event_001",
+      "category": "settlement",
+      "title": "The Drunkard's Tale",
+      "trigger_conditions": {"settlement_type": ["town", "city"], "market_tier": [2, 5]},
+      "visible_text_summary": "In a tavern, a drunk rambling about something important catches your attention.",
+      "choices": [
+        {
+          "label": "Buy him more drinks for details",
+          "requirements": {"currency": 8},
+          "effects": {"currency": -8, "intel_gain": true, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["drunk_tale", "hidden_info"]
+        },
+        {
+          "label": "Listen quietly",
+          "requirements": {},
+          "effects": {"partial_intel": true},
+          "risk": "none",
+          "followup_tags": ["overheard_tale"]
+        },
+        {
+          "label": "Ignore",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"rumor_discovered": true},
+      "followup_tags": ["tavern", "drunk", "intel", "hidden_knowledge"],
+      "cooldown_days": 10,
+      "weight": 45
+    },
+    {
+      "id": "settlement_event_002",
+      "category": "settlement",
+      "title": "The Price-Fixing Scheme",
+      "trigger_conditions": {"settlement_type": ["town", "city"], "merchant_guild_present": true, "prosperity": [30, 70]},
+      "visible_text_summary": "Traders complain that a guild monopoly has inflated prices beyond reason.",
+      "choices": [
+        {
+          "label": "Report to town council",
+          "requirements": {"reputation": 20},
+          "effects": {"merchant_guild_reputation": -15, "settlement_unrest": -5, "settlement_prosperity": 3},
+          "risk": "medium",
+          "followup_tags": ["council_action", "guild_hostile"]
+        },
+        {
+          "label": "Trade with guild anyway",
+          "requirements": {},
+          "effects": {"trade_access": 5, "merchant_guild_reputation": 5},
+          "risk": "none",
+          "followup_tags": []
+        },
+        {
+          "label": "Organize black market",
+          "requirements": {"companion_criminal_contacts": true},
+          "effects": {"contraband_trade": true, "merchant_guild_reputation": -20, "corruption": 10},
+          "risk": "high",
+          "followup_tags": ["black_market", "illegal_trade"]
+        }
+      ],
+      "mechanical_effects": {"economic_event": true},
+      "followup_tags": ["guild", "monopoly", "price_inflation", "trade"],
+      "cooldown_days": 21,
+      "weight": 35
+    },
+    {
+      "id": "settlement_event_003",
+      "category": "settlement",
+      "title": "The Sick Child",
+      "trigger_conditions": {"settlement_type": ["village", "town"], "medicine_stock": [0, 30]},
+      "visible_text_summary": "A desperate mother begs for medicine for her dying child.",
+      "choices": [
+        {
+          "label": "Give medicine from company stock",
+          "requirements": {"medicine_stock": 5},
+          "effects": {"medicine_stock": -5, "settlement_population": 1, "morale": 8, "healer_guild_reputation": 10},
+          "risk": "none",
+          "followup_tags": ["child_saved", "healer_blessing"]
+        },
+        {
+          "label": "Pay for medicine in town",
+          "requirements": {"currency": 25},
+          "effects": {"currency": -25, "settlement_medicine_stock": -3, "morale": 4},
+          "risk": "low",
+          "followup_tags": ["medicine_purchased"]
+        },
+        {
+          "label": "Cannot help",
+          "requirements": {},
+          "effects": {"morale": -5},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"morale_check": true},
+      "followup_tags": ["sick_child", "medicine", "desperation", "mercy"],
+      "cooldown_days": 14,
+      "weight": 40
+    },
+    {
+      "id": "settlement_event_004",
+      "category": "settlement",
+      "title": "The Festival Night",
+      "trigger_conditions": {"settlement_prosperity": [60, 100], "settlement_security": [50, 100], "time": "evening"},
+      "visible_text_summary": "The settlement holds a festival. Crowds gather, morale is high.",
+      "choices": [
+        {
+          "label": "Participate fully",
+          "requirements": {},
+          "effects": {"morale": 10, "fatigue": 10, "currency": -15, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["festival_fun", "rumor_network"]
+        },
+        {
+          "label": "Gather intelligence",
+          "requirements": {},
+          "effects": {"intel_gain": true, "settlement_unrest": 2},
+          "risk": "low",
+          "followup_tags": ["festival_intel", "rumors_heard"]
+        },
+        {
+          "label": "Guard the perimeter",
+          "requirements": {},
+          "effects": {"settlement_security": 5, "morale": 3},
+          "risk": "none",
+          "followup_tags": ["festival_guards"]
+        }
+      ],
+      "mechanical_effects": {"social_event": true},
+      "followup_tags": ["festival", "celebration", "crowds", "morale"],
+      "cooldown_days": 30,
+      "weight": 30
+    },
+    {
+      "id": "settlement_event_005",
+      "category": "settlement",
+      "title": "The Hidden Cult Meeting",
+      "trigger_conditions": {"settlement_unrest": [40, 100], "settlement_corruption": [30, 80]},
+      "visible_text_summary": "Your companion spots hooded figures entering a warehouse at midnight.",
+      "choices": [
+        {
+          "label": "Storm the warehouse",
+          "requirements": {"company_strength": 60},
+          "effects": {"cult_exposed": true, "settlement_unrest": -10, "settlement_corruption": -15, "companion_hp_loss": true},
+          "risk": "high",
+          "followup_tags": ["cult_raided", "possible_undead"]
+        },
+        {
+          "label": "Report to authorities",
+          "requirements": {},
+          "effects": {"settlement_security": 10, "cult_moves": true},
+          "risk": "medium",
+          "followup_tags": ["authorities_notified", "cult_flees"]
+        },
+        {
+          "label": "Infiltrate as new recruit",
+          "requirements": {"companion_deception": true},
+          "effects": {"cult_intel": true, "cult_trust": true, "tick": 2},
+          "risk": "high",
+          "followup_tags": ["cult_infiltration", "inside_information"]
+        },
+        {
+          "label": "Ignore",
+          "requirements": {},
+          "effects": {"cult_grows": true},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"cult_encounter": true},
+      "followup_tags": ["cult", "occult", "warehouse", "dark_worship"],
+      "cooldown_days": 21,
+      "weight": 35
+    },
+    {
+      "id": "settlement_event_006",
+      "category": "settlement",
+      "title": "The Disputed Tax Collection",
+      "trigger_conditions": {"settlement_type": ["town"], "faction_pressure": [30, 70]},
+      "visible_text_summary": "Tax collectors demand payment but residents claim they're not legitimate.",
+      "choices": [
+        {
+          "label": "Side with collectors",
+          "requirements": {},
+          "effects": {"faction_pressure_target": 15, "settlement_unrest": 8},
+          "risk": "low",
+          "followup_tags": ["collectors_supported"]
+        },
+        {
+          "label": "Side with residents",
+          "requirements": {},
+          "effects": {"settlement_unrest": -10, "faction_pressure_target": -15},
+          "risk": "medium",
+          "followup_tags": ["residents_supported", "collectors_hostile"]
+        },
+        {
+          "label": "Mediate between parties",
+          "requirements": {"presence_skill": 45},
+          "effects": {"settlement_unrest": -5, "settlement_prosperity": 2, "tick": 1},
+          "risk": "medium",
+          "followup_tags": ["successful_mediation"]
+        }
+      ],
+      "mechanical_effects": {"faction_conflict_resolution": true},
+      "followup_tags": ["tax", "dispute", "faction_conflict", "authority"],
+      "cooldown_days": 14,
+      "weight": 40
+    },
+    {
+      "id": "settlement_event_007",
+      "category": "settlement",
+      "title": "The Wanted Poster",
+      "trigger_conditions": {"settlement_type": ["town", "city"], "market_tier": [2, 4]},
+      "visible_text_summary": "A fresh wanted poster offers a bounty for a notorious criminal.",
+      "choices": [
+        {
+          "label": "Take the contract",
+          "requirements": {},
+          "effects": {"contract_added": "capture_bounty_target", "bounty_target_visible": true},
+          "risk": "medium",
+          "followup_tags": ["bounty_contract"]
+        },
+        {
+          "label": "Offer information for fee",
+          "requirements": {"intel_quality": "high"},
+          "effects": {"currency": 50, "criminal_reputation": -10},
+          "risk": "low",
+          "followup_tags": ["info_sold"]
+        },
+        {
+          "label": "Ignore",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"contract_available": true},
+      "followup_tags": ["wanted", "bounty", "criminal", "contract"],
+      "cooldown_days": 7,
+      "weight": 45
+    },
+    {
+      "id": "settlement_event_008",
+      "category": "settlement",
+      "title": "The Refugee Wave",
+      "trigger_conditions": {"nearby_war": true, "settlement_population": [100, 800]},
+      "visible_text_summary": "Refugees stream into the settlement, straining resources.",
+      "choices": [
+        {
+          "label": "Help organize relief",
+          "requirements": {},
+          "effects": {"settlement_unrest": -10, "settlement_population": 50, "morale": 5},
+          "risk": "low",
+          "followup_tags": ["refugees_aid", "settlement_grows"]
+        },
+        {
+          "label": "Recruit from refugees",
+          "requirements": {},
+          "effects": {"recruitment_pool_temp": 15, "settlement_unrest": 5},
+          "risk": "medium",
+          "followup_tags": ["refugee_recruits"]
+        },
+        {
+          "label": "Guard the gates",
+          "requirements": {},
+          "effects": {"settlement_security": 5, "refugees_turned_away": true},
+          "risk": "low",
+          "followup_tags": ["refugees_denied"]
+        }
+      ],
+      "mechanical_effects": {"population_event": true},
+      "followup_tags": ["refugees", "war", "population", "resources"],
+      "cooldown_days": 30,
+      "weight": 25
+    },
+    {
+      "id": "settlement_event_009",
+      "category": "settlement",
+      "title": "The Masterblacksmith's Offer",
+      "trigger_conditions": {"settlement_type": ["town", "city"], "market_tier": [3, 5], "player_reputation": 30},
+      "visible_text_summary": "A master blacksmith offers to upgrade company weapons for a significant fee.",
+      "choices": [
+        {
+          "label": "Full upgrade",
+          "requirements": {"currency": 200},
+          "effects": {"currency": -200, "company_weapon_quality": 1, "tick": 2},
+          "risk": "none",
+          "followup_tags": ["weapons_upgraded"]
+        },
+        {
+          "label": "Basic upgrade",
+          "requirements": {"currency": 80},
+          "effects": {"currency": -80, "company_weapon_quality": 1, "tick": 1},
+          "risk": "none",
+          "followup_tags": ["basic_upgrade"]
+        },
+        {
+          "label": "Decline",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"upgrade_available": true},
+      "followup_tags": ["blacksmith", "upgrade", "weapons", "forge"],
+      "cooldown_days": 14,
+      "weight": 35
+    },
+    {
+      "id": "settlement_event_010",
+      "category": "settlement",
+      "title": "The Plague Ship",
+      "trigger_conditions": {"settlement_type": ["town", "city"], "trade_access": [50, 100], "nearby_plague": true},
+      "visible_text_summary": "A ship arrives with sick passengers. Quarantine is being discussed.",
+      "choices": [
+        {
+          "label": "Volunteer for quarantine duty",
+          "requirements": {},
+          "effects": {"settlement_medicine_stock": -10, "settlement_security": 15, "morale": -5},
+          "risk": "high",
+          "followup_tags": ["quarantine_duty", "disease_risk"]
+        },
+        {
+          "label": "Organize medical response",
+          "requirements": {"companion_medicine_skill": true},
+          "effects": {"plague_contained": true, "healer_guild_reputation": 15},
+          "risk": "medium",
+          "followup_tags": ["medical_response", "plague_prevented"]
+        },
+        {
+          "label": "Leave immediately",
+          "requirements": {},
+          "effects": {"plague_spreads": true},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"plague_event": true},
+      "followup_tags": ["plague", "ship", "quarantine", "disease"],
+      "cooldown_days": 45,
+      "weight": 20
+    },
+    {
+      "id": "camp_event_001",
+      "category": "camp",
+      "title": "The Night Confession",
+      "trigger_conditions": {"camp_established": true, "companion_count": 2},
+      "visible_text_summary": "A companion wishes to speak privately by the fire.",
+      "choices": [
+        {
+          "label": "Listen with empathy",
+          "requirements": {},
+          "effects": {"companion_loyalty": 15, "companion_backstory_revealed": true},
+          "risk": "none",
+          "followup_tags": ["confession_heard", "companion_bond"]
+        },
+        {
+          "label": "Listen but remain guarded",
+          "requirements": {},
+          "effects": {"companion_loyalty": 5, "companion_backstory_partial": true},
+          "risk": "none",
+          "followup_tags": ["partial_trust"]
+        },
+        {
+          "label": "Send away - rest is priority",
+          "requirements": {},
+          "effects": {"companion_loyalty": -10},
+          "risk": "none",
+          "followup_tags": ["companion_upset"]
+        }
+      ],
+      "mechanical_effects": {"companion_event": true},
+      "followup_tags": ["confession", "companion", "night", "bonding"],
+      "cooldown_days": 10,
+      "weight": 40
+    },
+    {
+      "id": "camp_event_002",
+      "category": "camp",
+      "title": "The Strange Sounds",
+      "trigger_conditions": {"terrain_type": ["forest", "ruins", "cave"], "camp_hours": "night"},
+      "visible_text_summary": "Unusual sounds come from the darkness beyond the firelight.",
+      "choices": [
+        {
+          "label": "Investigate immediately",
+          "requirements": {},
+          "effects": {"companion_hp_loss_possible": true, "potential_encounter": true},
+          "risk": "high",
+          "followup_tags": ["investigation", "possible_combat"]
+        },
+        {
+          "label": "Set traps and wait",
+          "requirements": {},
+          "effects": {"fatigue_increase": 5},
+          "risk": "medium",
+          "followup_tags": ["trap_set", "ambush_prepared"]
+        },
+        {
+          "label": "Post watch and ignore",
+          "requirements": {},
+          "effects": {},
+          "risk": "low",
+          "followup_tags": ["watch_posted"]
+        }
+      ],
+      "mechanical_effects": {"random_encounter_check": true},
+      "followup_tags": ["night_sounds", "unknown_threat", "darkness"],
+      "cooldown_days": 7,
+      "weight": 45
+    },
+    {
+      "id": "camp_event_003",
+      "category": "camp",
+      "title": "The Rival Mercenary Company",
+      "trigger_conditions": {"settlement_within_10_hexes": true, "player_reputation": 20},
+      "visible_text_summary": "Another mercenary company makes camp nearby. Their leader approaches.",
+      "choices": [
+        {
+          "label": "Friendly parley",
+          "requirements": {},
+          "effects": {"potential_ally": true, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["parley", "possible_alliance"]
+        },
+        {
+          "label": "Cold dismissal",
+          "requirements": {},
+          "effects": {"potential_enemy": true},
+          "risk": "medium",
+          "followup_tags": ["rivalry_begins"]
+        },
+        {
+          "label": "Propose job partnership",
+          "requirements": {},
+          "effects": {"contract_partnership_possible": true},
+          "risk": "low",
+          "followup_tags": ["partnership_offered"]
+        }
+      ],
+      "mechanical_effects": {"npc_company_encounter": true},
+      "followup_tags": ["rival_company", "mercenary", "parley", "competition"],
+      "cooldown_days": 21,
+      "weight": 30
+    },
+    {
+      "id": "camp_event_004",
+      "category": "camp",
+      "title": "The Injured Traveler",
+      "trigger_conditions": {"terrain_type": ["forest", "plains"], "camp_hours": "evening"},
+      "visible_text_summary": "A wounded traveler stumbles into your camp, begging for help.",
+      "choices": [
+        {
+          "label": "Full medical treatment",
+          "requirements": {"medicine_stock": 3, "companion_medicine": true},
+          "effects": {"medicine_stock": -3, "morale": 8, "potential_intel": true},
+          "risk": "low",
+          "followup_tags": ["traveler_healed", "gratitude"]
+        },
+        {
+          "label": "Basic aid only",
+          "requirements": {},
+          "effects": {"morale": 3},
+          "risk": "low",
+          "followup_tags": ["basic_aid"]
+        },
+        {
+          "label": "Turn them away",
+          "requirements": {},
+          "effects": {"morale": -5},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"random_encounter": true},
+      "followup_tags": ["injured_traveler", "mercy", "help"],
+      "cooldown_days": 14,
+      "weight": 35
+    },
+    {
+      "id": "camp_event_005",
+      "category": "camp",
+      "title": "The Midnight Theft",
+      "trigger_conditions": {"camp_established": true, "inventory_value": 100},
+      "visible_text_summary": "You wake to find supplies missing and unusual tracks around camp.",
+      "choices": [
+        {
+          "label": "Pursue the thieves",
+          "requirements": {},
+          "effects": {"fatigue_increase": 15, "companion_hp_loss_possible": true, "supplies_recovered": true},
+          "risk": "high",
+          "followup_tags": ["pursuit", "thief_encounter"]
+        },
+        {
+          "label": "Set traps for morning",
+          "requirements": {},
+          "effects": {"supplies_partially_recovered": true},
+          "risk": "medium",
+          "followup_tags": ["trap_set"]
+        },
+        {
+          "label": "Increase watch rotation",
+          "requirements": {},
+          "effects": {"fatigue_increase": 5, "theft_limited": true},
+          "risk": "low",
+          "followup_tags": ["security_improved"]
+        }
+      ],
+      "mechanical_effects": {"theft_event": true},
+      "followup_tags": ["theft", "thieves", "supplies", "tracks"],
+      "cooldown_days": 10,
+      "weight": 40
+    },
+    {
+      "id": "camp_event_006",
+      "category": "camp",
+      "title": "The Ancient Shrine",
+      "trigger_conditions": {"terrain_type": ["hills", "ruins"], "camp_established": true},
+      "visible_text_summary": "An old shrine stands nearby. Its stones glow faintly in moonlight.",
+      "choices": [
+        {
+          "label": "Pray and make offering",
+          "requirements": {"currency": 10},
+          "effects": {"currency": -10, "blessing_possible": true, "tick": 1},
+          "risk": "low",
+          "followup_tags": ["offering_made", "divine_blessing"]
+        },
+        {
+          "label": "Investigate the shrine",
+          "requirements": {"companion_occult_knowledge": true},
+          "effects": {"lore_gain": true, "potential_curse_risk": true},
+          "risk": "medium",
+          "followup_tags": ["shrine_investigated"]
+        },
+        {
+          "label": "Ignore",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"divine_encounter": true},
+      "followup_tags": ["shrine", "ancient", "divine", "offering"],
+      "cooldown_days": 30,
+      "weight": 25
+    },
+    {
+      "id": "camp_event_007",
+      "category": "camp",
+      "title": "The Quarrel Between Companions",
+      "trigger_conditions": {"companion_count": 3, "camp_established": true},
+      "visible_text_summary": "Two companions argue heatedly over a past grievance.",
+      "choices": [
+        {
+          "label": "Mediate as leader",
+          "requirements": {"presence_skill": 40},
+          "effects": {"companion_loyalty_all": 10, "conflict_resolved": true},
+          "risk": "medium",
+          "followup_tags": ["conflict_mediated"]
+        },
+        {
+          "label": "Side with first speaker",
+          "requirements": {},
+          "effects": {"companion_loyalty_second": -15, "companion_loyalty_first": 5},
+          "risk": "low",
+          "followup_tags": ["partial_siding"]
+        },
+        {
+          "label": "Let them sort it out",
+          "requirements": {},
+          "effects": {"companion_loyalty_both": -10, "eventual_resolution": true},
+          "risk": "medium",
+          "followup_tags": ["conflict_unresolved"]
+        }
+      ],
+      "mechanical_effects": {"companion_conflict": true},
+      "followup_tags": ["quarrel", "companions", "conflict", "leadership"],
+      "cooldown_days": 14,
+      "weight": 35
+    },
+    {
+      "id": "camp_event_008",
+      "category": "camp",
+      "title": "The Hunting Party Success",
+      "trigger_conditions": {"terrain_type": ["forest", "plains", "hills"], "camp_established": true},
+      "visible_text_summary": "Companions return successfully from hunting with fresh game.",
+      "choices": [
+        {
+          "label": "Celebrate with feast",
+          "requirements": {},
+          "effects": {"food_stock": 15, "morale": 10, "fatigue_recovery": -20},
+          "risk": "none",
+          "followup_tags": ["feast", "hunting_success"]
+        },
+        {
+          "label": "Save the meat for travel",
+          "requirements": {},
+          "effects": {"food_stock": 20},
+          "risk": "none",
+          "followup_tags": ["supplies_gained"]
+        },
+        {
+          "label": "Trade excess at next settlement",
+          "requirements": {},
+          "effects": {"food_stock": 10, "currency": 30},
+          "risk": "low",
+          "followup_tags": ["hunting_trade"]
+        }
+      ],
+      "mechanical_effects": {"resource_event": true},
+      "followup_tags": ["hunting", "food", "success", "camp_life"],
+      "cooldown_days": 7,
+      "weight": 45
+    },
+    {
+      "id": "camp_event_009",
+      "category": "camp",
+      "title": "The Desertion Temptation",
+      "trigger_conditions": {"company_morale": [0, 30], "companion_count": 2},
+      "visible_text_summary": "A companion approaches with a worried expression about the company's future.",
+      "choices": [
+        {
+          "label": "Inspire them with vision",
+          "requirements": {"presence_skill": 45},
+          "effects": {"morale": 20, "companion_loyalty": 10},
+          "risk": "medium",
+          "followup_tags": ["inspiration_successful"]
+        },
+        {
+          "label": "Offer specific rewards",
+          "requirements": {"currency": 50},
+          "effects": {"currency": -50, "morale": 10, "companion_loyalty": 5},
+          "risk": "low",
+          "followup_tags": ["bribe_accepted"]
+        },
+        {
+          "label": "Dismiss their concerns",
+          "requirements": {},
+          "effects": {"companion_loyalty": -15, "desertion_risk": "increased"},
+          "risk": "high",
+          "followup_tags": ["companion_dissatisfied"]
+        }
+      ],
+      "mechanical_effects": {"morale_check": true, "loyalty_check": true},
+      "followup_tags": ["desertion", "morale", "companion_doubt", "leadership"],
+      "cooldown_days": 14,
+      "weight": 30
+    },
+    {
+      "id": "camp_event_010",
+      "category": "camp",
+      "title": "The Wandering Bard",
+      "trigger_conditions": {"camp_established": true, "settlement_within_6_hexes": true},
+      "visible_text_summary": "A bard seeks shelter for the night, offering songs and news in exchange.",
+      "choices": [
+        {
+          "label": "Welcome and request songs",
+          "requirements": {},
+          "effects": {"morale": 8, "intel_gain": true, "tick": 1},
+          "risk": "none",
+          "followup_tags": ["bard_songs", "stories_heard"]
+        },
+        {
+          "label": "Trade for specific news",
+          "requirements": {"currency": 10},
+          "effects": {"currency": -10, "specific_intel": true},
+          "risk": "none",
+          "followup_tags": ["bard_intel"]
+        },
+        {
+          "label": "Turn away strangers",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": []
+        }
+      ],
+      "mechanical_effects": {"social_encounter": true},
+      "followup_tags": ["bard", "entertainment", "news", "wanderer"],
+      "cooldown_days": 14,
+      "weight": 35
+    },
+    {
+      "id": "faction_event_001",
+      "category": "internal_faction_conflict",
+      "title": "The Guild War Begins",
+      "trigger_conditions": {"internal_faction_conflict": "trader_guild_vs_craftsmen", "settlement_unrest": [30, 70]},
+      "visible_text_summary": "Open conflict erupts between the Trader's Guild and Craftsmen's Guild.",
+      "choices": [
+        {
+          "label": "Support Trader's Guild",
+          "requirements": {},
+          "effects": {"trader_guild_influence": 20, "craftsmen_guild_influence": -25, "settlement_unrest": 10},
+          "risk": "high",
+          "followup_tags": ["guild_war_joined", "trader_ally"]
+        },
+        {
+          "label": "Support Craftsmen's Guild",
+          "requirements": {},
+          "effects": {"craftsmen_guild_influence": 20, "trader_guild_influence": -25, "settlement_unrest": 10},
+          "risk": "high",
+          "followup_tags": ["guild_war_joined", "craftsmen_ally"]
+        },
+        {
+          "label": "Mediate for peace",
+          "requirements": {"presence_skill": 55, "reputation": 40},
+          "effects": {"both_faction_influence": -10, "settlement_unrest": -15, "settlement_prosperity": 5},
+          "risk": "medium",
+          "followup_tags": ["peace_meditated", "both_sides_angry"]
+        },
+        {
+          "label": "Remain neutral",
+          "requirements": {},
+          "effects": {"settlement_unrest": 5, "settlement_security": -10},
+          "risk": "low",
+          "followup_tags": ["neutral_watcher"]
+        }
+      ],
+      "mechanical_effects": {"faction_war_begins": true},
+      "followup_tags": ["guild_war", "faction_conflict", "settlements_affected"],
+      "cooldown_days": 45,
+      "weight": 25
+    },
+    {
+      "id": "faction_event_002",
+      "category": "internal_faction_conflict",
+      "title": "The Cult Infiltration",
+      "trigger_conditions": {"internal_faction_id": "cult_present", "settlement_corruption": [40, 80]},
+      "visible_text_summary": "A cult has infiltrated the settlement's leadership.",
+      "choices": [
+        {
+          "label": "Expose the cult publicly",
+          "requirements": {"reputation": 35},
+          "effects": {"cult_influence": -30, "settlement_corruption": -15, "cult_hostile": true},
+          "risk": "high",
+          "followup_tags": ["cult_exposed", "cult_retaliation"]
+        },
+        {
+          "label": "Work with cult leaders",
+          "requirements": {},
+          "effects": {"cult_influence": 15, "settlement_corruption": 10, "settlement_population": -5},
+          "risk": "high",
+          "followup_tags": ["cult_alliance", "dark_powers"]
+        },
+        {
+          "label": "Infiltrate the cult",
+          "requirements": {"companion_deception": true},
+          "effects": {"cult_intel": true, "cult_trust": true, "cult_influence": 5},
+          "risk": "medium",
+          "followup_tags": ["inside_agent", "deep_cover"]
+        }
+      ],
+      "mechanical_effects": {"cult_expansion": true},
+      "followup_tags": ["cult", "infiltration", "corruption", "occult"],
+      "cooldown_days": 30,
+      "weight": 30
+    },
+    {
+      "id": "faction_event_003",
+      "category": "internal_faction_conflict",
+      "title": "The Noble Succession Crisis",
+      "trigger_conditions": {"internal_faction_type": "noble_house", "faction_leader_dead": true},
+      "visible_text_summary": "The noble house's leader is dead. Two claimants fight for succession.",
+      "choices": [
+        {
+          "label": "Support Claimer A",
+          "requirements": {},
+          "effects": {"claimer_a_influence": 30, "claimer_b_influence": -20, "potential_enemy_claimer": "claimer_b"},
+          "risk": "high",
+          "followup_tags": ["succession_war", "claimer_a_king"]
+        },
+        {
+          "label": "Support Claimer B",
+          "requirements": {},
+          "effects": {"claimer_b_influence": 30, "claimer_a_influence": -20, "potential_enemy_claimer": "claimer_a"},
+          "risk": "high",
+          "followup_tags": ["succession_war", "claimer_b_king"]
+        },
+        {
+          "label": "Propose unified rule",
+          "requirements": {"presence_skill": 60, "reputation": 50},
+          "effects": {"both_claimers_influence": 15, "settlement_stability": 10},
+          "risk": "medium",
+          "followup_tags": ["compromise_solution", "political_wisdom"]
+        }
+      ],
+      "mechanical_effects": {"noble_succession": true},
+      "followup_tags": ["noble_house", "succession", "claimants", "civil_war_risk"],
+      "cooldown_days": 30,
+      "weight": 25
+    },
+    {
+      "id": "faction_event_004",
+      "category": "internal_faction_conflict",
+      "title": "The Militia Mutiny",
+      "trigger_conditions": {"internal_faction_type": "militia", "militia_trust": [0, 20], "settlement_security": [0, 30]},
+      "visible_text_summary": "The militia refuses orders and demands better pay and conditions.",
+      "choices": [
+        {
+          "label": "Negotiate with militia",
+          "requirements": {"currency": 100},
+          "effects": {"currency": -100, "militia_trust": 30, "settlement_security": 10},
+          "risk": "medium",
+          "followup_tags": ["mutiny_averted", "militia_satisfied"]
+        },
+        {
+          "label": "Crush the mutiny",
+          "requirements": {"company_strength": 70},
+          "effects": {"militia_effectively_dissolved": true, "settlement_security": -20, "settlement_unrest": 15},
+          "risk": "high",
+          "followup_tags": ["mutiny_crushed", "brutal_efficiency"]
+        },
+        {
+          "label": "Investigate demands",
+          "requirements": {},
+          "effects": {"militia_trust": 10, "tick": 1, "root_cause_revealed": true},
+          "risk": "low",
+          "followup_tags": ["demands_investigated"]
+        }
+      ],
+      "mechanical_effects": {"militia_event": true},
+      "followup_tags": ["militia", "mutiny", "military_conflict", "pay_demand"],
+      "cooldown_days": 21,
+      "weight": 30
+    },
+    {
+      "id": "faction_event_005",
+      "category": "internal_faction_conflict",
+      "title": "The Criminal Syndicate Takeover",
+      "trigger_conditions": {"internal_faction_type": "criminal_synidcate", "settlement_security": [0, 40]},
+      "visible_text_summary": "The criminal syndicate moves to take control of the settlement's underworld.",
+      "choices": [
+        {
+          "label": "Work with syndicate",
+          "requirements": {},
+          "effects": {"syndicate_influence": 25, "settlement_corruption": 20, "settlement_security": -15},
+          "risk": "medium",
+          "followup_tags": ["syndicate_ally", "criminal_deal"]
+        },
+        {
+          "label": "Raid syndicate operations",
+          "requirements": {"company_strength": 60},
+          "effects": {"syndicate_influence": -30, "settlement_security": 15, "syndicate_hostile": true},
+          "risk": "high",
+          "followup_tags": ["syndicate_raid", "criminal_war"]
+        },
+        {
+          "label": "Drive them out completely",
+          "requirements": {"company_strength": 80},
+          "effects": {"syndicate_expelled": true, "settlement_security": 20, "settlement_corruption": -10},
+          "risk": "high",
+          "followup_tags": ["syndicate_destroyed", "underworld_clear"]
+        }
+      ],
+      "mechanical_effects": {"criminal_expansion": true},
+      "followup_tags": ["syndicate", "criminal", "underworld", "takeover"],
+      "cooldown_days": 30,
+      "weight": 30
+    },
+    {
+      "id": "crisis_event_001",
+      "category": "crisis_seed",
+      "title": "The First Omen",
+      "trigger_conditions": {"doom_counter": 3, "settlement_corruption": [50, 100]},
+      "visible_text_summary": "Strange omens appear in the sky. Animals behave oddly. Children speak of nightmares.",
+      "choices": [
+        {
+          "label": "Begin preparations",
+          "requirements": {},
+          "effects": {"doom_counter": 1, "settlement_unrest": 5, "awareness_raised": true},
+          "risk": "low",
+          "followup_tags": ["omens_noted", "preparations_begun"]
+        },
+        {
+          "label": "Investigate the source",
+          "requirements": {"companion_occult_knowledge": true},
+          "effects": {"doom_counter": 1, "intel_gain": true, "source_identified": true},
+          "risk": "medium",
+          "followup_tags": ["source_investigated", "dark_truth"]
+        },
+        {
+          "label": "Ignore - superstition",
+          "requirements": {},
+          "effects": {"doom_counter": 2},
+          "risk": "none",
+          "followup_tags": ["omens_ignored"]
+        }
+      ],
+      "mechanical_effects": {"crisis_building": true, "doom_counter": 1},
+      "followup_tags": ["omen", "supernatural", "warning", "doom_building"],
+      "cooldown_days": 14,
+      "weight": 40
+    },
+    {
+      "id": "crisis_event_002",
+      "category": "crisis_seed",
+      "title": "The Grain Blight",
+      "trigger_conditions": {"season": "autumn", "settlement_food_stock": [0, 50], "route_danger": [40, 100]},
+      "visible_text_summary": "The grain harvest is blighted. Without imported food, famine is certain.",
+      "choices": [
+        {
+          "label": "Organize emergency import",
+          "requirements": {"currency": 200},
+          "effects": {"currency": -200, "food_imported": true, "route_danger": 10},
+          "risk": "medium",
+          "followup_tags": ["emergency_import", "trade_routes_stressed"]
+        },
+        {
+          "label": "Ration severely",
+          "requirements": {},
+          "effects": {"settlement_food_stock": 30, "settlement_unrest": 15, "settlement_prosperity": -10},
+          "risk": "medium",
+          "followup_tags": ["severe_rationing", "hunger_managed"]
+        },
+        {
+          "label": "Hunt and forage more",
+          "requirements": {},
+          "effects": {"food_stock": 20, "companion_fatigue": 20},
+          "risk": "low",
+          "followup_tags": ["hunting_foraging", "supplies_augmented"]
+        }
+      ],
+      "mechanical_effects": {"famine_risk": true},
+      "followup_tags": ["grain_blight", "famine", "food_crisis", "harvest_failure"],
+      "cooldown_days": 30,
+      "weight": 35
+    },
+    {
+      "id": "crisis_event_003",
+      "category": "crisis_seed",
+      "title": "The Desertion Wave",
+      "trigger_conditions": {"nation_at_war": true, "military_reputation": [0, 30], "settlement_recruitment_pool": [30, 60]},
+      "visible_text_summary": "Soldiers desert in groups, fleeing from a losing war. They pass through the region.",
+      "choices": [
+        {
+          "label": "Shelter and recruit deserters",
+          "requirements": {},
+          "effects": {"recruitment_pool": 20, "military_reputation": -15, "deserters_recruited": true},
+          "risk": "low",
+          "followup_tags": ["deserter_recruitment", "military_relations_damaged"]
+        },
+        {
+          "label": "Report to military authorities",
+          "requirements": {},
+          "effects": {"military_reputation": 20, "settlement_security": -10},
+          "risk": "medium",
+          "followup_tags": ["deserters_reported", "military_pleased"]
+        },
+        {
+          "label": "Turn blind eye",
+          "requirements": {},
+          "effects": {},
+          "risk": "none",
+          "followup_tags": ["deserters_pass_through"]
+        }
+      ],
+      "mechanical_effects": {"war_effects": true},
+      "followup_tags": ["deserters", "war", "soldiers", "military_collapse"],
+      "cooldown_days": 21,
+      "weight": 30
+    },
+    {
+      "id": "crisis_event_004",
+      "category": "crisis_seed",
+      "title": "The Refugee Flood",
+      "trigger_conditions": {"nearby_war": true, "settlement_population": [200, 600]},
+      "visible_text_summary": "War refugees arrive in massive numbers, overwhelming the settlement.",
+      "choices": [
+        {
+          "label": "Welcome and integrate",
+          "requirements": {"food_stock": 50},
+          "effects": {"settlement_population": 100, "settlement_unrest": 20, "food_stock": -50, "recruitment_pool": 10},
+          "risk": "medium",
+          "followup_tags": ["refugees_integrated", "settlement_strained"]
+        },
+        {
+          "label": "Limited acceptance",
+          "requirements": {},
+          "effects": {"settlement_population": 30, "settlement_unrest": 5},
+          "risk": "low",
+          "followup_tags": ["limited_acceptance", "many_turned_away"]
+        },
+        {
+          "label": "Close gates",
+          "requirements": {},
+          "effects": {"settlement_unrest": -10, "settlement_reputation": -20, "refugee_crisis_continues": true},
+          "risk": "low",
+          "followup_tags": ["gates_closed", "refugees_hostile"]
+        }
+      ],
+      "mechanical_effects": {"refugee_crisis": true},
+      "followup_tags": ["refugees", "war", "migration", "population_crisis"],
+      "cooldown_days": 30,
+      "weight": 25
+    },
+    {
+      "id": "crisis_event_005",
+      "category": "crisis_seed",
+      "title": "The Water Source Poisoning",
+      "trigger_conditions": {"settlement_type": ["village", "town"], "settlement_corruption": [50, 100]},
+      "visible_text_summary": "The settlement's well water has been poisoned. Sickness spreads.",
+      "choices": [
+        {
+          "label": "Find alternative water source",
+          "requirements": {"companion_survival": true},
+          "effects": {"medicine_stock": -20, "settlement_population_loss": -5, "tick": 3},
+          "risk": "medium",
+          "followup_tags": ["alt_source_found", "healing_ongoing"]
+        },
+        {
+          "label": "Investigate poisoner",
+          "requirements": {"companion_investigation": true},
+          "effects": {"settlement_population_loss": -10, "culprit_found": true, "settlement_corruption": -15},
+          "risk": "high",
+          "followup_tags": ["poisoner_caught", "conspiracy_revealed"]
+        },
+        {
+          "label": "Rely on medicine shipments",
+          "requirements": {"currency": 150},
+          "effects": {"currency": -150, "medicine_stock": 30, "settlement_population_loss": -5},
+          "risk": "low",
+          "followup_tags": ["medicine_purchased", "crisis_managed"]
+        }
+      ],
+      "mechanical_effects": {"disease_crisis": true},
+      "followup_tags": ["poisoning", "water", "disease", "contamination", "sabotage"],
+      "cooldown_days": 21,
+      "weight": 30
+    }
+  ]
+}

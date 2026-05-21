@@ -1,0 +1,262 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Combat Schema Draft",
+  "description": "Draft schema for ROAD COMPANY combat entities",
+  "definitions": {
+    "fighter": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        " archetype": {"type": "string"},
+        "level": {"type": "integer"},
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "might": {"type": "number"},
+            "agility": {"type": "number"},
+            "endurance": {"type": "number"},
+            "wits": {"type": "number"},
+            "will": {"type": "number"},
+            "presence": {"type": "number"}
+          }
+        },
+        "derived_stats": {
+          "type": "object",
+          "properties": {
+            "max_hp": {"type": "number"},
+            "current_hp": {"type": "number"},
+            "max_fatigue": {"type": "number"},
+            "current_fatigue": {"type": "number"},
+            "initiative": {"type": "number"},
+            "resolve": {"type": "number"},
+            "melee_skill": {"type": "number"},
+            "ranged_skill": {"type": "number"},
+            "melee_defense": {"type": "number"},
+            "ranged_defense": {"type": "number"},
+            "carry_capacity": {"type": "number"}
+          }
+        },
+        "current_ap": {"type": "number"},
+        "max_ap": {"type": "number"},
+        "morale": {"type": "number"},
+        "conditions": {"type": "array", "items": {"$ref": "#/definitions/condition"}},
+        "equipped_weapons": {"type": "array", "items": {"$ref": "#/definitions/weapon"}},
+        "equipped_armor": {"type": "array", "items": {"$ref": "#/definitions/armor"}},
+        "position": {
+          "type": "object",
+          "properties": {
+            "hex_x": {"type": "integer"},
+            "hex_y": {"type": "integer"}
+          }
+        },
+        "companion_id": {"type": "string"},
+        "role_in_company": {"type": "string"}
+      }
+    },
+    "enemy_archetype": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "category": {"type": "string", "enum": ["humanoid", "undead", "monster", "beast", "construct", "demon", "cultist"]},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 4},
+        "hp_range": {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}},
+        "fatigue_range": {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}},
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "might": {"type": "number"},
+            "agility": {"type": "number"},
+            "endurance": {"type": "number"},
+            "wits": {"type": "number"},
+            "will": {"type": "number"},
+            "presence": {"type": "number"}
+          }
+        },
+        "skills": {
+          "type": "object",
+          "properties": {
+            "melee": {"type": "number"},
+            "ranged": {"type": "number"},
+            "defense": {"type": "number"}
+          }
+        },
+        "ap": {"type": "number"},
+        "move_ap_cost": {"type": "number"},
+        "attack_ap_cost": {"type": "number"},
+        "preferred_weapons": {"type": "array", "items": {"type": "string"}},
+        "armor_class": {"type": "string"},
+        "damage_type": {"type": "string", "enum": ["physical", "magic", "mixed"]},
+        "special_abilities": {"type": "array", "items": {"type": "string"}},
+        "loot_table": {"type": "array", "items": {"type": "string"}},
+        "experience_value": {"type": "number"},
+        "tags": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "weapon": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "family": {"type": "string"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 5},
+        "ap_cost": {"type": "number"},
+        "fatigue_cost": {"type": "number"},
+        "damage_range": {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}},
+        "armor_damage_modifier": {"type": "number"},
+        "hit_modifier": {"type": "number"},
+        "range": {"type": "number"},
+        "ammo_per_shot": {"type": "number"},
+        "max_ammo": {"type": "number"},
+        "reload_ap": {"type": "number"},
+        "special_actions": {"type": "array", "items": {"type": "string"}},
+        "traits": {"type": "array", "items": {"type": "string"}},
+        "durability": {"type": "number"},
+        "max_durability": {"type": "number"},
+        "repair_cost": {"type": "number"}
+      }
+    },
+    "armor": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "armor_type": {"type": "string", "enum": ["cloth", "leather", "chain", "plate", "shield"]},
+        "physical_armor": {"type": "number"},
+        "recall_armor": {"type": "number"},
+        "penalty_speed": {"type": "number"},
+        "penalty_ap_recovery": {"type": "number"},
+        "coverage": {"type": "string", "enum": ["light", "medium", "heavy", "full"]},
+        "durability": {"type": "number"},
+        "max_durability": {"type": "number"},
+        "repair_cost": {"type": "number"},
+        "traits": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "condition": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "category": {"type": "string", "enum": ["physical", "mental", "environmental", "social", "combat"]},
+        "source": {"type": "string"},
+        "duration_ticks": {"type": "integer"},
+        "severity": {"type": "number", "minimum": 1, "maximum": 10},
+        "effects": {
+          "type": "object",
+          "properties": {
+            "ap_modifier": {"type": "number"},
+            "damage_modifier": {"type": "number"},
+            "accuracy_modifier": {"type": "number"},
+            "defense_modifier": {"type": "number"},
+            "fatigue_cost_modifier": {"type": "number"},
+            "morale_modifier": {"type": "number"},
+            "skill_modifier": {"type": "number"},
+            "hp_per_tick": {"type": "number"},
+            "fatigue_per_tick": {"type": "number"}
+          }
+        },
+        "stackable": {"type": "boolean"},
+        "removable_by": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "ability": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "ability_type": {"type": "string", "enum": ["attack", "defense", "utility", "support", "special"]},
+        "ap_cost": {"type": "number"},
+        "fatigue_cost": {"type": "number"},
+        "range": {"type": "number"},
+        "target_type": {"type": "string", "enum": ["single", "self", "cone", "radius", "line", "adjacent"]},
+        "radius": {"type": "number"},
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "effect_type": {"type": "string"},
+              "value": {"type": "number"},
+              "condition": {"type": "string"},
+              "duration": {"type": "integer"}
+            }
+          }
+        },
+        "prerequisites": {"type": "array", "items": {"type": "string"}},
+        "cooldown": {"type": "integer"},
+        "uses_remaining": {"type": "integer"}
+      }
+    },
+    "battlefield_terrain_tile": {
+      "type": "object",
+      "properties": {
+        "terrain_id": {"type": "string"},
+        "name": {"type": "string"},
+        "movement_cost": {"type": "number"},
+        "defense_modifier": {"type": "number"},
+        "accuracy_modifier": {"type": "number"},
+        "blocks_los": {"type": "boolean"},
+        "blocks_ranged": {"type": "boolean"},
+        "provides_cover": {"type": "string", "enum": ["none", "light", "heavy"]},
+        "damage_per_turn": {"type": "number"},
+        "special_effect": {"type": "string"},
+        "flammable": {"type": "boolean"},
+        "traversable_by": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "encounter_template": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "encounter_type": {"type": "string", "enum": ["ambush", "deliberate_engagement", "surprise", "defensive", "siege", "pursuit"]},
+        "enemy_archetypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "archetype_id": {"type": "string"},
+              "count_min": {"type": "integer"},
+              "count_max": {"type": "integer"},
+              "level_adjustment": {"type": "number"}
+            }
+          }
+        },
+        "battlefield_tags": {"type": "array", "items": {"type": "string"}},
+        "objectives": {"type": "array", "items": {"$ref": "#/definitions/combat_objective"}},
+        "morale_events": {"type": "array", "items": {"type": "string"}},
+        "recommended_company_size": {"type": "object", "properties": {"min": {"type": "integer"}, "max": {"type": "integer"}}},
+        "difficulty_rating": {"type": "number"}
+      }
+    },
+    "combat_objective": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "objective_type": {"type": "string", "enum": ["eliminate", "capture", "defend", "escape", "retrieve", "survive"]},
+        "target_entity_id": {"type": "string"},
+        "target_count": {"type": "integer"},
+        "success_condition": {"type": "string"},
+        "failure_condition": {"type": "string"},
+        "time_limit_turns": {"type": "integer"},
+        "bonus_objective": {"type": "string"}
+      }
+    },
+    "morale_event": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "trigger_condition": {"type": "string"},
+        "trigger_threshold": {"type": "number"},
+        "event_text": {"type": "string"},
+        "morale_effect": {"type": "number"},
+        "affected_side": {"type": "string", "enum": ["player", "enemy", "both"]},
+        "immediate_action": {"type": "string"},
+        "followup_event_id": {"type": "string"}
+      }
+    }
+  }
+}
