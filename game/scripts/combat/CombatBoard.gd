@@ -85,11 +85,7 @@ func _draw() -> void:
 		if get("data") != null:
 			var asset_id = _get_asset_id_for_unit(unit)
 			if asset_id != "":
-				var asset = data.get_asset(asset_id)
-				if not asset.is_empty() and asset.has("path"):
-					var path = asset["path"]
-					if ResourceLoader.exists(path):
-						texture = load(path)
+				texture = data.load_asset_texture(asset_id)
 		
 		if texture != null:
 			var s = 64.0
@@ -140,13 +136,7 @@ func _draw_badge(font: Font, center_pos: Vector2, text: String, bg_color: Color,
 func _draw_condition_icon(icon_pos: Vector2, icon_id: String, font: Font, fallback_char: String) -> void:
 	var tex = null
 	if get("data") != null:
-		var asset = data.get_asset(icon_id)
-		if not asset.is_empty() and asset.has("path"):
-			var path = asset["path"]
-			# Note: SVG loading in headless Godot without .import files is unreliable and produces white blocks.
-			# We only use ResourceLoader; if it fails (e.g. in headless CI), we intentionally fall back to procedural drawing.
-			if ResourceLoader.exists(path):
-				tex = load(path)
+		tex = data.load_asset_texture(icon_id)
 			
 	if tex != null:
 		draw_texture_rect(tex, Rect2(icon_pos, Vector2(16, 16)), false)

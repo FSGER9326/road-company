@@ -129,6 +129,24 @@ func get_asset(asset_id: String) -> Dictionary:
 			return item
 	return {}
 
+## Helper method to load a texture for an asset ID.
+## Handles native ResourceLoader (if imported) and raw SVG string loading (headless/fallback).
+func load_asset_texture(asset_id: String) -> Texture2D:
+	var asset = get_asset(asset_id)
+	if asset.is_empty() or not asset.has("path"):
+		return null
+		
+	var path = asset["path"]
+	if ResourceLoader.exists(path):
+		return load(path)
+	elif FileAccess.file_exists(path) and path.ends_with(".svg"):
+		var svg_str = FileAccess.get_file_as_string(path)
+		var img = Image.new()
+		if img.load_svg_from_string(svg_str) == OK:
+			return ImageTexture.create_from_image(img)
+			
+	return null
+
 func _load_array(path: String) -> Array:
 	var value = _load_json(path)
 	if typeof(value) == TYPE_ARRAY:

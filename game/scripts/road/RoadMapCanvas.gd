@@ -29,11 +29,13 @@ func _draw() -> void:
 		var pb = _map_pos(b)
 		var danger = int(route.get("danger", 1))
 		var blocked = false
+		var status = "normal"
 		if get("data") != null and data.route_economy != null:
 			var r_eco = data.by_id(data.route_economy, route.get("id", ""))
 			if not r_eco.is_empty():
 				danger = int(r_eco.get("effective_danger", danger))
 				blocked = r_eco.get("blocked", false)
+				status = r_eco.get("status", "normal")
 
 		var color = Color(0.29, 0.48, 0.23) # <30
 		var width = 3.0
@@ -59,9 +61,15 @@ func _draw() -> void:
 		var mid = (pa + pb) * 0.5
 		var tex = null
 		if get("data") != null:
-			var asset = data.get_asset("icon_danger_%s" % clamp(danger, 1, 5))
-			if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
-				tex = load(asset["path"])
+			var icon_id = "icon_danger_%s" % clamp(danger, 1, 5)
+			if blocked:
+				icon_id = "icon_route_blocked"
+			elif status == "stabilizing":
+				icon_id = "icon_route_stabilizing"
+			elif status == "secure":
+				icon_id = "icon_route_secure"
+			
+			tex = data.load_asset_texture(icon_id)
 		if tex != null:
 			draw_texture_rect(tex, Rect2(mid - Vector2(12, 12), Vector2(24, 24)), false)
 		else:
@@ -71,22 +79,26 @@ func _draw() -> void:
 		var pos = _map_pos(loc)
 		var is_current = loc.get("id", "") == current_location
 		
+		var tier = 1
+		if get("data") != null and data.settlement_economy != null:
+			var s_eco = data.get_settlement_economy(loc.get("id", ""))
+			if not s_eco.is_empty():
+				tier = int(s_eco.get("market_tier", 1))
+
 		var icon_id = "icon_settlement_town"
+		if tier >= 4:
+			icon_id = "icon_settlement_city"
+		elif tier <= 2:
+			icon_id = "icon_settlement_village"
+			
 		var tex = null
 		if get("data") != null:
-			var asset = data.get_asset(icon_id)
-			if not asset.is_empty() and asset.has("path") and ResourceLoader.exists(asset["path"]):
-				tex = load(asset["path"])
+			tex = data.load_asset_texture(icon_id)
 				
 		if tex != null:
 			var s = 40 if is_current else 32
 			draw_texture_rect(tex, Rect2(pos - Vector2(s/2.0, s/2.0), Vector2(s, s)), false)
 		else:
-			var tier = 1
-			if get("data") != null and data.settlement_economy != null:
-				var s_eco = data.get_settlement_economy(loc.get("id", ""))
-				if not s_eco.is_empty():
-					tier = int(s_eco.get("market_tier", 1))
 			var radius = 8
 			if tier == 2: radius = 10
 			elif tier == 3: radius = 14
