@@ -28,11 +28,33 @@ func _draw() -> void:
 		var pa = _map_pos(a)
 		var pb = _map_pos(b)
 		var danger = int(route.get("danger", 1))
-		var color = Color(0.42 + danger * 0.08, 0.34, 0.24)
-		var width = 2.0 + danger * 0.4
+		var blocked = false
+		if get("data") != null and data.route_economy != null:
+			var r_eco = data.by_id(data.route_economy, route.get("id", ""))
+			if not r_eco.is_empty():
+				danger = int(r_eco.get("effective_danger", danger))
+				blocked = r_eco.get("blocked", false)
+
+		var color = Color(0.29, 0.48, 0.23) # <30
+		var width = 3.0
+		
+		if blocked:
+			color = Color(0.35, 0.16, 0.16)
+			width = 2.0
+		elif danger >= 70:
+			color = Color(0.54, 0.23, 0.23)
+			width = 5.0
+		elif danger >= 50:
+			color = Color(0.60, 0.35, 0.16)
+			width = 4.0
+		elif danger >= 30:
+			color = Color(0.54, 0.48, 0.23)
+			width = 3.0
+
 		if route.get("id", "") == selected_route_id:
 			color = Color(0.95, 0.68, 0.28)
-			width = 5.0
+			width += 2.0
+			
 		draw_line(pa, pb, color, width)
 		var mid = (pa + pb) * 0.5
 		var tex = null
@@ -60,7 +82,19 @@ func _draw() -> void:
 			var s = 40 if is_current else 32
 			draw_texture_rect(tex, Rect2(pos - Vector2(s/2.0, s/2.0), Vector2(s, s)), false)
 		else:
-			var radius = 16 if is_current else 12
+			var tier = 1
+			if get("data") != null and data.settlement_economy != null:
+				var s_eco = data.get_settlement_economy(loc.get("id", ""))
+				if not s_eco.is_empty():
+					tier = int(s_eco.get("market_tier", 1))
+			var radius = 8
+			if tier == 2: radius = 10
+			elif tier == 3: radius = 14
+			elif tier == 4: radius = 18
+			elif tier >= 5: radius = 22
+				
+			if is_current: radius += 4
+			
 			var color = Color(0.82, 0.68, 0.36) if is_current else Color(0.38, 0.42, 0.39)
 			draw_circle(pos, radius + 3, Color(0.02, 0.02, 0.02))
 			draw_circle(pos, radius, color)

@@ -99,23 +99,19 @@ func _refresh() -> void:
 		lines.append("[b]Road Event[/b]")
 		lines.append("%s" % road_event.get("title", "Road Event"))
 		lines.append("%s" % road_event.get("description", ""))
-		lines.append("Effects: %s" % str(road_event.get("effects", {})))
+		lines.append("Effects: %s" % _format_effects(road_event.get("effects", {})))
 		lines.append("")
 	var combat = summary.get("combat", {})
 	if not combat.is_empty():
 		lines.append("[b]Combat[/b]")
-		lines.append("Result: %s" % ("victory" if combat.get("victory", false) else "defeat"))
+		lines.append("Result: %s" % ("[color=#4a7a3a]Victory[/color]" if combat.get("victory", false) else "[color=#8a3a3a]Defeat[/color]"))
 		lines.append("Casualties: %s" % _list_or_none(combat.get("casualties", [])))
 		lines.append("Injuries: %s" % _list_or_none(combat.get("injuries", [])))
 		lines.append("Loot: %s" % str(combat.get("loot", {})))
 		lines.append("")
 	if summary.get("contract_resolved", false):
-		lines.append("[b]Contract[/b]")
-		if summary.get("contract_success", false):
-			lines.append("Success. Reward and reputation changes applied.")
-		elif summary.get("contract_failure", false):
-			lines.append("Failure. Reputation changes applied.")
-		lines.append("Effects: %s" % str(summary.get("contract_effect", {})))
+		lines.append("[b]Contract: %s[/b]" % ("[color=#4a7a3a]SUCCESS[/color]" if summary.get("contract_success", false) else "[color=#8a3a3a]FAILURE[/color]"))
+		lines.append("Effects: %s" % _format_effects(summary.get("contract_effect", {})))
 		lines.append("")
 	lines.append("[b]Roster[/b]")
 	for fighter in company.roster:
@@ -150,3 +146,18 @@ func _list_or_none(values: Array) -> String:
 	if values.is_empty():
 		return "none"
 	return ", ".join(values)
+
+func _format_effects(eff: Dictionary) -> String:
+	var parts = []
+	for k in eff.keys():
+		var val = eff[k]
+		if typeof(val) == TYPE_INT or typeof(val) == TYPE_FLOAT:
+			if val > 0:
+				parts.append("%s [color=#4a7a3a]+%s[/color]" % [k, val])
+			elif val < 0:
+				parts.append("%s [color=#8a3a3a]%s[/color]" % [k, val])
+			else:
+				parts.append("%s %s" % [k, val])
+		else:
+			parts.append("%s %s" % [k, val])
+	return " · ".join(parts) if parts.size() > 0 else "None"
