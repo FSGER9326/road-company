@@ -113,13 +113,16 @@ Run:
 1. `python tools/run_all_tests.py`
 2. Godot headless test if available:
    `godot --headless --path . -s res://tools/godot/run_godot_tests.gd`
-3. A relevant targeted validator or test for the changed system.
+3. Visual regression testing if available and you touched UI:
+   `python tools/run_visual_smoke.py`
+4. A relevant targeted validator or test for the changed system.
 
 Examples:
 
 - World or contract data: `python tools/validate_data.py`
 - Combat math or scripted autoplay: `python -m unittest discover -s tools/tests -p test_*.py`
 - UI or scene wiring: `godot --headless --path . -s res://tools/godot/run_godot_tests.gd`
+- UI design changes: run visual smoke tests and if intentional, `--accept-baseline`. Attach visual diffs/reports to handoff!
 
 ## Final Response Requirements
 
