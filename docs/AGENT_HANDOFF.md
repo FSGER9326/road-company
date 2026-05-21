@@ -40,6 +40,7 @@ Prefer adding testable logic to:
 - `game/scripts/camp/CampSystem.gd`
 - `game/scripts/core/AutoplaySmoke.gd`
 - `game/scripts/world/WorldEconomySystem.gd`
+- `game/scripts/world/RouteDynamicsSystem.gd`
 
 UI screens should call those systems instead of duplicating rule logic.
 
@@ -84,6 +85,36 @@ python -m unittest discover -s tools/tests -p test_*.py
 - Skipped tests: none.
 
 Next recommended implementation task: connect the economy state to contract reward/danger modifiers through a small, testable adapter without changing combat rules.
+
+## Route Dynamics V1 Handoff
+
+- Branch: `feature/route-dynamics-v1`
+- Purpose: deterministic route economy changes from contract success/failure.
+- Spec docs were merged to `main` first from `spec/deepseek-route-dynamics-v1`.
+- Runtime behavior lives in `game/scripts/world/RouteDynamicsSystem.gd`.
+- Existing contracts now define `route_effects_on_success` and `route_effects_on_failure`.
+- Route economy entries now track `blocked_until_tick`, `route_history`, and `status`.
+- `ContractSystem.complete()` and `ContractSystem.fail()` can apply route effects when passed a route economy entry.
+- `WorldEconomySystem.weekly_tick()` clears expired route blocks, recalculates route status, and lets secure routes provide a small settlement benefit.
+- Debug route delta UI is deferred; the rule layer and tests are in place first.
+
+Verification commands run:
+
+```powershell
+python tools/validate_contracts.py
+python tools/validate_world_economy.py
+python -m unittest discover -s tools/tests -p test_*.py
+python tools/run_all_tests.py
+```
+
+Expected result as of this handoff: all pass, including Godot headless tests through the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable.
+
+Known limitations:
+
+- There is no save/load persistence for `route_history` yet.
+- Contract-driven route changes only apply when resolution code passes a route economy entry.
+- Route status visuals and contract-board effect previews are deferred.
+- No new contract types were added.
 
 ## Docs-Only DeepSeek Integration
 

@@ -8,7 +8,10 @@
     "patrol_presence": 42,
     "bandit_pressure": 26,
     "monster_pressure": 4,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "blackford_embermill_fenway",
@@ -19,7 +22,10 @@
     "patrol_presence": 10,
     "bandit_pressure": 48,
     "monster_pressure": 18,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "embermill_saintsfall_pilgrim",
@@ -30,7 +36,10 @@
     "patrol_presence": 52,
     "bandit_pressure": 18,
     "monster_pressure": 4,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "blackford_saintsfall_oldwood",
@@ -41,7 +50,10 @@
     "patrol_presence": 8,
     "bandit_pressure": 54,
     "monster_pressure": 26,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "blackford_saintsfall_causeway",
@@ -52,7 +64,10 @@
     "patrol_presence": 24,
     "bandit_pressure": 38,
     "monster_pressure": 8,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "embermill_blackford_rivertrack",
@@ -63,7 +78,10 @@
     "patrol_presence": 20,
     "bandit_pressure": 44,
     "monster_pressure": 10,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   },
   {
     "route_id": "saintsfall_embermill_coalpath",
@@ -74,6 +92,9 @@
     "patrol_presence": 30,
     "bandit_pressure": 30,
     "monster_pressure": 6,
-    "blocked": false
+    "blocked": false,
+    "blocked_until_tick": null,
+    "route_history": [],
+    "status": "normal"
   }
 ]

@@ -17,6 +17,7 @@ Run it from the project root, `road_company/`.
 - World economy data checks for trade goods, settlement economy, route economy, and settlement status effects.
 - Pure Python gameplay simulation tests for travel, contracts, combat math, travel-to-combat consequences, camp actions, and seed reproducibility.
 - Pure Python world economy tests for deterministic weekly settlement and route updates.
+- Pure Python route dynamics tests for deterministic contract-driven route changes.
 - Godot headless tests if Godot is available.
 
 The command exits nonzero if any required layer fails. If Godot is unavailable, it prints a `SKIP` line explaining why and still reports the Python/data result.
@@ -90,6 +91,7 @@ The Godot test runner checks:
 - combat screen instantiates with escort wagon objective;
 - camp aftermath instantiates;
 - deterministic world economy weekly tick runs;
+- deterministic route dynamics contract effect runs;
 - deterministic escort autoplay reaches aftermath without crashing.
 
 ## World Economy Validation
@@ -104,6 +106,9 @@ The Godot test runner checks:
 - prosperity, security, unrest, trade access, recruitment quality, route danger, traffic, road quality, trade flow, patrol presence, bandit pressure, and monster pressure remain in `0..100`;
 - food, medicine, tools, and arms stocks are nonnegative;
 - market tiers remain in `1..5`.
+- route `blocked_until_tick` is `null` or a nonnegative integer;
+- route `route_history` entries contain `tick`, `contract`, `outcome`, and `effects`;
+- route `status` is `normal`, `stabilizing`, or `secure`.
 
 Targeted command:
 
@@ -115,6 +120,22 @@ The weekly tick regression tests live in `tools/tests/test_world_economy.py` and
 
 ```powershell
 python -m unittest discover -s tools/tests -p test_*.py
+```
+
+## Route Dynamics Validation
+
+Route dynamics is covered by:
+
+- `tools/validate_contracts.py`, which validates `route_effects_on_success` and `route_effects_on_failure`;
+- `tools/validate_world_economy.py`, which validates route block/status/history fields;
+- `tools/tests/test_route_dynamics.py`, which checks escort success/failure, patrol-style route effects, bandit pressure reduction, clamping, determinism, history trimming, and settlement economy cascade.
+
+Targeted commands:
+
+```powershell
+python tools/validate_contracts.py
+python tools/validate_world_economy.py
+python -m unittest discover -s tools/tests -p test_route_dynamics.py
 ```
 
 ## Codex Verification Rule

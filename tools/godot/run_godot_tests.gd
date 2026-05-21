@@ -8,6 +8,7 @@ const CombatScreenScript = preload("res://game/scripts/combat/CombatScreen.gd")
 const CampScreenScript = preload("res://game/scripts/camp/CampScreen.gd")
 const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
 const WorldEconomySystemScript = preload("res://game/scripts/world/WorldEconomySystem.gd")
+const RouteDynamicsSystemScript = preload("res://game/scripts/world/RouteDynamicsSystem.gd")
 
 var failures := 0
 var data
@@ -28,6 +29,7 @@ func _run() -> void:
 	_test_combat_instantiates()
 	_test_camp_instantiates()
 	_test_world_economy_ticks()
+	_test_route_dynamics_apply_contract()
 	_test_autoplay_escort_smoke()
 
 	if failures == 0:
@@ -123,6 +125,17 @@ func _test_world_economy_ticks() -> void:
 		_pass("world economy weekly tick")
 	else:
 		_fail("world economy weekly tick did not return expected updates")
+
+func _test_route_dynamics_apply_contract() -> void:
+	var dynamics = RouteDynamicsSystemScript.new()
+	var contract = data.by_id(data.contracts, "escort_embermill")
+	var route = data.get_route_economy(contract.get("target_route", "")).duplicate(true)
+	var before_bandits = int(route.get("bandit_pressure", 0))
+	var result = dynamics.call("apply_contract_success", contract, route, 1)
+	if int(route.get("bandit_pressure", 0)) < before_bandits and result.get("route_id", "") == contract.get("target_route", ""):
+		_pass("route dynamics applies contract effect")
+	else:
+		_fail("route dynamics did not improve route after escort success")
 
 func _escort_context() -> Dictionary:
 	var contract = data.by_id(data.contracts, "escort_embermill")

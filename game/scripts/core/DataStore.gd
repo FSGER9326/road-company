@@ -77,6 +77,12 @@ func get_settlement_economy(settlement_id: String) -> Dictionary:
 			return item
 	return {}
 
+func get_route_economy(route_id: String) -> Dictionary:
+	for item in route_economy:
+		if item.get("route_id", "") == route_id:
+			return item
+	return {}
+
 func _load_array(path: String) -> Array:
 	var value = _load_json(path)
 	if typeof(value) == TYPE_ARRAY:

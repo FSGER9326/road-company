@@ -21,7 +21,21 @@
     "failure_faction_effects": {
       "millers_compact": -10
     },
-    "required_cargo_or_objective": "wagon_survives"
+    "required_cargo_or_objective": "wagon_survives",
+    "route_effects_on_success": {
+      "bandit_pressure": -15,
+      "danger": -3,
+      "patrol_presence": 5,
+      "traffic": 10,
+      "trade_flow": 5
+    },
+    "route_effects_on_failure": {
+      "bandit_pressure": 10,
+      "danger": 5,
+      "traffic": -10,
+      "trade_flow": -5,
+      "block_duration_ticks": 3
+    }
   },
   {
     "id": "hunt_red_sashes",
@@ -45,7 +59,16 @@
     "failure_faction_effects": {
       "ashen_crown": -6
     },
-    "required_cargo_or_objective": ""
+    "required_cargo_or_objective": "",
+    "route_effects_on_success": {
+      "bandit_pressure": -25,
+      "danger": -8,
+      "monster_pressure": -5
+    },
+    "route_effects_on_failure": {
+      "bandit_pressure": 15,
+      "danger": 5
+    }
   },
   {
     "id": "recover_wagon",
@@ -68,7 +91,15 @@
     "failure_faction_effects": {
       "millers_compact": -8
     },
-    "required_cargo_or_objective": "wagon_lockbox"
+    "required_cargo_or_objective": "wagon_lockbox",
+    "route_effects_on_success": {
+      "bandit_pressure": -10,
+      "danger": -3
+    },
+    "route_effects_on_failure": {
+      "bandit_pressure": 10,
+      "danger": 4
+    }
   },
   {
     "id": "capture_gravetithe",
@@ -91,6 +122,15 @@
     "failure_faction_effects": {
       "lantern_church": -8
     },
-    "required_cargo_or_objective": "bounty_target"
+    "required_cargo_or_objective": "bounty_target",
+    "route_effects_on_success": {
+      "bandit_pressure": -5,
+      "danger": -2,
+      "patrol_presence": 5
+    },
+    "route_effects_on_failure": {
+      "bandit_pressure": 5,
+      "danger": 3
+    }
   }
 ]

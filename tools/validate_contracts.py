@@ -24,6 +24,25 @@ def unique_ids(items: list[dict], label: str, errors: list[str]) -> set[str]:
     return seen
 
 
+def validate_route_effects(contract: dict, field: str, label: str, errors: list[str]) -> None:
+    allowed = {"bandit_pressure", "danger", "monster_pressure", "patrol_presence", "traffic", "trade_flow"}
+    effects = contract.get(field)
+    if not isinstance(effects, dict):
+        errors.append(f"{label} {field} must be an object")
+        return
+    for key, value in effects.items():
+        if key == "block_duration_ticks":
+            if field != "route_effects_on_failure":
+                errors.append(f"{label} block_duration_ticks is only allowed on route_effects_on_failure")
+            if not isinstance(value, int) or not 1 <= value <= 52:
+                errors.append(f"{label} {field}.block_duration_ticks must be an integer between 1 and 52")
+            continue
+        if key not in allowed:
+            errors.append(f"{label} {field}.{key} is not an allowed route effect")
+        if not isinstance(value, int) or not -100 <= value <= 100:
+            errors.append(f"{label} {field}.{key} must be an integer between -100 and 100")
+
+
 def validate() -> list[str]:
     errors: list[str] = []
     contracts = load_json(ROOT / "data/contracts/contracts.json")
@@ -56,6 +75,8 @@ def validate() -> list[str]:
         "encounter_id",
         "faction_effects",
         "required_cargo_or_objective",
+        "route_effects_on_success",
+        "route_effects_on_failure",
     ]
     allowed_types = {"escort_caravan", "hunt_bandits", "recover_missing_wagon", "capture_bounty_target"}
 
@@ -90,6 +111,8 @@ def validate() -> list[str]:
                     errors.append(f"{label} {effects_field} references unknown faction '{faction_id}'")
                 if not isinstance(value, int) or not -50 <= value <= 50:
                     errors.append(f"{label} {effects_field}.{faction_id} must be an integer between -50 and 50")
+        validate_route_effects(contract, "route_effects_on_success", label, errors)
+        validate_route_effects(contract, "route_effects_on_failure", label, errors)
 
     return errors
 

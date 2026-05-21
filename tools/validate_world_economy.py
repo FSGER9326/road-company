@@ -35,6 +35,28 @@ def int_range(item: dict, field: str, low: int, high: int, label: str, errors: l
     if not isinstance(value, int) or not low <= value <= high:
         errors.append(f"{label} field '{field}' must be an integer between {low} and {high}")
 
+def validate_route_history(route: dict, label: str, errors: list[str]) -> None:
+    history = route.get("route_history")
+    if not isinstance(history, list):
+        errors.append(f"{label} route_history must be a list")
+        return
+    for index, entry in enumerate(history):
+        entry_label = f"{label} route_history[{index}]"
+        if not isinstance(entry, dict):
+            errors.append(f"{entry_label} must be an object")
+            continue
+        for field in ["tick", "contract", "outcome", "effects"]:
+            if field not in entry:
+                errors.append(f"{entry_label} missing required field '{field}'")
+        if not isinstance(entry.get("tick"), int) or entry.get("tick", 0) < 0:
+            errors.append(f"{entry_label} tick must be a nonnegative integer")
+        if not isinstance(entry.get("contract"), str) or not entry.get("contract"):
+            errors.append(f"{entry_label} contract must be a nonempty string")
+        if entry.get("outcome") not in {"success", "failure"}:
+            errors.append(f"{entry_label} outcome must be success or failure")
+        if not isinstance(entry.get("effects"), dict):
+            errors.append(f"{entry_label} effects must be an object")
+
 
 def validate() -> list[str]:
     errors: list[str] = []
@@ -116,13 +138,19 @@ def validate() -> list[str]:
 
     for route in route_economy:
         label = f"route economy {route.get('route_id', '<missing>')}"
-        require(route, ["route_id", "traffic", "danger", "road_quality", "trade_flow", "patrol_presence", "bandit_pressure", "monster_pressure", "blocked"], label, errors)
+        require(route, ["route_id", "traffic", "danger", "road_quality", "trade_flow", "patrol_presence", "bandit_pressure", "monster_pressure", "blocked", "blocked_until_tick", "route_history", "status"], label, errors)
         if route.get("route_id") not in route_ids:
             errors.append(f"{label} references missing route")
         for field in ["traffic", "danger", "road_quality", "trade_flow", "patrol_presence", "bandit_pressure", "monster_pressure"]:
             int_range(route, field, 0, 100, label, errors)
         if not isinstance(route.get("blocked"), bool):
             errors.append(f"{label} blocked must be a boolean")
+        blocked_until = route.get("blocked_until_tick")
+        if blocked_until is not None and (not isinstance(blocked_until, int) or blocked_until < 0):
+            errors.append(f"{label} blocked_until_tick must be null or a nonnegative integer")
+        if route.get("status") not in {"normal", "stabilizing", "secure"}:
+            errors.append(f"{label} status must be normal, stabilizing, or secure")
+        validate_route_history(route, label, errors)
 
     if settlement_ids != location_ids:
         missing = sorted(location_ids - settlement_ids)
