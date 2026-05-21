@@ -66,13 +66,18 @@ Known limitations:
 
 	
 ### 7. Road UI Playability V1 (Antigravity)
-**Status**: Implemented on `feature/road-ui-playability-v1`.
+**Status**: Merged into main.
 - **Pass A (Debug Readability)**: Added company resource strip and settlement economy text bars to `RoadScreen`. Updated route hover to show danger, traffic, bandits, patrols, trade flow, and status. `RoadMapCanvas` color-codes routes by danger and sizes settlements by market tier.
 - **Pass B (Contract Board Clarity)**: `ContractBoard.gd` categorizes generated vs static contracts, adds type icons, and presents contract details (patron, expected effects, and generated reasons) cleanly.
 - **Pass C (Aftermath Summary)**: `CampScreen.gd` groups consequence blocks and color-codes stat changes. `RoadScreen.gd` logs format rumors/memories with urgency-based bbcode highlighting.
 
-Commands run:
-- `python tools/run_all_tests.py` on branch: **PASS** (10 validators, 67 tests, Godot 9/9)
+Commands run for merge:
+- `python tools/run_all_tests.py` on main: **PASS** (10 validators, 67 tests, Godot 9/9)
+- `godot --headless` test suite: **PASS**
+
+Remaining limitations:
+- No real visual assets are used yet (everything is procedural or basic placeholder SVG).
+- Layouts are still quite rigid and could use polish and animations.
 
 ## Contract Generator V1 Handoff
 
