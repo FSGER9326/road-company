@@ -6,10 +6,12 @@ signal back_requested
 
 var data
 var company
+var seed = 12345
 
-func setup(new_data, new_company) -> void:
+func setup(new_data, new_company, new_seed: int = 12345) -> void:
 	data = new_data
 	company = new_company
+	seed = new_seed
 	_build()
 
 func _build() -> void:
@@ -48,7 +50,7 @@ func _build() -> void:
 	list.add_theme_constant_override("separation", 10)
 	scroll.add_child(list)
 
-	for contract in data.contracts_for_location(company.current_location):
+	for contract in data.contract_board_for_location(company.current_location, company.faction_reputation, seed):
 		list.add_child(_contract_row(contract))
 
 func _contract_row(contract: Dictionary) -> Control:
@@ -75,6 +77,13 @@ func _contract_row(contract: Dictionary) -> Control:
 	]
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(body)
+
+	if contract.has("generated_from"):
+		var reason = Label.new()
+		reason.text = "Generated: %s" % contract.get("generated_from", {}).get("world_state_reason", "")
+		reason.add_theme_color_override("font_color", Color(0.64, 0.73, 0.78))
+		reason.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(reason)
 
 	var accept = Button.new()
 	accept.text = "Accept Contract"

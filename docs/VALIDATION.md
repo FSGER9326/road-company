@@ -60,6 +60,7 @@ python tools/validate_factions.py
 python tools/validate_world.py
 python tools/validate_world_economy.py
 python tools/validate_contracts.py
+python tools/validate_contract_generator.py
 python tools/validate_company.py
 python tools/validate_combat.py
 python tools/validate_art_assets.py
@@ -138,6 +139,20 @@ Targeted commands:
 python tools/validate_contracts.py
 python tools/validate_world_economy.py
 python -m unittest discover -s tools/tests -p test_route_dynamics.py
+```
+
+## Contract Generator Validation
+
+Contract generator validation is covered by:
+
+- `tools/validate_contract_generator.py`, which checks `data/contracts/contract_type_defaults.json`, generated contract schemas, valid settlement/route/faction/encounter references, sane reward and urgency ranges, and compatible route/settlement effects;
+- `tools/tests/test_contract_generator.py`, which checks deterministic generation, food and medicine shortage triggers, route danger triggers, bandit pressure triggers, defend settlement triggers, schema validation, effect compatibility, and priority changes from different world states.
+
+Targeted commands:
+
+```powershell
+python tools/validate_contract_generator.py
+python -m unittest discover -s tools/tests -p test_contract_generator.py
 ```
 
 ## Art Asset Validation

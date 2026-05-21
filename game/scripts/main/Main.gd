@@ -58,7 +58,7 @@ func show_road(message: String = "") -> void:
 
 func show_contract_board() -> void:
 	var board = ContractBoardScript.new()
-	board.call("setup", data, company)
+	board.call("setup", data, company, run_seed)
 	board.back_requested.connect(func(): show_road())
 	board.contract_accepted.connect(func(contract):
 		if contract_system.accept(company, contract):
@@ -105,12 +105,12 @@ func _finish_combat(result: Dictionary) -> void:
 		if contract_system.active_contract_completed(company, pending_route, pending_destination):
 			contract_success = true
 			contract_resolved = true
-			contract_effect = contract_system.complete(company, data.get_route_economy(pending_route.get("id", "")), 0)
+			contract_effect = contract_system.complete(company, data.get_route_economy(pending_route.get("id", "")), 0, data.settlement_economy)
 	else:
 		if company.has_active_contract() and result.get("objective_failed", false):
 			contract_failure = true
 			contract_resolved = true
-			contract_effect = contract_system.fail(company, data.get_route_economy(pending_route.get("id", "")), 0)
+			contract_effect = contract_system.fail(company, data.get_route_economy(pending_route.get("id", "")), 0, data.settlement_economy)
 	var summary = _make_travel_aftermath(true, victory, result.get("headline", "The fight ends."))
 	summary["combat"] = result
 	summary["contract_resolved"] = contract_resolved

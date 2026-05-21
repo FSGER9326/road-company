@@ -82,6 +82,7 @@ def main() -> int:
         "tools/validate_world.py",
         "tools/validate_world_economy.py",
         "tools/validate_contracts.py",
+        "tools/validate_contract_generator.py",
         "tools/validate_company.py",
         "tools/validate_combat.py",
         "tools/validate_art_assets.py",
