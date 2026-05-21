@@ -65,6 +65,7 @@ func _build_ui() -> void:
 
 	board = CombatBoardScript.new()
 	board.custom_minimum_size = Vector2(840, 600)
+	board.set("data", data)
 	board.cell_clicked.connect(_on_cell_clicked)
 	body.add_child(board)
 
