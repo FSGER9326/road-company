@@ -9,10 +9,16 @@
     "tools_stock": 42,
     "arms_stock": 60,
     "unrest": 22,
+    "corruption": 18,
     "trade_access": 58,
     "market_tier": 3,
     "recruitment_pool_quality": 46,
-    "status_effects": ["well_stocked"]
+    "status_effects": ["well_stocked"],
+    "dominant_internal_faction": "blackford_gate_wardens",
+    "faction_tension": 18,
+    "local_policy_tags": ["toll_watch"],
+    "active_internal_conflicts": [],
+    "last_faction_events": []
   },
   {
     "settlement_id": "embermill",
@@ -24,10 +30,16 @@
     "tools_stock": 52,
     "arms_stock": 44,
     "unrest": 18,
+    "corruption": 12,
     "trade_access": 55,
     "market_tier": 3,
     "recruitment_pool_quality": 43,
-    "status_effects": []
+    "status_effects": [],
+    "dominant_internal_faction": "embermill_millers_compact",
+    "faction_tension": 16,
+    "local_policy_tags": ["grain_quotas"],
+    "active_internal_conflicts": [],
+    "last_faction_events": []
   },
   {
     "settlement_id": "saintsfall",
@@ -39,9 +51,15 @@
     "tools_stock": 36,
     "arms_stock": 58,
     "unrest": 14,
+    "corruption": 8,
     "trade_access": 50,
     "market_tier": 4,
     "recruitment_pool_quality": 55,
-    "status_effects": []
+    "status_effects": [],
+    "dominant_internal_faction": "saintsfall_lantern_chapter",
+    "faction_tension": 12,
+    "local_policy_tags": ["shrine_tithe"],
+    "active_internal_conflicts": [],
+    "last_faction_events": []
   }
 ]

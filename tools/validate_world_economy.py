@@ -124,7 +124,9 @@ def validate() -> list[str]:
         if settlement.get("settlement_id") not in location_ids:
             errors.append(f"{label} references missing settlement location")
         int_range(settlement, "population", 10, 50000, label, errors)
-        for field in ["prosperity", "security", "unrest", "trade_access", "recruitment_pool_quality"]:
+        for field in ["prosperity", "security", "unrest", "trade_access", "recruitment_pool_quality", "corruption", "faction_tension"]:
+            if field not in settlement and field in {"corruption", "faction_tension"}:
+                continue
             int_range(settlement, field, 0, 100, label, errors)
         for field in ["food_stock", "medicine_stock", "tools_stock", "arms_stock"]:
             int_range(settlement, field, 0, 100000, label, errors)
@@ -135,6 +137,9 @@ def validate() -> list[str]:
             for effect_id in settlement["status_effects"]:
                 if effect_id not in effect_ids:
                     errors.append(f"{label} references missing status effect '{effect_id}'")
+        for field in ["local_policy_tags", "active_internal_conflicts", "last_faction_events"]:
+            if field in settlement and not isinstance(settlement.get(field), list):
+                errors.append(f"{label} {field} must be a list")
 
     for route in route_economy:
         label = f"route economy {route.get('route_id', '<missing>')}"

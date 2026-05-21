@@ -17,6 +17,7 @@ var trade_goods = []
 var settlement_economy = []
 var route_economy = []
 var settlement_status_effects = []
+var settlement_factions = []
 var asset_manifest = []
 var company_start = {}
 
@@ -35,6 +36,7 @@ func load_all() -> void:
 	settlement_economy = _load_array("res://data/world/settlement_economy.json")
 	route_economy = _load_array("res://data/world/route_economy.json")
 	settlement_status_effects = _load_array("res://data/world/settlement_status_effects.json")
+	settlement_factions = _load_array("res://data/world/settlement_factions.json")
 	asset_manifest = _load_dict("res://data/art/asset_manifest.json").get("assets", [])
 	company_start = _load_dict("res://data/company/company_start.json")
 
@@ -78,8 +80,16 @@ func generated_contracts_for_location(location_id: String, faction_reputation: D
 		contracts,
 		locations,
 		factions,
-		tick
+		tick,
+		settlement_factions
 	)
+
+func settlement_factions_for_location(location_id: String) -> Array:
+	var found = []
+	for faction in settlement_factions:
+		if faction.get("settlement_id", "") == location_id:
+			found.append(faction)
+	return found
 
 func contract_board_for_location(location_id: String, faction_reputation: Dictionary = {}, seed: int = 12345, tick: int = 0) -> Array:
 	var board = contracts_for_location(location_id)

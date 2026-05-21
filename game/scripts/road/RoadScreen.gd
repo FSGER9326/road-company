@@ -193,7 +193,10 @@ func _refresh_economy_label() -> void:
 	if economy.is_empty():
 		economy_label.text = "[b]Settlement Economy[/b]\nNo economy entry for this settlement."
 		return
-	economy_label.text = "[b]Settlement Economy[/b]\nPopulation %s  Prosperity %s  Food %s\nUnrest %s  Security %s  Trade %s\nMarket Tier %s  Recruits %s" % [
+	var faction_lines = []
+	for faction in data.settlement_factions_for_location(company.current_location):
+		faction_lines.append("%s %s/%s" % [faction.get("name", ""), faction.get("influence", 0), faction.get("attitude_to_company", 0)])
+	economy_label.text = "[b]Settlement Economy[/b]\nPopulation %s  Prosperity %s  Food %s\nUnrest %s  Security %s  Trade %s\nMarket Tier %s  Recruits %s\nDominant: %s  Tension %s\n%s" % [
 		economy.get("population", 0),
 		economy.get("prosperity", 0),
 		economy.get("food_stock", 0),
@@ -201,11 +204,14 @@ func _refresh_economy_label() -> void:
 		economy.get("security", 0),
 		economy.get("trade_access", 0),
 		economy.get("market_tier", 1),
-		economy.get("recruitment_pool_quality", 0)
+		economy.get("recruitment_pool_quality", 0),
+		economy.get("dominant_internal_faction", ""),
+		economy.get("faction_tension", 0),
+		"\n".join(faction_lines)
 	]
 
 func _advance_week() -> void:
-	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes)
+	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes, 0, data.settlement_factions)
 	var current = {}
 	for entry in result.get("settlements", []):
 		if entry.get("settlement_id", "") == company.current_location:
