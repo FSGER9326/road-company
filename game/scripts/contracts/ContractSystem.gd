@@ -4,9 +4,21 @@ class_name ContractSystem
 const RouteDynamicsSystemScript = preload("res://game/scripts/world/RouteDynamicsSystem.gd")
 
 var route_dynamics = RouteDynamicsSystemScript.new()
+var event_system = null
+var rumor_system = null
+var memory_system = null
 
 func configure_route_dynamics(system) -> void:
 	route_dynamics = system
+
+func configure_event_system(system) -> void:
+	event_system = system
+
+func configure_rumor_system(system) -> void:
+	rumor_system = system
+
+func configure_memory_system(system) -> void:
+	memory_system = system
 
 func can_accept(company, contract: Dictionary) -> bool:
 	return not company.has_active_contract() and not contract.is_empty()
@@ -30,6 +42,24 @@ func complete(company, route_economy: Dictionary = {}, current_tick: int = 0, se
 		result["route_dynamics"] = route_dynamics.apply_contract_success(contract, route_economy, current_tick)
 	if not contract.is_empty() and not settlement_economies.is_empty():
 		result["settlement_effects"] = _apply_settlement_effects(contract.get("settlement_effects_on_success", {}), settlement_economies)
+	
+	if event_system != null:
+		var company_state = {
+			"last_contract_failed": false,
+			"last_contract_type": contract.get("type", "")
+		}
+		var world_state = {
+			"company": company_state,
+			"context_route": route_economy,
+			"context_settlement": _settlement_by_id(settlement_economies, contract.get("target_location", "")) if contract.has("target_location") else {}
+		}
+		var fired_events = event_system.evaluate_and_fire(world_state, current_tick)
+		result["fired_events"] = fired_events
+		if rumor_system != null:
+			rumor_system.process_events(fired_events, current_tick)
+		if memory_system != null:
+			memory_system.process_events(fired_events, current_tick)
+			
 	return result
 
 func fail(company, route_economy: Dictionary = {}, current_tick: int = 0, settlement_economies: Array = []) -> Dictionary:
@@ -39,6 +69,24 @@ func fail(company, route_economy: Dictionary = {}, current_tick: int = 0, settle
 		result["route_dynamics"] = route_dynamics.apply_contract_failure(contract, route_economy, current_tick)
 	if not contract.is_empty() and not settlement_economies.is_empty():
 		result["settlement_effects"] = _apply_settlement_effects(contract.get("settlement_effects_on_failure", {}), settlement_economies)
+	
+	if event_system != null:
+		var company_state = {
+			"last_contract_failed": true,
+			"last_contract_type": contract.get("type", "")
+		}
+		var world_state = {
+			"company": company_state,
+			"context_route": route_economy,
+			"context_settlement": _settlement_by_id(settlement_economies, contract.get("target_location", "")) if contract.has("target_location") else {}
+		}
+		var fired_events = event_system.evaluate_and_fire(world_state, current_tick)
+		result["fired_events"] = fired_events
+		if rumor_system != null:
+			rumor_system.process_events(fired_events, current_tick)
+		if memory_system != null:
+			memory_system.process_events(fired_events, current_tick)
+		
 	return result
 
 func _apply_settlement_effects(effects_by_settlement: Dictionary, settlement_economies: Array) -> Array:

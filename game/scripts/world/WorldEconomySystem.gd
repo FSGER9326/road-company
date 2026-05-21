@@ -6,6 +6,19 @@ const SettlementFactionSystemScript = preload("res://game/scripts/world/Settleme
 const MIN_POPULATION = 10
 const MAX_POPULATION = 50000
 
+var event_system = null
+var rumor_system = null
+var memory_system = null
+
+func configure_event_system(sys) -> void:
+	event_system = sys
+
+func configure_rumor_system(sys) -> void:
+	rumor_system = sys
+
+func configure_memory_system(sys) -> void:
+	memory_system = sys
+
 func weekly_tick(settlements: Array, routes: Array, route_links: Array = [], current_tick: int = 0, settlement_factions: Array = []) -> Dictionary:
 	var settlement_updates = []
 	var route_updates = []
@@ -17,9 +30,21 @@ func weekly_tick(settlements: Array, routes: Array, route_links: Array = [], cur
 	for settlement in settlements:
 		var connected = _connected_route_economies(settlement.get("settlement_id", ""), routes, route_links)
 		settlement_updates.append(_tick_settlement(settlement, connected, route_dynamics, faction_system, current_tick))
+		
+	var fired_events = []
+	if event_system != null:
+		var world_state = { "settlements": settlements, "routes": routes, "company": {} }
+		fired_events = event_system.evaluate_and_fire(world_state, current_tick)
+		if rumor_system != null:
+			rumor_system.expire_old_rumors(current_tick)
+			rumor_system.process_events(fired_events, current_tick)
+		if memory_system != null:
+			memory_system.process_events(fired_events, current_tick)
+		
 	return {
 		"settlements": settlement_updates,
-		"routes": route_updates
+		"routes": route_updates,
+		"fired_events": fired_events
 	}
 
 func _tick_route(route: Dictionary, route_dynamics, current_tick: int) -> Dictionary:

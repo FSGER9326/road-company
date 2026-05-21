@@ -1,0 +1,244 @@
+[
+  {
+    "id": "food_shortage",
+    "category": "settlement",
+    "title": "Severe Shortage",
+    "trigger_conditions": [
+      {"field": "food_stock", "op": "lt", "value": 10}
+    ],
+    "weight": 100,
+    "cooldown_days": 14,
+    "choices": [],
+    "mechanical_effects": {
+      "unrest": 10,
+      "prosperity": -5
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "crisis",
+      "title": "Starvation in {settlement_name}",
+      "summary": "{settlement_name} suffered a severe lack of food."
+    },
+    "rumor_entry": {
+      "text": "They say the granaries are completely empty in {settlement_name}.",
+      "urgency": 8,
+      "expires_after_days": 14
+    },
+    "visible_text_summary": "Food supplies ran dry, causing panic."
+  },
+  {
+    "id": "medicine_crisis",
+    "category": "settlement",
+    "title": "Sickness Spreads",
+    "trigger_conditions": [
+      {"field": "medicine_stock", "op": "lt", "value": 5}
+    ],
+    "weight": 100,
+    "cooldown_days": 21,
+    "choices": [],
+    "mechanical_effects": {
+      "population": -50,
+      "unrest": 5
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "crisis",
+      "title": "Sickness in {settlement_name}",
+      "summary": "A plague swept through {settlement_name}."
+    },
+    "rumor_entry": {
+      "text": "Carts of the dead are being hauled out of {settlement_name}.",
+      "urgency": 9,
+      "expires_after_days": 21
+    },
+    "visible_text_summary": "Lack of medicine caused a deadly outbreak."
+  },
+  {
+    "id": "rising_unrest",
+    "category": "settlement",
+    "title": "Riots",
+    "trigger_conditions": [
+      {"field": "unrest", "op": "gt", "value": 80}
+    ],
+    "weight": 120,
+    "cooldown_days": 14,
+    "choices": [],
+    "mechanical_effects": {
+      "security": -10,
+      "prosperity": -10
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "crisis",
+      "title": "Riots in {settlement_name}",
+      "summary": "Violent riots broke out in {settlement_name}."
+    },
+    "rumor_entry": {
+      "text": "The guard has lost control in {settlement_name}!",
+      "urgency": 7,
+      "expires_after_days": 14
+    },
+    "visible_text_summary": "High unrest boiled over into riots."
+  },
+  {
+    "id": "bandit_surge",
+    "category": "route",
+    "title": "Bandits Massing",
+    "trigger_conditions": [
+      {"field": "bandit_pressure", "op": "gt", "value": 40},
+      {"field": "danger", "op": "lt", "value": 80}
+    ],
+    "weight": 90,
+    "cooldown_days": 7,
+    "choices": [],
+    "mechanical_effects": {
+      "danger": 20,
+      "traffic": -10
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "danger",
+      "title": "Bandits seize {route_name}",
+      "summary": "Bandit gangs overwhelmed the road patrols."
+    },
+    "rumor_entry": {
+      "text": "No one is making it through {route_name} alive. Bandits everywhere.",
+      "urgency": 6,
+      "expires_after_days": 14
+    },
+    "visible_text_summary": "A sudden surge of bandits made the route extremely dangerous."
+  },
+  {
+    "id": "route_blocked_event",
+    "category": "route",
+    "title": "Road Impassable",
+    "trigger_conditions": [
+      {"field": "danger", "op": "gte", "value": 90}
+    ],
+    "weight": 200,
+    "cooldown_days": 14,
+    "choices": [],
+    "mechanical_effects": {
+      "blocked": true,
+      "traffic": 0
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "danger",
+      "title": "{route_name} Blocked",
+      "summary": "{route_name} became entirely impassable."
+    },
+    "rumor_entry": {
+      "text": "Don't even try the {route_name}, it's certain death.",
+      "urgency": 9,
+      "expires_after_days": 21
+    },
+    "visible_text_summary": "The route has been declared entirely blocked."
+  },
+  {
+    "id": "route_reopened",
+    "category": "route",
+    "title": "Road Reopened",
+    "trigger_conditions": [
+      {"field": "danger", "op": "lt", "value": 60},
+      {"field": "blocked", "op": "eq", "value": true}
+    ],
+    "weight": 150,
+    "cooldown_days": 7,
+    "choices": [],
+    "mechanical_effects": {
+      "blocked": false,
+      "traffic": 10
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "positive",
+      "title": "{route_name} Cleared",
+      "summary": "Traffic resumed on {route_name}."
+    },
+    "rumor_entry": {
+      "text": "Merchants say {route_name} is finally passable again.",
+      "urgency": 5,
+      "expires_after_days": 14
+    },
+    "visible_text_summary": "The route is no longer blocked."
+  },
+  {
+    "id": "route_secured",
+    "category": "route",
+    "title": "Route Secured",
+    "trigger_conditions": [
+      {"field": "danger", "op": "lt", "value": 20},
+      {"field": "patrol_presence", "op": "gt", "value": 30}
+    ],
+    "weight": 80,
+    "cooldown_days": 21,
+    "choices": [],
+    "mechanical_effects": {
+      "traffic": 20,
+      "trade_flow": 10
+    },
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "positive",
+      "title": "{route_name} Secured",
+      "summary": "Heavily patrolled and perfectly safe."
+    },
+    "rumor_entry": {
+      "text": "I've never seen {route_name} so safe. Guards everywhere.",
+      "urgency": 3,
+      "expires_after_days": 21
+    },
+    "visible_text_summary": "Heavy patrols made the route extremely secure."
+  },
+  {
+    "id": "caravan_destroyed",
+    "category": "company",
+    "title": "Caravan Lost",
+    "trigger_conditions": [
+      {"field": "last_contract_failed", "op": "eq", "value": true},
+      {"field": "last_contract_type", "op": "eq", "value": "escort"}
+    ],
+    "weight": 999,
+    "cooldown_days": 0,
+    "choices": [],
+    "mechanical_effects": {},
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "negative",
+      "title": "Failure on {route_name}",
+      "summary": "The company failed to protect a caravan on {route_name}."
+    },
+    "rumor_entry": {
+      "text": "Did you hear? The Ash Road Company let a caravan burn on {route_name}.",
+      "urgency": 7,
+      "expires_after_days": 21
+    },
+    "visible_text_summary": "The company lost a client's caravan."
+  },
+  {
+    "id": "contract_success",
+    "category": "company",
+    "title": "Contract Completed",
+    "trigger_conditions": [
+      {"field": "last_contract_failed", "op": "eq", "value": false},
+      {"field": "last_contract_type", "op": "eq", "value": "escort"}
+    ],
+    "weight": 50,
+    "cooldown_days": 0,
+    "choices": [],
+    "mechanical_effects": {},
+    "followup_tags": [],
+    "memory_entry": {
+      "category": "positive",
+      "title": "Success on {route_name}",
+      "summary": "The company successfully escorted a caravan across {route_name}."
+    },
+    "rumor_entry": {
+      "text": "The Ash Road Company got another caravan through safely.",
+      "urgency": 2,
+      "expires_after_days": 7
+    },
+    "visible_text_summary": "The company successfully delivered a caravan."
+  }
+]
