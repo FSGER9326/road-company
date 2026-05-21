@@ -43,9 +43,9 @@ Prefer adding testable logic to:
 
 UI screens should call those systems instead of duplicating rule logic.
 
-## Current Feature Branch
+## World Tick V1 Merge Status
 
-- Branch: `feature/world-tick-v1`
+- Merged into `main` from `feature/world-tick-v1`.
 - Purpose: first deterministic settlement economy tick only.
 - Main merge completed first: `integration/deepseek-docs-only` was merged into `main`; runtime changes from `design/deepseek-world-systems` remain intentionally excluded.
 - MiniMax reference branches/data were not merged into runtime data.
@@ -70,7 +70,7 @@ Intentionally deferred:
 - procedural trade generation;
 - MiniMax runtime data integration.
 
-Before continuing this branch, run:
+Verification commands run for merge:
 
 ```powershell
 python tools/run_all_tests.py
@@ -78,7 +78,10 @@ python tools/validate_world_economy.py
 python -m unittest discover -s tools/tests -p test_*.py
 ```
 
-Expected result as of this handoff: all pass, including Godot headless tests when the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable is present.
+- Feature branch result before merge: `python tools/run_all_tests.py` passed.
+- Main result after merge: `python tools/run_all_tests.py` passed.
+- Godot headless result: passed through the local `.godot/bin/Godot_v4.6.2-stable_win64.exe` executable.
+- Skipped tests: none.
 
 Next recommended implementation task: connect the economy state to contract reward/danger modifiers through a small, testable adapter without changing combat rules.
 
