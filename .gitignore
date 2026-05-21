@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.tmp
+*.log
+.godot/
+export_presets.cfg

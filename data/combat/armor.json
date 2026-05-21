@@ -1,0 +1,37 @@
+[
+  {
+    "id": "quilted_coat",
+    "name": "Quilted Coat",
+    "body_armor": 30,
+    "head_armor": 10,
+    "fatigue_penalty": 4
+  },
+  {
+    "id": "leather_jack",
+    "name": "Leather Jack",
+    "body_armor": 38,
+    "head_armor": 14,
+    "fatigue_penalty": 6
+  },
+  {
+    "id": "patched_mail",
+    "name": "Patched Mail",
+    "body_armor": 52,
+    "head_armor": 20,
+    "fatigue_penalty": 10
+  },
+  {
+    "id": "raider_rags",
+    "name": "Raider Rags",
+    "body_armor": 18,
+    "head_armor": 6,
+    "fatigue_penalty": 2
+  },
+  {
+    "id": "bandit_hide",
+    "name": "Bandit Hide",
+    "body_armor": 34,
+    "head_armor": 12,
+    "fatigue_penalty": 5
+  }
+]

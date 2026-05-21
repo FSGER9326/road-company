@@ -1,0 +1,41 @@
+[
+  {
+    "id": "blackford",
+    "name": "Blackford Gate",
+    "type": "settlement",
+    "description": "A toll town built around a river gate and an old gallows square.",
+    "faction_influence": {
+      "ashen_crown": 55,
+      "gutter_league": 15
+    },
+    "market_tags": ["grain", "tools", "cheap_hands"],
+    "available_contracts": ["escort_embermill", "hunt_red_sashes"],
+    "map_pos": [0.18, 0.56]
+  },
+  {
+    "id": "embermill",
+    "name": "Embermill",
+    "type": "settlement",
+    "description": "A soot-stained mill settlement that feeds the iron road with charcoal and flour.",
+    "faction_influence": {
+      "millers_compact": 60,
+      "ashen_crown": 20
+    },
+    "market_tags": ["food", "medicine", "laborers"],
+    "available_contracts": ["recover_wagon"],
+    "map_pos": [0.54, 0.32]
+  },
+  {
+    "id": "saintsfall",
+    "name": "Saintsfall",
+    "type": "settlement",
+    "description": "A fortified shrine town where reliquaries and bounty notices share the same walls.",
+    "faction_influence": {
+      "lantern_church": 65,
+      "ashen_crown": 10
+    },
+    "market_tags": ["medicine", "ammo", "blessings"],
+    "available_contracts": ["capture_gravetithe"],
+    "map_pos": [0.78, 0.64]
+  }
+]

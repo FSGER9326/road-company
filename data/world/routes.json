@@ -1,0 +1,93 @@
+[
+  {
+    "id": "blackford_embermill_highroad",
+    "from": "blackford",
+    "to": "embermill",
+    "days": 2,
+    "food_cost": 6,
+    "vigor_cost": 14,
+    "danger": 3,
+    "terrain_tags": ["road", "farmland"],
+    "encounter_table": "road_raiders",
+    "battlefield_tags": ["open", "ditch"],
+    "description": "A taxed road with burned mile posts and enough traffic to hide trouble."
+  },
+  {
+    "id": "blackford_embermill_fenway",
+    "from": "blackford",
+    "to": "embermill",
+    "days": 3,
+    "food_cost": 8,
+    "vigor_cost": 21,
+    "danger": 5,
+    "terrain_tags": ["mud", "marsh"],
+    "encounter_table": "fen_ambush",
+    "battlefield_tags": ["mud", "reeds"],
+    "description": "A flooded shortcut where carts sink and voices carry strangely."
+  },
+  {
+    "id": "embermill_saintsfall_pilgrim",
+    "from": "embermill",
+    "to": "saintsfall",
+    "days": 2,
+    "food_cost": 5,
+    "vigor_cost": 12,
+    "danger": 2,
+    "terrain_tags": ["road", "hill"],
+    "encounter_table": "road_raiders",
+    "battlefield_tags": ["hill", "stone"],
+    "description": "A watched pilgrim road with shrine markers and narrow switchbacks."
+  },
+  {
+    "id": "blackford_saintsfall_oldwood",
+    "from": "blackford",
+    "to": "saintsfall",
+    "days": 4,
+    "food_cost": 10,
+    "vigor_cost": 26,
+    "danger": 5,
+    "terrain_tags": ["forest", "old_road"],
+    "encounter_table": "oldwood_raiders",
+    "battlefield_tags": ["forest", "roots"],
+    "description": "An old military road swallowed by root walls and outlaw camps."
+  },
+  {
+    "id": "blackford_saintsfall_causeway",
+    "from": "blackford",
+    "to": "saintsfall",
+    "days": 3,
+    "food_cost": 7,
+    "vigor_cost": 18,
+    "danger": 4,
+    "terrain_tags": ["road", "mud"],
+    "encounter_table": "road_raiders",
+    "battlefield_tags": ["mud", "broken_cart"],
+    "description": "A raised causeway with blind bends and abandoned toll stones."
+  },
+  {
+    "id": "embermill_blackford_rivertrack",
+    "from": "embermill",
+    "to": "blackford",
+    "days": 2,
+    "food_cost": 5,
+    "vigor_cost": 16,
+    "danger": 4,
+    "terrain_tags": ["river", "forest"],
+    "encounter_table": "river_cutters",
+    "battlefield_tags": ["forest", "shallows"],
+    "description": "A river track used by charcoal burners and smugglers."
+  },
+  {
+    "id": "saintsfall_embermill_coalpath",
+    "from": "saintsfall",
+    "to": "embermill",
+    "days": 3,
+    "food_cost": 7,
+    "vigor_cost": 17,
+    "danger": 3,
+    "terrain_tags": ["hill", "road"],
+    "encounter_table": "bounty_guard",
+    "battlefield_tags": ["slope", "stones"],
+    "description": "A rough coal path watched by shrine wardens and desperate deserters."
+  }
+]

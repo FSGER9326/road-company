@@ -1,0 +1,22 @@
+[
+  {
+    "id": "ashen_crown",
+    "name": "Ashen Crown",
+    "description": "Tax collectors, road wardens, and minor nobles trying to keep the old realm solvent."
+  },
+  {
+    "id": "millers_compact",
+    "name": "Millers' Compact",
+    "description": "Mill owners and teamsters who can starve a district by closing their gates."
+  },
+  {
+    "id": "lantern_church",
+    "name": "Lantern Church",
+    "description": "A hard-eyed shrine authority that trades mercy for obedience."
+  },
+  {
+    "id": "gutter_league",
+    "name": "Gutter League",
+    "description": "Fence networks, debt runners, and informants with knives behind their smiles."
+  }
+]

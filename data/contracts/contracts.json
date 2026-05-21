@@ -1,0 +1,96 @@
+[
+  {
+    "id": "escort_embermill",
+    "title": "Escort Meal Wagons to Embermill",
+    "type": "escort_caravan",
+    "patron_faction": "millers_compact",
+    "origin_location": "blackford",
+    "target_location": "embermill",
+    "target_route": "blackford_embermill_highroad",
+    "reward_crowns": 420,
+    "reward_renown": 12,
+    "danger": 3,
+    "description": "Guard two meal wagons through the highroad tolls. The Compact expects the cargo intact.",
+    "success_text": "The wagons roll into Embermill with enough guards left to count.",
+    "failure_text": "The cargo is lost, and the Compact marks the company as unreliable.",
+    "encounter_id": "escort_ambush",
+    "faction_effects": {
+      "millers_compact": 8,
+      "ashen_crown": 2
+    },
+    "failure_faction_effects": {
+      "millers_compact": -10
+    },
+    "required_cargo_or_objective": "wagon_survives"
+  },
+  {
+    "id": "hunt_red_sashes",
+    "title": "Hunt the Red Sash Band",
+    "type": "hunt_bandits",
+    "patron_faction": "ashen_crown",
+    "origin_location": "blackford",
+    "target_location": "saintsfall",
+    "target_route": "blackford_saintsfall_oldwood",
+    "reward_crowns": 520,
+    "reward_renown": 16,
+    "danger": 5,
+    "description": "A red-sashed road band has been taking toll silver and thumbs. Bring proof they are broken.",
+    "success_text": "The Crown's clerk pays without smiling.",
+    "failure_text": "The Red Sashes keep the old wood road.",
+    "encounter_id": "oldwood_raiders",
+    "faction_effects": {
+      "ashen_crown": 10,
+      "gutter_league": -4
+    },
+    "failure_faction_effects": {
+      "ashen_crown": -6
+    },
+    "required_cargo_or_objective": ""
+  },
+  {
+    "id": "recover_wagon",
+    "title": "Recover a Missing Iron Wagon",
+    "type": "recover_missing_wagon",
+    "patron_faction": "millers_compact",
+    "origin_location": "embermill",
+    "target_location": "blackford",
+    "target_route": "embermill_blackford_rivertrack",
+    "reward_crowns": 460,
+    "reward_renown": 14,
+    "danger": 4,
+    "description": "Find a wagon that vanished on the river track and return with its lockbox or a convincing explanation.",
+    "success_text": "The lockbox is returned with enough iron tallies to satisfy the Compact.",
+    "failure_text": "The Compact assumes the company kept what it found.",
+    "encounter_id": "river_cutters",
+    "faction_effects": {
+      "millers_compact": 7
+    },
+    "failure_faction_effects": {
+      "millers_compact": -8
+    },
+    "required_cargo_or_objective": "wagon_lockbox"
+  },
+  {
+    "id": "capture_gravetithe",
+    "title": "Capture the Gravetithe Runner",
+    "type": "capture_bounty_target",
+    "patron_faction": "lantern_church",
+    "origin_location": "saintsfall",
+    "target_location": "embermill",
+    "target_route": "saintsfall_embermill_coalpath",
+    "reward_crowns": 610,
+    "reward_renown": 18,
+    "danger": 4,
+    "description": "A tithe runner fled with shrine coin. The Church pays more if the target can still answer questions.",
+    "success_text": "The runner reaches Saintsfall breathing, if not comfortably.",
+    "failure_text": "The Church records the loss in red ink.",
+    "encounter_id": "bounty_guard",
+    "faction_effects": {
+      "lantern_church": 10
+    },
+    "failure_faction_effects": {
+      "lantern_church": -8
+    },
+    "required_cargo_or_objective": "bounty_target"
+  }
+]

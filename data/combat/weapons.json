@@ -1,0 +1,112 @@
+[
+  {
+    "id": "militia_spear",
+    "name": "Militia Spear",
+    "range": 1,
+    "ap_cost": 4,
+    "fatigue_cost": 5,
+    "damage_min": 16,
+    "damage_max": 24,
+    "armor_damage": 0.75,
+    "hit_bonus": 8
+  },
+  {
+    "id": "short_bow",
+    "name": "Short Bow",
+    "range": 4,
+    "ap_cost": 5,
+    "fatigue_cost": 6,
+    "damage_min": 12,
+    "damage_max": 20,
+    "armor_damage": 0.45,
+    "hit_bonus": 0
+  },
+  {
+    "id": "road_axe",
+    "name": "Road Axe",
+    "range": 1,
+    "ap_cost": 5,
+    "fatigue_cost": 8,
+    "damage_min": 22,
+    "damage_max": 34,
+    "armor_damage": 1.15,
+    "hit_bonus": 0
+  },
+  {
+    "id": "hanger_sword",
+    "name": "Hanger Sword",
+    "range": 1,
+    "ap_cost": 4,
+    "fatigue_cost": 6,
+    "damage_min": 18,
+    "damage_max": 28,
+    "armor_damage": 0.85,
+    "hit_bonus": 4
+  },
+  {
+    "id": "cleaver_bill",
+    "name": "Cleaver Bill",
+    "range": 1,
+    "ap_cost": 5,
+    "fatigue_cost": 8,
+    "damage_min": 24,
+    "damage_max": 32,
+    "armor_damage": 0.95,
+    "hit_bonus": -2
+  },
+  {
+    "id": "heavy_club",
+    "name": "Heavy Club",
+    "range": 1,
+    "ap_cost": 5,
+    "fatigue_cost": 9,
+    "damage_min": 20,
+    "damage_max": 36,
+    "armor_damage": 0.65,
+    "hit_bonus": -4
+  },
+  {
+    "id": "rusted_knife",
+    "name": "Rusted Knife",
+    "range": 1,
+    "ap_cost": 3,
+    "fatigue_cost": 4,
+    "damage_min": 10,
+    "damage_max": 18,
+    "armor_damage": 0.35,
+    "hit_bonus": 5
+  },
+  {
+    "id": "raider_axe",
+    "name": "Raider Axe",
+    "range": 1,
+    "ap_cost": 5,
+    "fatigue_cost": 8,
+    "damage_min": 18,
+    "damage_max": 30,
+    "armor_damage": 1.0,
+    "hit_bonus": 0
+  },
+  {
+    "id": "black_bow",
+    "name": "Black Bow",
+    "range": 4,
+    "ap_cost": 5,
+    "fatigue_cost": 6,
+    "damage_min": 11,
+    "damage_max": 19,
+    "armor_damage": 0.4,
+    "hit_bonus": 0
+  },
+  {
+    "id": "wagon_axle",
+    "name": "Wagon Axle",
+    "range": 0,
+    "ap_cost": 99,
+    "fatigue_cost": 0,
+    "damage_min": 0,
+    "damage_max": 0,
+    "armor_damage": 0.0,
+    "hit_bonus": 0
+  }
+]

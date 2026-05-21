@@ -1,0 +1,32 @@
+[
+  {
+    "id": "road_raiders",
+    "name": "Road Raiders",
+    "enemies": ["raider_cutthroat", "raider_thug", "raider_archer", "raider_cutthroat", "raider_thug"]
+  },
+  {
+    "id": "escort_ambush",
+    "name": "Escort Ambush",
+    "enemies": ["raider_cutthroat", "raider_cutthroat", "raider_thug", "raider_archer", "raider_thug", "raider_cutthroat"]
+  },
+  {
+    "id": "oldwood_raiders",
+    "name": "Oldwood Red Sashes",
+    "enemies": ["raider_thug", "raider_thug", "raider_archer", "raider_cutthroat", "raider_cutthroat", "raider_thug", "raider_archer"]
+  },
+  {
+    "id": "fen_ambush",
+    "name": "Fen Ambush",
+    "enemies": ["raider_cutthroat", "raider_cutthroat", "raider_archer", "raider_thug", "raider_cutthroat"]
+  },
+  {
+    "id": "river_cutters",
+    "name": "River Cutters",
+    "enemies": ["raider_thug", "raider_cutthroat", "raider_cutthroat", "raider_archer", "raider_thug", "raider_cutthroat"]
+  },
+  {
+    "id": "bounty_guard",
+    "name": "Bounty Guard",
+    "enemies": ["bounty_knave", "raider_thug", "raider_cutthroat", "raider_archer", "bounty_knave"]
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "silent_mile",
+    "title": "Silent Mile",
+    "description": "A mile of road goes quiet enough for the company to hear its own harness leather creak.",
+    "effects": {
+      "morale": -1
+    }
+  },
+  {
+    "id": "good_ford",
+    "title": "Good Ford",
+    "description": "The ford is lower than expected. The company saves time and arguments.",
+    "effects": {
+      "vigor": 3
+    }
+  }
+]
