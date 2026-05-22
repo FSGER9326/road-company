@@ -1,0 +1,71 @@
+name: Codex Implement Issue
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to implement manually'
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  codex_implement:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'codex:implement'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve issue context
+        id: issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.eventName === 'workflow_dispatch'
+              ? Number(core.getInput('issue_number'))
+              : context.payload.issue.number;
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number
+            });
+            core.setOutput('number', String(issue_number));
+            core.setOutput('title', issue.title);
+            core.setOutput('body', issue.body || '');
+
+      - name: Run Codex implementation
+        id: codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+          prompt: |
+            Read .github/codex/prompts/implement-issue.md and follow it.
+
+            Implement GitHub issue #${{ steps.issue.outputs.number }}.
+
+            Title:
+            ${{ steps.issue.outputs.title }}
+
+            Body:
+            ${{ steps.issue.outputs.body }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: codex/issue-${{ steps.issue.outputs.number }}
+          title: "Codex: ${{ steps.issue.outputs.title }}"
+          body: |
+            Implements #${{ steps.issue.outputs.number }}
+
+            ## Codex result
+
+            ${{ steps.codex.outputs.final-message }}
+          commit-message: "Codex implement issue #${{ steps.issue.outputs.number }}"
+          labels: codex:generated
