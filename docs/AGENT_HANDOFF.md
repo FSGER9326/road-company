@@ -2,6 +2,27 @@
 
 ROAD COMPANY is designed so coding agents can verify the core loop without manual clicking. Keep changes small, deterministic, and data-first.
 
+## Save/Load Snapshot V1
+
+- **Branch**: `feature/save-load-snapshot-v1`
+- **Purpose**: Add deterministic JSON snapshots for the current road/company/world prototype state.
+- **Schema**: `schema_version: 1`
+- **Save paths**: `user://saves/autosave.json`; optional manual slot constant `user://saves/manual_1.json`.
+- **Runtime**: `game/scripts/core/SaveLoadSystem.gd`; callable from code through `build_snapshot`, `save_snapshot`, `load_snapshot`, and `apply_snapshot`.
+- **Main hooks**: `Main.gd` exposes `save_game()` and `load_game()`. Debug shortcuts are `F5` for save and `F9` for load; no visible UI was added to avoid visual baseline churn.
+- **Persisted**: game day, current location, company resources, roster/graveyard/faction reputation/active contract, current generated board snapshot, settlement economy, route economy, settlement factions, rumors, memory log, recent events/event cooldowns, and deterministic run seed.
+- **Validation**: `tools/save_load_core.py`, `tools/validate_save_snapshot.py`, `tools/tests/test_save_load_snapshot.py`, and a Godot headless snapshot round trip in `tools/godot/run_godot_tests.gd`.
+- **Known limitations**: no mid-combat resume, no pending-travel resume, no RNG stream-position persistence beyond seed plus day/tick, and no migration path beyond graceful schema rejection.
+
+Commands to verify:
+
+```powershell
+python tools/validate_save_snapshot.py
+python -m unittest discover -s tools/tests -p test_save_load_snapshot.py
+python tools/run_all_tests.py
+python tools/run_visual_smoke.py
+```
+
 ## SVG Token Loading Fix (Antigravity)
 
 - **Branch**: `feature/svg-token-loading-fix-v1`

@@ -3,6 +3,12 @@ class_name RumorSystem
 
 var active_rumors = []
 
+func snapshot() -> Array:
+	return active_rumors.duplicate(true)
+
+func restore_snapshot(snapshot_data: Dictionary) -> void:
+	active_rumors = snapshot_data.get("active", []).duplicate(true)
+
 func process_events(fired_events: Array, current_tick: int) -> void:
 	for candidate in fired_events:
 		var template = candidate.template

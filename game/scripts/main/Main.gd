@@ -13,6 +13,7 @@ const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
 const EventSystemScript = preload("res://game/scripts/world/EventSystem.gd")
 const RumorSystemScript = preload("res://game/scripts/world/RumorSystem.gd")
 const WorldMemorySystemScript = preload("res://game/scripts/world/WorldMemorySystem.gd")
+const SaveLoadSystemScript = preload("res://game/scripts/core/SaveLoadSystem.gd")
 
 var data
 var company
@@ -25,11 +26,14 @@ var event_system
 var rumor_system
 var memory_system
 var run_seed = 12345
+var game_day = 0
+var save_load_system
 
 func _ready() -> void:
 	_parse_user_args()
 	data = DataStoreScript.new()
 	data.load_all()
+	save_load_system = SaveLoadSystemScript.new()
 	road_system = RoadSystemScript.new()
 	road_system.call("setup", data, run_seed)
 	
@@ -63,11 +67,33 @@ func show_menu() -> void:
 func _start_new_run() -> void:
 	company = CompanyStateScript.new()
 	company.load_from_start(data.company_start)
+	game_day = 0
 	show_road("The company gathers at the road gate. Choose work, then choose a road.")
+
+func save_game(path: String = SaveLoadSystemScript.AUTOSAVE_PATH) -> Dictionary:
+	if company == null:
+		return {"ok": false, "error": "No active company state to save."}
+	var snapshot = save_load_system.build_snapshot(data, company, game_day, run_seed, event_system, rumor_system, memory_system)
+	return save_load_system.save_snapshot(snapshot, path)
+
+func load_game(path: String = SaveLoadSystemScript.AUTOSAVE_PATH) -> Dictionary:
+	var loaded = save_load_system.load_snapshot(path)
+	if not loaded.get("ok", false):
+		return loaded
+	if company == null:
+		company = CompanyStateScript.new()
+		company.load_from_start(data.company_start)
+	var applied = save_load_system.apply_snapshot(loaded.get("snapshot", {}), data, company, event_system, rumor_system, memory_system)
+	if applied.get("ok", false):
+		game_day = int(applied.get("game_day", game_day))
+		run_seed = int(applied.get("rng_seed", run_seed))
+		road_system.call("setup", data, run_seed)
+		show_road("Loaded save snapshot.")
+	return applied
 
 func show_road(message: String = "") -> void:
 	var road = RoadScreenScript.new()
-	road.call("setup", data, company, message)
+	road.call("setup", data, company, message, game_day)
 	road.economy_system.configure_event_system(event_system)
 	road.economy_system.configure_rumor_system(rumor_system)
 	road.economy_system.configure_memory_system(memory_system)
@@ -78,11 +104,12 @@ func show_road(message: String = "") -> void:
 	
 	road.open_contract_board.connect(show_contract_board)
 	road.travel_requested.connect(_begin_travel)
+	road.week_advanced.connect(func(days): game_day += int(days))
 	_set_screen(road)
 
 func show_contract_board() -> void:
 	var board = ContractBoardScript.new()
-	board.call("setup", data, company, run_seed)
+	board.call("setup", data, company, run_seed, game_day)
 	board.back_requested.connect(func(): show_road())
 	board.contract_accepted.connect(func(contract):
 		if contract_system.accept(company, contract):
@@ -91,6 +118,21 @@ func show_contract_board() -> void:
 			show_road("The company cannot accept another contract right now.")
 	)
 	_set_screen(board)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F5:
+			var save_result = save_game()
+			if save_result.get("ok", false):
+				print("Saved snapshot: %s" % save_result.get("path", ""))
+			else:
+				push_error("Save failed: %s" % save_result.get("error", "unknown"))
+		elif event.keycode == KEY_F9:
+			var load_result = load_game()
+			if load_result.get("ok", false):
+				print("Loaded snapshot: day=%s location=%s" % [load_result.get("game_day", 0), load_result.get("current_location", "")])
+			else:
+				push_error("Load failed: %s" % load_result.get("error", "unknown"))
 
 func _begin_travel(route: Dictionary) -> void:
 	var travel = road_system.travel(company, route)
@@ -129,12 +171,12 @@ func _finish_combat(result: Dictionary) -> void:
 		if contract_system.active_contract_completed(company, pending_route, pending_destination):
 			contract_success = true
 			contract_resolved = true
-			contract_effect = contract_system.complete(company, data.get_route_economy(pending_route.get("id", "")), 0, data.settlement_economy)
+			contract_effect = contract_system.complete(company, data.get_route_economy(pending_route.get("id", "")), game_day, data.settlement_economy)
 	else:
 		if company.has_active_contract() and result.get("objective_failed", false):
 			contract_failure = true
 			contract_resolved = true
-			contract_effect = contract_system.fail(company, data.get_route_economy(pending_route.get("id", "")), 0, data.settlement_economy)
+			contract_effect = contract_system.fail(company, data.get_route_economy(pending_route.get("id", "")), game_day, data.settlement_economy)
 	var summary = _make_travel_aftermath(true, victory, result.get("headline", "The fight ends."))
 	summary["combat"] = result
 	summary["contract_resolved"] = contract_resolved

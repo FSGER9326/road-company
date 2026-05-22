@@ -9,6 +9,7 @@ const CampScreenScript = preload("res://game/scripts/camp/CampScreen.gd")
 const AutoplaySmokeScript = preload("res://game/scripts/core/AutoplaySmoke.gd")
 const WorldEconomySystemScript = preload("res://game/scripts/world/WorldEconomySystem.gd")
 const RouteDynamicsSystemScript = preload("res://game/scripts/world/RouteDynamicsSystem.gd")
+const SaveLoadSystemScript = preload("res://game/scripts/core/SaveLoadSystem.gd")
 
 var failures := 0
 var data
@@ -30,6 +31,7 @@ func _run() -> void:
 	_test_camp_instantiates()
 	_test_world_economy_ticks()
 	_test_route_dynamics_apply_contract()
+	_test_save_load_snapshot_round_trip()
 	_test_autoplay_escort_smoke()
 
 	if failures == 0:
@@ -136,6 +138,24 @@ func _test_route_dynamics_apply_contract() -> void:
 		_pass("route dynamics applies contract effect")
 	else:
 		_fail("route dynamics did not improve route after escort success")
+
+func _test_save_load_snapshot_round_trip() -> void:
+	var save_load = SaveLoadSystemScript.new()
+	var snapshot = save_load.call("build_snapshot", data, company, 3, 12345)
+	var validation = save_load.call("validate_snapshot", snapshot)
+	if not validation.get("ok", false):
+		_fail("save snapshot validation failed: %s" % str(validation.get("errors", [])))
+		return
+	var restored_data = DataStoreScript.new()
+	restored_data.load_all()
+	var restored_company = CompanyStateScript.new()
+	restored_company.load_from_start(restored_data.company_start)
+	restored_company.crowns = 1
+	var applied = save_load.call("apply_snapshot", snapshot, restored_data, restored_company)
+	if applied.get("ok", false) and restored_company.current_location == company.current_location and restored_company.crowns == company.crowns:
+		_pass("save load snapshot round trip")
+	else:
+		_fail("save load snapshot round trip failed: %s" % str(applied))
 
 func _escort_context() -> Dictionary:
 	var contract = data.by_id(data.contracts, "escort_embermill")

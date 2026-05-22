@@ -7,11 +7,13 @@ signal back_requested
 var data
 var company
 var seed = 12345
+var tick = 0
 
-func setup(new_data, new_company, new_seed: int = 12345) -> void:
+func setup(new_data, new_company, new_seed: int = 12345, new_tick: int = 0) -> void:
 	data = new_data
 	company = new_company
 	seed = new_seed
+	tick = new_tick
 	_build()
 
 func _build() -> void:
@@ -52,7 +54,7 @@ func _build() -> void:
 
 	var generated = []
 	var static_contracts = []
-	for contract in data.contract_board_for_location(company.current_location, company.faction_reputation, seed):
+	for contract in data.contract_board_for_location(company.current_location, company.faction_reputation, seed, tick):
 		if contract.has("generated_from"):
 			generated.append(contract)
 		else:

@@ -3,10 +3,12 @@ class_name EventSystem
 
 var templates = []
 var _last_fired = {}
+var _recent_events = []
 
 func configure(event_templates: Array) -> void:
 	templates = event_templates
 	_last_fired = {}
+	_recent_events = []
 
 func evaluate_and_fire(world_state: Dictionary, current_tick: int) -> Array:
 	var candidates = []
@@ -51,8 +53,21 @@ func evaluate_and_fire(world_state: Dictionary, current_tick: int) -> Array:
 		_last_fired[event_id] = current_tick
 		_apply_mechanical_effects(candidate)
 		fired.append(candidate)
+		_recent_events.append(_event_snapshot(candidate, current_tick))
+		if _recent_events.size() > 50:
+			_recent_events.pop_front()
 		
 	return fired
+
+func snapshot_cooldowns() -> Dictionary:
+	return _last_fired.duplicate(true)
+
+func snapshot_recent_events() -> Array:
+	return _recent_events.duplicate(true)
+
+func restore_snapshot(snapshot_data: Dictionary) -> void:
+	_last_fired = snapshot_data.get("event_cooldowns", {}).duplicate(true)
+	_recent_events = snapshot_data.get("active_events", []).duplicate(true)
 
 func _check_conditions(target: Dictionary, conditions: Array) -> bool:
 	for cond in conditions:
@@ -116,3 +131,12 @@ func _apply_mechanical_effects(candidate: Dictionary) -> void:
 		else:
 			var current = float(target.get(field, 0))
 			target[field] = current + float(val)
+
+func _event_snapshot(candidate: Dictionary, current_tick: int) -> Dictionary:
+	return {
+		"tick": current_tick,
+		"event_id": candidate.template.get("id", ""),
+		"category": candidate.template.get("category", ""),
+		"settlement_id": candidate.settlement.get("settlement_id", ""),
+		"route_id": candidate.route.get("route_id", "")
+	}
