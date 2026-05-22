@@ -2,9 +2,44 @@
 
 ROAD COMPANY is designed so coding agents can verify the core loop without manual clicking. Keep changes small, deterministic, and data-first.
 
+## Latest Main Status - 2026-05-22
+
+- Save/load snapshot v1 is merged into `main`.
+- DeepSeek agent workflow tooling spec is merged into `main`.
+- Save/load schema version: `1`.
+- Save path: `user://saves/autosave.json`; optional manual slot constant `user://saves/manual_1.json`.
+- Python/data/Godot validation: PASS (`python tools/run_all_tests.py`, 79 Python tests plus Godot headless).
+- Visual smoke: PASS (`python tools/run_visual_smoke.py`, 5/5 screenshots matched baselines).
+- MiniMax/Qwen branches remain unmerged.
+- Next recommended task: implement agent workflow tools v1.
+
+Commands run for this merge:
+
+```powershell
+git checkout main
+git pull
+git checkout feature/save-load-snapshot-v1
+git pull
+git merge main
+python tools/run_all_tests.py
+python tools/run_visual_smoke.py
+git checkout main
+git merge --no-ff feature/save-load-snapshot-v1 -m "core: merge save load snapshot v1"
+python tools/run_all_tests.py
+python tools/run_visual_smoke.py
+git push
+git checkout main
+git pull
+git merge --no-ff spec/deepseek-agent-workflow-tools-v1 -m "docs: merge agent workflow tooling spec"
+python tools/run_all_tests.py
+python tools/run_visual_smoke.py
+git push
+```
+
 ## Save/Load Snapshot V1
 
 - **Branch**: `feature/save-load-snapshot-v1`
+- **Merge Status**: Merged into `main`.
 - **Purpose**: Add deterministic JSON snapshots for the current road/company/world prototype state.
 - **Schema**: `schema_version: 1`
 - **Save paths**: `user://saves/autosave.json`; optional manual slot constant `user://saves/manual_1.json`.
@@ -22,6 +57,14 @@ python -m unittest discover -s tools/tests -p test_save_load_snapshot.py
 python tools/run_all_tests.py
 python tools/run_visual_smoke.py
 ```
+
+## Agent Workflow Tooling Spec
+
+- **Branch**: `spec/deepseek-agent-workflow-tools-v1`
+- **Merge Status**: Merged into `main`.
+- **Purpose**: Document the expected agent workflow tooling, operating rules, and prompts without adding runtime gameplay.
+- **Files**: `AGENTS.md`, `docs/AGENT_WORKFLOW.md`, `prompts/antigravity_next/agent_workflow_tools_v1.md`, and `prompts/codex_next/agent_workflow_tools_v1.md`.
+- **Next recommended task**: implement agent workflow tools v1.
 
 ## SVG Token Loading Fix (Antigravity)
 
