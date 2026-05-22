@@ -34,6 +34,36 @@ func load_from_start(start_data: Dictionary) -> void:
 	active_contract = {}
 	last_summary = {}
 
+func snapshot() -> Dictionary:
+	return {
+		"company_name": company_name,
+		"current_location": current_location,
+		"resources": snapshot_resources(),
+		"roster": roster.duplicate(true),
+		"graveyard": graveyard.duplicate(true),
+		"faction_reputation": faction_reputation.duplicate(true),
+		"active_contract": active_contract.duplicate(true),
+		"last_summary": last_summary.duplicate(true)
+	}
+
+func restore_from_snapshot(snapshot_data: Dictionary) -> void:
+	company_name = snapshot_data.get("company_name", company_name)
+	current_location = snapshot_data.get("current_location", current_location)
+	var resources = snapshot_data.get("resources", {})
+	crowns = int(resources.get("crowns", crowns))
+	food = int(resources.get("food", food))
+	tools = int(resources.get("tools", tools))
+	medicine = int(resources.get("medicine", medicine))
+	ammunition = int(resources.get("ammunition", ammunition))
+	morale = int(resources.get("morale", morale))
+	vigor = int(resources.get("vigor", vigor))
+	renown = int(resources.get("renown", renown))
+	roster = snapshot_data.get("roster", roster).duplicate(true)
+	graveyard = snapshot_data.get("graveyard", graveyard).duplicate(true)
+	faction_reputation = snapshot_data.get("faction_reputation", faction_reputation).duplicate(true)
+	active_contract = snapshot_data.get("active_contract", active_contract).duplicate(true)
+	last_summary = snapshot_data.get("last_summary", last_summary).duplicate(true)
+
 func accept_contract(contract: Dictionary) -> void:
 	active_contract = contract.duplicate(true)
 

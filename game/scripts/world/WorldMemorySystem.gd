@@ -4,6 +4,14 @@ class_name WorldMemorySystem
 var _buffer = []
 const MAX_ENTRIES = 200
 
+func snapshot() -> Array:
+	return _buffer.duplicate(true)
+
+func restore_snapshot(snapshot_data: Dictionary) -> void:
+	_buffer = snapshot_data.get("entries", []).duplicate(true)
+	while _buffer.size() > MAX_ENTRIES:
+		_buffer.pop_front()
+
 func process_events(fired_events: Array, current_tick: int) -> void:
 	for candidate in fired_events:
 		var template = candidate.template

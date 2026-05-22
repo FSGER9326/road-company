@@ -6,6 +6,7 @@ const WorldEconomySystemScript = preload("res://game/scripts/world/WorldEconomyS
 
 signal open_contract_board
 signal travel_requested(route)
+signal week_advanced(days)
 
 var data
 var company
@@ -23,13 +24,15 @@ var economy_system
 var event_system
 var rumor_system
 var memory_system
+var current_day = 0
 
 var events_label: RichTextLabel
 var rumors_label: RichTextLabel
 
-func setup(new_data, new_company, message: String = "") -> void:
+func setup(new_data, new_company, message: String = "", new_current_day: int = 0) -> void:
 	data = new_data
 	company = new_company
+	current_day = new_current_day
 	economy_system = WorldEconomySystemScript.new()
 	_build(message)
 
@@ -301,7 +304,9 @@ func _draw_eco_bar(pos: Vector2, value: float, invert_colors: bool) -> void:
 	draw_rect(Rect2(pos, Vector2(fw, h)), fill)
 
 func _advance_week() -> void:
-	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes, 0, data.settlement_factions)
+	current_day += 7
+	var result = economy_system.weekly_tick(data.settlement_economy, data.route_economy, data.routes, current_day, data.settlement_factions)
+	week_advanced.emit(7)
 	var current = {}
 	for entry in result.get("settlements", []):
 		if entry.get("settlement_id", "") == company.current_location:

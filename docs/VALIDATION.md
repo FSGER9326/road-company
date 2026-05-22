@@ -19,6 +19,7 @@ Run it from the project root, `road_company/`.
 - Pure Python gameplay simulation tests for travel, contracts, combat math, travel-to-combat consequences, camp actions, and seed reproducibility.
 - Pure Python world economy tests for deterministic weekly settlement and route updates.
 - Pure Python route dynamics tests for deterministic contract-driven route changes.
+- Save/load snapshot schema validation and round-trip tests.
 - Godot headless tests if Godot is available.
 
 The command exits nonzero if any required layer fails. If Godot is unavailable, it prints a `SKIP` line explaining why and still reports the Python/data result.
@@ -65,6 +66,8 @@ python tools/validate_contract_generator.py
 python tools/validate_company.py
 python tools/validate_combat.py
 python tools/validate_art_assets.py
+python tools/validate_event_rumor_memory.py
+python tools/validate_save_snapshot.py
 ```
 
 Pure simulation tests only:
@@ -96,6 +99,7 @@ The Godot test runner checks:
 - camp aftermath instantiates;
 - deterministic world economy weekly tick runs;
 - deterministic route dynamics contract effect runs;
+- save/load snapshot round trip runs;
 - deterministic escort autoplay reaches aftermath without crashing.
 
 ## Visual Regression Testing
@@ -203,6 +207,23 @@ python tools/generate_placeholder_assets.py
 python tools/validate_art_assets.py
 python -m unittest discover -s tools/tests -p test_art_assets.py
 ```
+
+## Save/Load Snapshot Validation
+
+Save/load snapshot v1 is covered by:
+
+- `tools/validate_save_snapshot.py`, which validates the v1 schema shape and can validate a provided snapshot path;
+- `tools/tests/test_save_load_snapshot.py`, which checks minimal valid snapshots, round-trip preservation of day/location/resources/world state, optional-section normalization, malformed JSON handling, and schema version failures;
+- Godot headless coverage in `tools/godot/run_godot_tests.gd`, which builds and applies a snapshot through `SaveLoadSystem.gd`.
+
+Targeted commands:
+
+```powershell
+python tools/validate_save_snapshot.py
+python -m unittest discover -s tools/tests -p test_save_load_snapshot.py
+```
+
+See `docs/save_load_snapshot_v1.md` for save path, persisted fields, and limitations.
 
 ## Codex Verification Rule
 
