@@ -11,6 +11,9 @@ ROAD COMPANY is a Godot 4.x 2D prototype for a dark fantasy mercenary caravan-co
 
 Godot was not found on PATH in the creation environment, so the project was prepared as text-first Godot files and validated with Python.
 
+For multi-agent task flow and handoff conventions, see `docs/CODEX_ORCHESTRATION.md`.
+
+
 ## Run Validators
 
 From the project folder:
