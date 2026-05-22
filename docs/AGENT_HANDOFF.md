@@ -6,12 +6,13 @@ ROAD COMPANY is designed so coding agents can verify the core loop without manua
 
 - Save/load snapshot v1 is merged into `main`.
 - DeepSeek agent workflow tooling spec is merged into `main`.
+- Agent workflow tools v1 is in progress on `feature/agent-workflow-tools-v1`.
 - Save/load schema version: `1`.
 - Save path: `user://saves/autosave.json`; optional manual slot constant `user://saves/manual_1.json`.
 - Python/data/Godot validation: PASS (`python tools/run_all_tests.py`, 79 Python tests plus Godot headless).
 - Visual smoke: PASS (`python tools/run_visual_smoke.py`, 5/5 screenshots matched baselines).
 - MiniMax/Qwen branches remain unmerged.
-- Next recommended task: implement agent workflow tools v1.
+- Next recommended task: merge agent workflow tools v1 after validation.
 
 Commands run for this merge:
 
@@ -65,6 +66,15 @@ python tools/run_visual_smoke.py
 - **Purpose**: Document the expected agent workflow tooling, operating rules, and prompts without adding runtime gameplay.
 - **Files**: `AGENTS.md`, `docs/AGENT_WORKFLOW.md`, `prompts/antigravity_next/agent_workflow_tools_v1.md`, and `prompts/codex_next/agent_workflow_tools_v1.md`.
 - **Next recommended task**: implement agent workflow tools v1.
+
+## Agent Workflow Tools V1
+
+- **Branch**: `feature/agent-workflow-tools-v1`
+- **Purpose**: Add executable start and finish helpers for Codex, Antigravity, and future agents.
+- **Tools**: `python tools/agent_status.py` and `python tools/agent_finish.py`.
+- **Report path**: `artifacts/agent_reports/latest.md`.
+- **Dependencies**: `requirements-dev.txt` includes `Pillow` for visual comparison; the agent helpers use stdlib.
+- **Validation**: Run `python tools/agent_status.py`, `python tools/run_all_tests.py`, `python tools/agent_finish.py --skip-visual`, and, when Godot is available, `python tools/agent_finish.py`.
 
 ## SVG Token Loading Fix (Antigravity)
 

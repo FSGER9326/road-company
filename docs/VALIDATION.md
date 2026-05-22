@@ -8,6 +8,15 @@ python tools/run_all_tests.py
 
 Run it from the project root, `road_company/`.
 
+Agents should also use the workflow helpers:
+
+```powershell
+python tools/agent_status.py
+python tools/agent_finish.py --skip-visual
+```
+
+Use `python tools/agent_finish.py` without `--skip-visual` when Godot is available and visual smoke should be part of the finish pass.
+
 ## What It Checks
 
 `tools/run_all_tests.py` detects the project root, then runs:
@@ -46,6 +55,18 @@ python tools/run_all_tests.py
 ```
 
 ## Direct Commands
+
+Agent status:
+
+```powershell
+python tools/agent_status.py
+```
+
+Agent finish report:
+
+```powershell
+python tools/agent_finish.py --skip-visual
+```
 
 All local tests:
 
@@ -119,6 +140,21 @@ python tools/run_visual_smoke.py --accept-baseline
 ```
 
 For more details, see `docs/visual_regression_testing.md`.
+
+## Agent Workflow Helpers
+
+`tools/agent_status.py` prints branch, commit, dirty status, diff against `origin/main` or `main`, Godot availability, harness file availability, latest visual report summary, and recommended validation commands.
+
+`tools/agent_finish.py` runs `git status`, diff against main, `python tools/run_all_tests.py`, and visual smoke when Godot is available unless `--skip-visual` is passed. It writes `artifacts/agent_reports/latest.md`.
+
+Supported finish flags:
+
+```powershell
+python tools/agent_finish.py --skip-visual
+python tools/agent_finish.py --force-visual
+python tools/agent_finish.py --no-tests
+python tools/agent_finish.py --report-path artifacts/agent_reports/custom.md
+```
 
 ## World Economy Validation
 

@@ -1,0 +1,4 @@
+# ROAD COMPANY development dependencies
+# Python 3.10+ required.
+# Godot 4.x is optional for headless and visual smoke tests.
+Pillow

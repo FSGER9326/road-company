@@ -25,7 +25,7 @@ Define the standard operating procedure for coding agents (Codex, Antigravity, D
    - Antigravity task: `feature/antigravity-<task>-v<N>`
    - Spec/docs only: `spec/<system>-v<N>`
 3. `git checkout -b <branch-name>`
-4. Run startup status (once implemented):
+4. Run startup status:
    ```powershell
    python tools/agent_status.py
    ```
@@ -50,6 +50,12 @@ Define the standard operating procedure for coding agents (Codex, Antigravity, D
 python tools/run_all_tests.py
 ```
 This runs: 8+ validators, 50+ simulation tests, Godot headless (if available).
+
+### Session Status
+```powershell
+python tools/agent_status.py
+```
+This reports the current branch, latest commit, dirty files, diff against `origin/main` or `main`, Godot availability, latest visual report summary, and recommended validation commands.
 
 ### For UI/Rendering Changes
 ```powershell
@@ -90,11 +96,18 @@ If your agent does NOT support image output:
 
 ## 7. Finishing Work
 
-1. Run the finish script (once implemented):
+1. Run the finish script:
    ```powershell
    python tools/agent_finish.py
    ```
-   This runs all validators, all tests, visual smoke, and writes `artifacts/agent_reports/latest.md`.
+   This runs all validators, all tests, visual smoke when Godot is available, and writes `artifacts/agent_reports/latest.md`.
+
+   Useful flags:
+   ```powershell
+   python tools/agent_finish.py --skip-visual
+   python tools/agent_finish.py --force-visual
+   python tools/agent_finish.py --report-path artifacts/agent_reports/my_task.md
+   ```
 
 2. Manual verification checklist:
    - [ ] `python tools/run_all_tests.py` passes
@@ -153,13 +166,13 @@ Do NOT merge if:
 
 ---
 
-## 11. Future Tools (to be implemented by Codex/Antigravity)
+## 11. Agent Workflow Tools
 
 ### tools/agent_status.py
 ```powershell
 python tools/agent_status.py
 ```
-**Expected behavior**:
+**Behavior**:
 - Print current branch name
 - Print latest commit hash and message
 - Print working tree status (clean/dirty, list modified files)
@@ -168,7 +181,7 @@ python tools/agent_status.py
 - Detect local Godot executable path (if any)
 - Confirm `tools/run_all_tests.py` exists
 - Confirm `tools/run_visual_smoke.py` exists (if applicable)
-- Check if latest visual report exists at `artifacts/agent_reports/latest.md` and summarize
+- Check if latest visual report exists at `tests/visual/runs/latest/report.json` and summarize
 - Recommend next validation commands based on dirty files
 
 **Exit code**: 0 on success, 0 even with dirty tree (just reports state).
@@ -177,7 +190,7 @@ python tools/agent_status.py
 ```powershell
 python tools/agent_finish.py
 ```
-**Expected behavior**:
+**Behavior**:
 1. Print `=== Git Status ===`
 2. Run `git status --short`
 3. Print `=== Diff Against Main ===`
@@ -201,11 +214,11 @@ python tools/agent_finish.py
 ### requirements-dev.txt
 ```
 # ROAD COMPANY development dependencies
-# Python 3.10+
-# No external packages required for core tooling.
-# Godot 4.x required for headless tests (optional for data/sim tests).
+# Python 3.10+ required.
+# Godot 4.x is optional for headless and visual smoke tests.
+Pillow
 ```
-Currently minimal — the project uses only Python stdlib. Add packages if future tools need them.
+`requirements-dev.txt` lists local development dependencies. `Pillow` is required by the visual comparison script. The agent helper scripts themselves use only Python stdlib.
 
 ---
 
